@@ -1,0 +1,27 @@
+# Set up the path to the local repository
+local_repository:
+  path: "${HOME}/.atomist/repository"
+
+# Set up remote repositories to query for Rug archives. Additionally one of the
+# repositories can also be enabled for publication (publish: true).
+remote_repositories:
+  central:
+    publish: false
+    url: "http://repo.maven.apache.org/maven2/"
+  rug:
+    publish: false
+    url: "https://atomist.jfrog.io/atomist/rugs"
+  release:
+    publish: true
+    url: "${MAVEN_BASE_URL}/rugs-release"
+    authentication:
+      username: "${MAVEN_USER}"
+      password: "${MAVEN_TOKEN}"
+configuration:
+  options:
+    disable_console_log: true
+    error: true
+    quiet: true
+    resolver_report: true
+    timer: true
+    update: true

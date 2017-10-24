@@ -1,0 +1,38 @@
+---
+kind: "operation"
+client: "com.atomist:rug"
+version: "1.0.0-m.7"
+editor:
+  name: "ConvertExistingProjectToRugArchive"
+  group: "atomist"
+  artifact: "rug-rugs"
+  version: "0.34.0"
+  origin:
+    repo: "https://github.com/atomist/rug-rugs.git"
+    branch: "c7ddec0ff638a1cfd019004b18917468d209883d"
+    sha: "c7ddec0"
+  parameters:
+    - "archiveName": "boot-api"
+    - "groupId": "shboland"
+    - "version": "1.0.0"
+
+---
+kind: "operation"
+client: "com.atomist:rug"
+version: "1.0.0-m.7"
+editor:
+  name: "ConvertExistingProjectToGenerator"
+  group: "atomist"
+  artifact: "rug-rugs"
+  version: "0.34.0"
+  origin:
+    repo: "https://github.com/atomist/rug-rugs.git"
+    branch: "c7ddec0ff638a1cfd019004b18917468d209883d"
+    sha: "c7ddec0"
+  parameters:
+    - "archiveName": "boot-api"
+    - "groupId": "shboland"
+    - "version": "1.0.0"
+    - "generatorName": "NewMavenProject"
+    - "description": "Bare minimum of a maven project. (Use the editors!)"
+
