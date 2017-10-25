@@ -12,4 +12,14 @@
     <dependencies>
     </dependencies>
 
+    <dependencyManagement>
+        <dependencies>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>api</module>
+        <module>persistence</module>
+        <module>domain</module>
+    </modules>
 </project>
