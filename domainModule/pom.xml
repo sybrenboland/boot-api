@@ -9,18 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>api</artifactId>
+    <artifactId>domainModule</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>org.shboland</groupId>
-            <artifactId>persistence</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.shboland</groupId>
-            <artifactId>domain</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
+
 </project>

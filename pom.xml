@@ -9,6 +9,12 @@
     <packaging>pom</packaging>
     <version>1.0.0</version>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.8.RELEASE</version>
+    </parent>
+
     <dependencies>
     </dependencies>
 
@@ -18,8 +24,8 @@
     </dependencyManagement>
 
     <modules>
-        <module>api</module>
-        <module>persistence</module>
-        <module>domain</module>
+        <module>apiModule</module>
+        <module>persistenceModule</module>
+        <module>domainModule</module>
     </modules>
 </project>

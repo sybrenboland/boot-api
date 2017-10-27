@@ -1,13 +1,11 @@
-import { Project } from "@atomist/rug/model/Project";
-import { Pom } from "@atomist/rug/model/Pom";
-import { Generator, Parameter, Tags } from "@atomist/rug/operations/Decorators";
-import { PopulateProject } from "@atomist/rug/operations/ProjectGenerator";
-import { Pattern } from "@atomist/rug/operations/RugOperation";
-import {
-    cleanChangeLog, cleanReadMe, movePackage, removeUnnecessaryFiles, renameClass,
-    updatePom
-} from "./RugGeneratorFunctions";
-import { PathExpressionEngine } from "@atomist/rug/tree/PathExpression";
+import {File} from "@atomist/rug/model/File";
+import {JavaSource} from "@atomist/rug/model/JavaSource";
+import {Pom} from "@atomist/rug/model/Pom";
+import {Project} from "@atomist/rug/model/Project";
+import {Generator, Parameter, Tags} from "@atomist/rug/operations/Decorators";
+import {PopulateProject} from "@atomist/rug/operations/ProjectGenerator";
+import {Pattern} from "@atomist/rug/operations/RugOperation";
+import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 
 /**
  * Sample TypeScript generator used by AddNewMavenProject.
@@ -40,7 +38,7 @@ export class NewMavenProject implements PopulateProject {
         maxLength: 50,
         required: false,
     })
-    public groupId: string = "shboland";
+    public groupId: string = "org.shboland";
 
     @Parameter({
         displayName: "Version",
@@ -52,29 +50,6 @@ export class NewMavenProject implements PopulateProject {
         required: false,
     })
     public version: string = "1.0.0";
-
-    @Parameter({
-        displayName: "Project Description",
-        description: "short descriptive text describing the new project",
-        pattern: Pattern.any,
-        validInput: "free text sentence fragment",
-        minLength: 1,
-        maxLength: 100,
-        required: false,
-    })
-    public description: string = "Spring Boot api project";
-
-    @Parameter({
-        displayName: "Root Package",
-        description: "root package for your generated source, often this will be namespaced under the group ID",
-        pattern: Pattern.java_package,
-        validInput: "a valid Java package name, which consists of period-separated identifiers which" +
-        " have only alphanumeric characters, $ and _ and do not start with a number",
-        minLength: 1,
-        maxLength: 50,
-        required: false,
-    })
-    public rootPackage: string = "org.shboland";
 
     @Parameter({
         displayName: "API module name",
@@ -110,28 +85,39 @@ export class NewMavenProject implements PopulateProject {
     public domainModuleName: string = "domain";
 
     public populate(project: Project) {
-        //cleanReadMe(project, this.description, this.groupId);
-        //cleanChangeLog(project, this.groupId);
-        //removeUnnecessaryFiles(project);
-        //this.updatePom(project, this.artifactId, this.groupId, this.version, this.description);
-        //movePackage(project, "com.atomist.springrest", this.rootPackage);
-        //renameClass(project, "SpringRest", this.serviceClassName);
+        this.updateMasterPom(project);
+        this.moveModule(project, "apiModule", this.apiModuleName);
+        this.moveModule(project, "persistenceModule", this.persistenceModuleName);
+        this.moveModule(project, "domainModule", this.domainModuleName);
+        this.updateModulePomParent(project);
     }
 
-    private updatePom(
-        project: Project,
-        artifactId: string,
-        groupId: string,
-        version: string,
-        description: string): void {
-
+    private updateMasterPom(project: Project): void {
         const eng: PathExpressionEngine = project.context.pathExpressionEngine;
         eng.with<Pom>(project, "/Pom()", pom => {
-            pom.setArtifactId(artifactId);
-            pom.setGroupId(groupId);
-            pom.setProjectName(project.name);
-            pom.setVersion(version);
-            pom.setDescription(description);
+            pom.setArtifactId(this.artifactId);
+            pom.setGroupId(this.groupId);
+            pom.setVersion(this.version);
+        });
+    }
+
+    private moveModule(project: Project, oldModuleName: string, newModuleName: string): void {
+        const pomFile: File = project.findFile(oldModuleName + "/pom.xml");
+        project.addFile(newModuleName + "/pom.xml", pomFile.content.replace(oldModuleName, newModuleName));
+        project.deleteDirectory(oldModuleName);
+
+        const masterPomFile: File = project.findFile("pom.xml");
+        masterPomFile.replace(oldModuleName, newModuleName);
+    }
+
+    private updateModulePomParent(project: Project) {
+        const eng: PathExpressionEngine = project.context.pathExpressionEngine;
+        eng.with<Pom>(project, "//Pom()", pom => {
+            if (pom.parentGroupId() !== "org.springframework.boot") {
+                pom.setParentArtifactId(this.artifactId);
+                pom.setParentGroupId(this.groupId);
+                pom.setParentVersion(this.version);
+            }
         });
     }
 }
