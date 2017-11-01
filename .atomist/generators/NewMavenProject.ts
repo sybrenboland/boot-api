@@ -1,5 +1,4 @@
 import {File} from "@atomist/rug/model/File";
-import {JavaSource} from "@atomist/rug/model/JavaSource";
 import {Pom} from "@atomist/rug/model/Pom";
 import {Project} from "@atomist/rug/model/Project";
 import {Generator, Parameter, Tags} from "@atomist/rug/operations/Decorators";
@@ -90,6 +89,7 @@ export class NewMavenProject implements PopulateProject {
         this.moveModule(project, "persistenceModule", this.persistenceModuleName);
         this.moveModule(project, "domainModule", this.domainModuleName);
         this.updateModulePomParent(project);
+        this.addApiDependencies(project);
     }
 
     private updateMasterPom(project: Project): void {
@@ -117,6 +117,16 @@ export class NewMavenProject implements PopulateProject {
                 pom.setParentArtifactId(this.artifactId);
                 pom.setParentGroupId(this.groupId);
                 pom.setParentVersion(this.version);
+            }
+        });
+    }
+
+    private addApiDependencies(project: Project) {
+        const eng: PathExpressionEngine = project.context.pathExpressionEngine;
+        eng.with<Pom>(project, "//Pom()", pom => {
+            if (pom.artifactId() === this.apiModuleName) {
+                pom.addOrReplaceDependencyOfVersion(this.groupId, this.persistenceModuleName, this.version);
+                pom.addOrReplaceDependencyOfVersion(this.groupId, this.domainModuleName, this.version);
             }
         });
     }
