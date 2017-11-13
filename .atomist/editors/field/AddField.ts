@@ -8,16 +8,17 @@ import {fileFunctions} from "../functions/FileFunctions";
 
 /**
  * AddField editor
- * - Adds chain from persistence to api for a bean
+ * - Adds chain from persistence to api for field of a bean
+ * - Supported types: String, int, long, boolean, LocalDateTime
  */
-@Editor("AddField", "Add whole api to persistence chain")
+@Editor("AddField", "Add field to a bean for the whole api to persistence chain")
 @Tags("rug", "api", "persistence", "domain", "shboland")
 export class AddField implements EditProject {
     @Parameter({
-        displayName: "Class name",
-        description: "Name of the class we want to add",
-        pattern: Pattern.any,
-        validInput: "Java class name",
+        displayName: "Field name",
+        description: "Name of the field we want to add",
+        pattern: Pattern.java_identifier,
+        validInput: "Java identifier",
         minLength: 1,
         maxLength: 100,
         required: true,
@@ -25,10 +26,10 @@ export class AddField implements EditProject {
     public fieldName: string;
 
     @Parameter({
-        displayName: "Class name",
-        description: "Name of the class we want to add",
+        displayName: "Type",
+        description: "Type of the field we want to add",
         pattern: Pattern.any,
-        validInput: "Java class name",
+        validInput: "Java type that is supported: String, int, long, boolean, LocalDateTime",
         minLength: 1,
         maxLength: 100,
         required: true,
