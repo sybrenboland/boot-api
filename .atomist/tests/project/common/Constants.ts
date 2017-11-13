@@ -1,6 +1,7 @@
 
 export const ClassName = "Adres";
 export const BasePackage = "org.shboland";
+export const Release = "2.0.0";
 
 export const ApiModule = "apiModule";
 export const PersistenceModule = "persistenceModule";

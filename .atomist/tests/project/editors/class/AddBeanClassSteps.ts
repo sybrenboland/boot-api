@@ -1,14 +1,12 @@
 
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import {ApiModule, BasePackage, ClassName, PersistenceModule} from "../../common/Constants";
-
-const releaseInput = "2.0.0";
+import {ApiModule, BasePackage, ClassName, PersistenceModule, Release} from "../../common/Constants";
 
 const mavenBasePath = "/src/main";
 const beanPath = PersistenceModule + mavenBasePath + "/java/org/shboland/db/hibernate/bean/Adres.java";
 const changelogPath = PersistenceModule + mavenBasePath + "/resources/liquibase/release/"
-    + releaseInput + "/db-adres.xml";
+    + Release + "/db-adres.xml";
 
 When("the AddBeanClass is run", (p: Project, w: ProjectScenarioWorld) => {
     const editor = w.editor("AddBeanClass");
@@ -16,7 +14,7 @@ When("the AddBeanClass is run", (p: Project, w: ProjectScenarioWorld) => {
         className: ClassName,
         basePackage: BasePackage,
         module: PersistenceModule,
-        release: releaseInput,
+        release: Release,
     });
 });
 
