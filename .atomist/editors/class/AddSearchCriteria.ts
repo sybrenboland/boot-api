@@ -300,8 +300,8 @@ public class SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-        javaFunctions.addImport(file, "org.shboland.domain.Json" + this.className + "SearchCriteria");
-        javaFunctions.addImport(file, "org.shboland.domain.JsonSearchResult");
+        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".domain.JsonSearchResult");
         javaFunctions.addImport(file, "javax.ws.rs.BeanParam");
     }
 
@@ -351,10 +351,10 @@ public class SearchCriteriaConverter {
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");
         javaFunctions.addImport(file, "lombok.extern.slf4j.Slf4j");
-        javaFunctions.addImport(file, "org.shboland.domain.Json" + this.className + "SearchCriteria");
-        javaFunctions.addImport(file, "org.shboland.domain.JsonSearchResult");
-        javaFunctions.addImport(file, "org.shboland.convert.ConvertException");
-        javaFunctions.addImport(file, "org.shboland.domain." + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".domain.JsonSearchResult");
+        javaFunctions.addImport(file, this.basePackage + ".convert.ConvertException");
+        javaFunctions.addImport(file, this.basePackage + ".domain." + this.className + "SearchCriteria");
         javaFunctions.addImport(file, "java.util.ArrayList");
         javaFunctions.addImport(file, "java.util.List");
         javaFunctions.addImport(file, "javax.ws.rs.BeanParam");
