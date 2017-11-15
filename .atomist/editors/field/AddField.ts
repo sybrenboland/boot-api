@@ -3,8 +3,9 @@ import {Project} from "@atomist/rug/model/Project";
 import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
-import {javaFunctions} from "../functions/JavaClassFunctions";
 import {fileFunctions} from "../functions/FileFunctions";
+import {dateFieldFunctions} from "./DateFieldFunctions";
+import {javaFunctions} from "../functions/JavaClassFunctions";
 
 /**
  * AddField editor
@@ -107,9 +108,21 @@ export class AddField implements EditProject {
         const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
 
         this.addChangelog(project);
-        this.addFieldToBean(project, basePath);
-        this.addFieldToDomainObject(project, basePath);
-        this.addFieldToConverter(project, basePath);
+
+        if (this.type === "LocalDateTime") {
+            dateFieldFunctions.addDateField(
+                this.fieldName, this.type, this.className, this.basePackage,
+                this.persistenceModule, this.apiModule, this.domainModule,
+                project, basePath);
+        } else {
+            this.addFieldToBean(project, basePath);
+            this.addFieldToDomainObject(project, basePath);
+            this.addFieldToConverter(project, basePath);
+            this.addFieldToJsonSearchCriteria(project, basePath);
+            this.addFieldToSearchCriteria(project, basePath);
+            this.addFieldToSearchCriteriaConverter(project, basePath);
+            this.addFieldToPredicates(project, basePath);
+        }
     }
 
     private addChangelog(project: Project) {
@@ -135,24 +148,13 @@ export class AddField implements EditProject {
 
     private addFieldToBean(project: Project, basePath: string) {
         const inputHook = "// @Input";
-        let rawJavaCode = `@Column(name = "${this.fieldName.toUpperCase()}")
+        const rawJavaCode = `@Column(name = "${this.fieldName.toUpperCase()}")
     private ${this.type} ${this.fieldName};
     
     ` + inputHook;
 
         const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.className + ".java";
         const beanFile: File = project.findFile(beanPath);
-
-        if (this.type === "LocalDateTime") {
-            rawJavaCode = `@Convert(converter = LocalDateTimeAttributeConverter.class)
-    ` + rawJavaCode;
-
-            const importConverter = this.basePackage + ".db.hibernate.converter.LocalDateTimeAttributeConverter";
-            javaFunctions.addImport(beanFile, importConverter);
-            javaFunctions.addImport(beanFile, "java.time.LocalDateTime");
-
-            this.addConverter(project, basePath, this.type, "Timestamp");
-        }
 
         if (project.fileExists(beanPath)) {
             beanFile.replace(inputHook, rawJavaCode);
@@ -163,32 +165,13 @@ export class AddField implements EditProject {
 
     private addFieldToDomainObject(project: Project, basePath: string) {
         const inputHook = "// @Input";
-        let rawJavaCode = `@JsonProperty("${this.fieldName}")
+        const rawJavaCode = `@JsonProperty("${this.fieldName}")
     private ${this.type} ${this.fieldName};
 
     ` + inputHook;
 
         const path = this.domainModule + basePath + "/domain/Json" + this.className + ".java";
         const file: File = project.findFile(path);
-
-        if (this.type === "LocalDateTime") {
-            rawJavaCode = `@JsonProperty("${this.fieldName}")
-    @JsonSerialize(using = CustomDateTimeSerializer.class)
-    @JsonDeserialize(using = CustomDateTimeDeserializer.class)
-    private ZonedDateTime ${this.fieldName};
-
-    ` + inputHook;
-
-            javaFunctions.addImport(file, "java.time.ZonedDateTime");
-            javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonDeserialize");
-            javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonSerialize");
-
-            this.addDateTimeSerializer(project, basePath);
-            javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeSerializer");
-            this.addDateTimeDeserializer(project, basePath);
-            javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeDeserializer");
-            this.addInvalidDateException(project, basePath);
-        }
 
         if (project.fileExists(path)) {
             file.replace(inputHook, rawJavaCode);
@@ -198,40 +181,100 @@ export class AddField implements EditProject {
     }
 
     private addFieldToConverter(project: Project, basePath: string) {
+        const methodPrefix = this.type === "boolean" ? "is" : "get";
+
         const inputJsonHook = "// @InputJsonField";
-        let rawJsonInput = `json${this.className}.set${this.capitalize(this.fieldName)}` +
-            `(${this.className.toLowerCase()}.get${this.capitalize(this.fieldName)}());
+        let rawJsonInput = `json${this.className}.set${javaFunctions.capitalize(this.fieldName)}` +
+            `(${this.className.toLowerCase()}.${methodPrefix}${javaFunctions.capitalize(this.fieldName)}());
         ` + inputJsonHook;
 
         const inputBeanHook = "// @InputBeanField";
-        let rawBeanInput = `${this.className.toLowerCase()}To.set${this.capitalize(this.fieldName)}` +
-            `(${this.className.toLowerCase()}From.get${this.capitalize(this.fieldName)}());
+        let rawBeanInput = `${this.className.toLowerCase()}To.set${javaFunctions.capitalize(this.fieldName)}` +
+            `(${this.className.toLowerCase()}From.${methodPrefix}${javaFunctions.capitalize(this.fieldName)}());
         ` + inputBeanHook;
 
         const path = this.apiModule + basePath + "/convert/" + this.className + "Converter.java";
         const file: File = project.findFile(path);
-
-        if (this.type === "LocalDateTime") {
-            rawJsonInput = `if (${this.className.toLowerCase()}.get${this.capitalize(this.fieldName)}() != null) {
-            json${this.className}.set${this.capitalize(this.fieldName)}(${this.className.toLowerCase()}.` +
-                `get${this.capitalize(this.fieldName)}().atZone(ZoneId.of("UTC")));
-        }
-        ` + inputJsonHook;
-
-            rawBeanInput = `if (${this.className.toLowerCase()}From.get${this.capitalize(this.fieldName)}() != null) {
-            ${this.className.toLowerCase()}To.set${this.capitalize(this.fieldName)}` +
-                `(${this.className.toLowerCase()}From.get${this.capitalize(this.fieldName)}().to${this.type}());
-        }
-        ` + inputBeanHook;
-
-            javaFunctions.addImport(file, "java.time.ZoneId");
-        }
 
         if (project.fileExists(path)) {
             file.replace(inputJsonHook, rawJsonInput);
             file.replace(inputBeanHook, rawBeanInput);
         } else {
             console.error("Converter not added yet!");
+        }
+    }
+
+    private addFieldToJsonSearchCriteria(project: Project, basePath: string) {
+        const inputHook = "// @Input";
+        const rawJavaCode = `@QueryParam("${this.fieldName}")
+    private ${this.type} ${this.fieldName};
+    
+    ` + inputHook;
+
+        const path = this.domainModule + basePath + "/domain/Json" + this.className + "SearchCriteria.java";
+        const file: File = project.findFile(path);
+
+        if (project.fileExists(path)) {
+            file.replace(inputHook, rawJavaCode);
+        } else {
+            console.error("JsonSearchCriteria class not added yet!");
+        }
+    }
+
+    private addFieldToSearchCriteria(project: Project, basePath: string) {
+        const inputHook = "// @Input";
+        const rawJavaCode = `private Optional<${this.type}> ${this.fieldName} = Optional.empty();
+    
+    ` + inputHook;
+
+        const path = this.persistenceModule + basePath + "/domain/" + this.className + "SearchCriteria.java";
+        const file: File = project.findFile(path);
+
+        if (project.fileExists(path)) {
+            file.replace(inputHook, rawJavaCode);
+        } else {
+            console.error("SearchCriteria class not added yet!");
+        }
+    }
+
+    private addFieldToSearchCriteriaConverter(project: Project, basePath: string) {
+        const inputHook = "// @Input";
+        const rawJavaCode = `${this.type} ${this.fieldName} = ` +
+            `json${this.className}SearchCriteria.get${javaFunctions.capitalize(this.fieldName)}();
+        sc.set${javaFunctions.capitalize(this.fieldName)}(Optional.ofNullable(${this.fieldName}));
+    
+    ` + inputHook;
+
+        const path = this.apiModule + basePath + "/convert/SearchCriteriaConverter.java";
+        const file: File = project.findFile(path);
+
+        if (project.fileExists(path)) {
+            file.replace(inputHook, rawJavaCode);
+        } else {
+            console.error("SearchCriteriaConverter class not added yet!");
+        }
+    }
+
+    private addFieldToPredicates(project: Project, basePath: string) {
+        const propertyInputHook = "// @Property input";
+        const rawJavaPropertyCode = `private static final String ` +
+            `${this.fieldName.toUpperCase()}_PROPERTY = "${this.fieldName}";
+    ` + propertyInputHook;
+
+        const predicateInputHook = "// @Predicate input";
+        const rawPredicateJavaCode = `sc.get${javaFunctions.capitalize(this.fieldName)}().ifPresent(${this.fieldName} -> ` +
+            `predicates.add(criteria.equal(root.get(${this.fieldName.toUpperCase()}_PROPERTY), ${this.fieldName})));
+    
+        ` + predicateInputHook;
+
+        const path = this.persistenceModule + basePath + "/db/repo/" + this.className + "RepositoryImpl.java";
+        const file: File = project.findFile(path);
+
+        if (project.fileExists(path)) {
+            file.replace(predicateInputHook, rawPredicateJavaCode);
+            file.replace(propertyInputHook, rawJavaPropertyCode);
+        } else {
+            console.error("Custom repository implementation class not added yet!");
         }
     }
 
@@ -254,129 +297,6 @@ export class AddField implements EditProject {
         }
 
         return dbType;
-    }
-
-    private capitalize(word: string) {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-    }
-
-    private addConverter(project: Project, basePath: string, javaType: string, dbType: string) {
-        const rawJavaConverterInput = `package ` + this.basePackage + `.db.hibernate.converter;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-import java.sql.` + dbType + `;
-import java.time.` + javaType + `;
-
-@Converter(autoApply = true)
-public class ` + javaType + `AttributeConverter implements AttributeConverter<` + javaType + `, ` + dbType + `> {
-
-    @Override
-    public ` + dbType + ` convertToDatabaseColumn(` + javaType + ` locDate) {
-        return locDate == null ? null : ` + dbType + `.valueOf(locDate);
-    }
-
-    @Override
-    public ` + javaType + ` convertToEntityAttribute(` + dbType + ` sql` + dbType + `) {
-        return sql` + dbType + ` == null ? null : sql` + dbType + `.to` + javaType + `();
-    }
-}
-`;
-
-        const converterPath = this.persistenceModule + basePath +
-            "/db/hibernate/converter/LocalDateTimeAttributeConverter.java";
-
-        if (!project.fileExists(converterPath)) {
-            project.addFile(converterPath, rawJavaConverterInput);
-        }
-    }
-
-    private addDateTimeSerializer(project: Project, basePath: string) {
-        const rawJavaInput = `package ` + this.basePackage + `.domain.utility;
-
-import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-
-public class CustomDateTimeSerializer extends JsonSerializer<ZonedDateTime> {
-
-    @Override
-    public void serialize(final ZonedDateTime value, final JsonGenerator jgen, final SerializerProvider provider)
-            throws IOException {
-        final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmZ");
-        final String dateString = value.format(dateFormat);
-        jgen.writeString(dateString);
-    }
-}
-`;
-
-        const path = this.domainModule + basePath + "/domain/utility/CustomDateTimeSerializer.java";
-
-        if (!project.fileExists(path)) {
-            project.addFile(path, rawJavaInput);
-        }
-    }
-
-    private addDateTimeDeserializer(project: Project, basePath: string) {
-        const rawJavaInput = `package ` + this.basePackage + `.domain.utility;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-
-public class CustomDateTimeDeserializer extends JsonDeserializer<ZonedDateTime> {
-
-    @Override
-    public ZonedDateTime deserialize(final JsonParser parser, final DeserializationContext ctxt) throws IOException {
-
-        final String date = parser.getText();
-
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
-        format.setLenient(false);
-
-        try {
-            return ZonedDateTime.ofInstant(format.parse(date).toInstant(), ZoneId.of("UTC"));
-        } catch (final ParseException e) {
-            final String msg = "Invalid date value: " + date;
-            throw new InvalidDateException(msg, e);
-        }
-    }
-}
-`;
-
-        const path = this.domainModule + basePath + "/domain/utility/CustomDateTimeDeserializer.java";
-
-        if (!project.fileExists(path)) {
-            project.addFile(path, rawJavaInput);
-        }
-    }
-
-    private addInvalidDateException(project: Project, basePath: string) {
-        const rawJavaInput = `package ` + this.basePackage + `.domain.utility;
-
-class InvalidDateException extends RuntimeException {
-
-    InvalidDateException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-}
-`;
-
-        const path = this.domainModule + basePath + "/domain/utility/InvalidDateException.java";
-
-        if (!project.fileExists(path)) {
-            project.addFile(path, rawJavaInput);
-        }
     }
 }
 
