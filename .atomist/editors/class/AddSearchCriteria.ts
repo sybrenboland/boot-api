@@ -276,7 +276,7 @@ public class SearchCriteriaConverter {
         }
 
         long id = json${this.className}SearchCriteria.getId();
-        sc.setId(Optional.ofNullable(id));
+        sc.setId(id == 0 ? Optional.empty() : Optional.of(id));
         
         // @Input
 
