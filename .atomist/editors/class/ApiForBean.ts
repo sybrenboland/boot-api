@@ -16,6 +16,7 @@ import {addResource} from "./AddResource";
 import {addService} from "./AddService";
 import {addSpringBoot} from "./AddSpringBoot";
 import {addSwagger} from "./AddSwagger";
+import {addSearchCriteria} from "./AddSearchCriteria";
 
 /**
  * ApiForBean editor
@@ -48,14 +49,14 @@ export class ApiForBean implements EditProject {
 
     @Parameter({
         displayName: "Methods",
-        description: "All methods you want implemented",
+        description: "All methods you want implemented (GET,PUT,POST,SEARCH)",
         pattern: Pattern.any,
         validInput: "Comma separated http methods e.g. 'GET,POST'",
         minLength: 0,
         maxLength: 100,
         required: false,
     })
-    public methods: string = "PUT,POST,GET";
+    public methods: string = "PUT,POST,SEARCH,GET";
 
     @Parameter({
         displayName: "Module name",
@@ -166,6 +167,17 @@ export class ApiForBean implements EditProject {
         required: false,
     })
     public swaggerVersion: string = "";
+
+    @Parameter({
+        displayName: "Version",
+        description: "Version of resteasy",
+        pattern: Pattern.any,
+        validInput: "Release number",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public restEasyVersion: string = "";
 
     public edit(project: Project) {
 
@@ -327,6 +339,10 @@ export class ApiForBean implements EditProject {
                     this.addPut(project);
                     break;
                 }
+                case "SEARCH": {
+                    this.addSearchCriteria(project);
+                    break;
+                }
             }
         });
     }
@@ -362,6 +378,26 @@ export class ApiForBean implements EditProject {
         }
 
         addPut.edit(project);
+    }
+
+    private addSearchCriteria(project: Project) {
+
+        addSearchCriteria.className = this.className;
+        addSearchCriteria.basePackage = this.basePackage;
+        if(this.persistenceModule !== "") {
+            addSearchCriteria.persistenceModule = this.persistenceModule;
+        }
+        if(this.apiModule !== "") {
+            addSearchCriteria.apiModule = this.apiModule;
+        }
+        if(this.domainModule !== "") {
+            addSearchCriteria.domainModule = this.domainModule;
+        }
+        if(this.restEasyVersion !== "") {
+            addSearchCriteria.restEasyVersion = this.restEasyVersion;
+        }
+
+        addSearchCriteria.edit(project);
     }
 
     private addSwagger(project: Project) {

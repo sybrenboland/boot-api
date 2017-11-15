@@ -31,6 +31,31 @@ export class JavaClassFunctions {
             file.setContent(newContent);
         }
     }
+
+    public addMemberToClass(file: File, member: string) {
+        const memberInputHook = "// @FieldInput";
+        const argumentReplacement = member + ";\n    " + memberInputHook;
+
+        file.replace(memberInputHook, argumentReplacement);
+    }
+
+    public addConstructorArgument(file: File, className: string, argument: string) {
+        const constructorInputHook = className + "(";
+        const argumentReplacement = constructorInputHook + argument + ", ";
+
+        file.replace(constructorInputHook, argumentReplacement);
+    }
+
+    public addConstructorAssignment(file: File, argumentName: string) {
+        const constructorInputHook = "// @ConstructorInput";
+        const argumentReplacement = "this." + argumentName + " = " + argumentName + ";\n        " + constructorInputHook;
+
+        file.replace(constructorInputHook, argumentReplacement);
+    }
+
+    public capitalize(word: string) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
 }
 
 export const javaFunctions = new JavaClassFunctions();

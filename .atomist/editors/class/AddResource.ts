@@ -94,10 +94,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ${this.className}Controller implements I${this.className}Controller {
 
     private final ${this.className}Service ${this.className.toLowerCase()}Service;
+    // @FieldInput
 
     @Autowired
     public ${this.className}Controller(${this.className}Service ${this.className.toLowerCase()}Service) {
         this.${this.className.toLowerCase()}Service = ${this.className.toLowerCase()}Service;
+        // @ConstructorInput
     }
     
     // @Input
