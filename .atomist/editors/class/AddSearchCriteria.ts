@@ -214,7 +214,7 @@ public class Json${this.className}SearchCriteria {
     private int start;
 
     @QueryParam("id")
-    private long id;
+    private Long id;
     
     // @Input
 
@@ -252,7 +252,7 @@ public class ${this.className}SearchCriteria {
     }
 
     private addSearchCriteriaConverter(project: Project, basePath: string) {
-        const path = this.apiModule + basePath + "/convert/SearchCriteriaConverter.java";
+        const path = this.apiModule + basePath + "/convert/" + this.className + "SearchCriteriaConverter.java";
         const rawJavaContent = `package ${this.basePackage}.convert;
 
 import ${this.basePackage}.domain.Json${this.className}SearchCriteria;
@@ -261,8 +261,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service("searchCriteriaConverter")
-public class SearchCriteriaConverter {
+@Service("${this.className.toLowerCase()}SearchCriteriaConverter")
+public class ${this.className}SearchCriteriaConverter {
 
     public ${this.className}SearchCriteria createSearchCriteria` +
             `(Json${this.className}SearchCriteria json${this.className}SearchCriteria) {
@@ -275,13 +275,15 @@ public class SearchCriteriaConverter {
             throw new ConvertException("Maximum number of results should be a positive number.");
         }
 
-        long id = json${this.className}SearchCriteria.getId();
-        sc.setId(id == 0 ? Optional.empty() : Optional.of(id));
+        Long id = json${this.className}SearchCriteria.getId();
+        sc.setId(Optional.ofNullable(id));
         
         // @Input
 
         return sc;
     }
+    
+    // @Function input
 }`;
 
         if (!project.fileExists(path)) {
@@ -312,7 +314,7 @@ public class SearchCriteriaConverter {
 
         ${this.className}SearchCriteria sc;
         try {
-            sc = searchCriteriaConverter.createSearchCriteria(searchCriteria);
+            sc = ${this.className.toLowerCase()}SearchCriteriaConverter.createSearchCriteria(searchCriteria);
         } catch (ConvertException e) {
             log.warn("Conversion failed!", e);
             return ResponseEntity.badRequest().build();
@@ -339,14 +341,19 @@ public class SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-        javaFunctions.addMemberToClass(file, "private final SearchCriteriaConverter searchCriteriaConverter");
-        javaFunctions.addConstructorArgument(file, this.className + "Controller", "SearchCriteriaConverter searchCriteriaConverter");
-        javaFunctions.addConstructorAssignment(file, "searchCriteriaConverter");
-        javaFunctions.addImport(file, this.basePackage + ".convert.SearchCriteriaConverter");
+        javaFunctions.addMemberToClass(file,
+            `private final ${this.className}SearchCriteriaConverter ` +
+            `${this.className.toLowerCase()}SearchCriteriaConverter`);
+        javaFunctions.addConstructorArgument(file, this.className + "Controller",
+            `${this.className}SearchCriteriaConverter ${this.className.toLowerCase()}SearchCriteriaConverter`);
+        javaFunctions.addConstructorAssignment(file, this.className.toLowerCase() + "SearchCriteriaConverter");
+        javaFunctions.addImport(file, this.basePackage + ".convert." + this.className + "SearchCriteriaConverter");
 
-        javaFunctions.addMemberToClass(file, "private final PersonConverter personConverter");
-        javaFunctions.addConstructorArgument(file, this.className + "Controller", "PersonConverter personConverter");
-        javaFunctions.addConstructorAssignment(file, "personConverter");
+        javaFunctions.addMemberToClass(file,
+            `private final ${this.className}Converter ${this.className.toLowerCase()}Converter`);
+        javaFunctions.addConstructorArgument(file, this.className + "Controller",
+            `${this.className}Converter ${this.className.toLowerCase()}Converter`);
+        javaFunctions.addConstructorAssignment(file, this.className.toLowerCase() + "Converter");
         javaFunctions.addImport(file, this.basePackage + ".convert." + this.className + "Converter");
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");
@@ -408,12 +415,12 @@ public class SearchCriteriaConverter {
 
 public class ConvertException extends RuntimeException {
 
-    public ConvertException(String message) {
+    ConvertException(String message) {
         super(message);
     }
-
-    public ConvertException(String message, Throwable cause) {
-        super(message, cause);
+    
+    ConvertException(String message, Throwable e) {
+        super(message, e);
     }
 }`;
 

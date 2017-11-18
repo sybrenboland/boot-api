@@ -36,4 +36,5 @@ Feature: Add field class should add a given field to the api chain
     Then the method CustomDateTimeSerializer is added to domain/JsonAdres in the Domain module
     Then the method CustomDateTimeDeserializer is added to domain/JsonAdres in the Domain module
     Then the method Street is added to convert/AdresConverter in the Api module
+    Then a DateParam class is added to the Domain module
     Then the converter is extended with the field

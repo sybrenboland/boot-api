@@ -56,6 +56,30 @@ export class JavaClassFunctions {
     public capitalize(word: string) {
         return word.charAt(0).toUpperCase() + word.slice(1);
     }
+
+    public methodPrefix(type: string) {
+        return type === "boolean" ? "is" : "get";
+    }
+
+    public box(javaType: string) {
+        let boxedType: string;
+        switch (javaType) {
+            case "int":
+                boxedType = "Integer";
+                break;
+            case "long":
+                boxedType = "Long";
+                break;
+            case "boolean":
+                boxedType = "Boolean";
+                break;
+            default:
+                boxedType = javaType;
+                break;
+        }
+
+        return boxedType;
+    }
 }
 
 export const javaFunctions = new JavaClassFunctions();

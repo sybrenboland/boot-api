@@ -26,6 +26,8 @@ export class DateFieldFunctions {
         this.addFieldToBean(project, basePath);
         this.addFieldToDomainClass(project, basePath);
         this.addFieldToConverter(project, basePath);
+        this.addFieldToJsonSearchCriteria(project, basePath);
+        this.addFieldToSearchCriteriaConverter(project, basePath);
     }
 
     private addFieldToBean(project: Project, basePath: string) {
@@ -228,6 +230,104 @@ class InvalidDateException extends RuntimeException {
 
         if (!project.fileExists(path)) {
             project.addFile(path, rawJavaInput);
+        }
+    }
+
+    private addFieldToJsonSearchCriteria(project: Project, basePath: string) {
+        const inputHook = "// @Input";
+        const rawJavaCode = `@QueryParam("${this.fieldName}")
+    private DateParam ${this.fieldName}Param;
+    
+    ` + inputHook;
+
+        const path = this.domainModule + basePath + "/domain/Json" + this.className + "SearchCriteria.java";
+        const file: File = project.findFile(path);
+
+        if (project.fileExists(path)) {
+            file.replace(inputHook, rawJavaCode);
+            javaFunctions.addImport(file, "nl.myorg.domain.utility.DateParam");
+        } else {
+            console.error("JsonSearchCriteria class not added yet!");
+        }
+
+        this.addDateParamClass(project, basePath);
+    }
+
+    private addFieldToSearchCriteriaConverter(project: Project, basePath: string) {
+        const inputHook = "// @Input";
+        const rawJavaCode = `DateParam ${this.fieldName}Param = ` +
+            `json${this.className}SearchCriteria.get${javaFunctions.capitalize(this.fieldName)}Param();
+        sc.set${javaFunctions.capitalize(this.fieldName)}` +
+            `(${this.fieldName}Param != null ? parseLocalDateTime(${this.fieldName}Param) : Optional.empty());
+    
+    ` + inputHook;
+
+        const path = this.apiModule + basePath + "/convert/" + this.className + "SearchCriteriaConverter.java";
+        const file: File = project.findFile(path);
+
+        if (project.fileExists(path)) {
+            file.replace(inputHook, rawJavaCode);
+            javaFunctions.addImport(file, this.basePackage + ".domain.utility.DateParam");
+            javaFunctions.addImport(file, "java.time.LocalDateTime");
+            javaFunctions.addImport(file, "java.util.Date");
+            javaFunctions.addImport(file, "java.time.ZoneId");
+            javaFunctions.addImport(file, "java.text.ParseException");
+
+            this.addDateParseFunction(project, path);
+        } else {
+            console.error("SearchCriteriaConverter class not added yet!");
+        }
+    }
+
+    private addDateParamClass(project: Project, basePath: string) {
+        const rawJavaConverterInput = `package ${this.basePackage}.domain.utility;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class DateParam {
+
+    private String dateString;
+
+    public DateParam(String dateString) {
+        this.dateString = dateString;
+    }
+
+    public Date parseDate() throws ParseException {
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+        format.setLenient(false);
+
+        return format.parse(dateString);
+    }
+}
+`;
+
+        const path = this.domainModule + basePath + "/domain/utility/DateParam.java";
+
+        if (!project.fileExists(path)) {
+            project.addFile(path, rawJavaConverterInput);
+        }
+    }
+
+    private addDateParseFunction(project: Project, path: string) {
+        const functionInputHook = "// @Function input";
+        const rawFunctionCode = `private static Optional<LocalDateTime> parseLocalDateTime(DateParam dateParam) {
+        try {
+            Date date = dateParam.parseDate();
+            return Optional.of(LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC")));
+        } catch (ParseException e) {
+            throw new ConvertException("Date parameters should be formatted as 'yyyy-MM-dd'T'HH:mmZ'", e);
+        }
+    }
+    ` + functionInputHook;
+
+        const file: File = project.findFile(path);
+
+        if (project.fileExists(path) && !project.fileContains(path, "parseLocalDateTime(DateParam dateParam)")) {
+            file.replace(functionInputHook, rawFunctionCode);
+        } else {
+            console.error("SearchCriteriaConverter class not added yet!");
         }
     }
 }

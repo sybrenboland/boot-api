@@ -1,7 +1,11 @@
 
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import {ApiModule, BasePackage, ClassName, DomainModule, PersistenceModule, Release} from "../../common/Constants";
+import {
+    ApiModule, BasePackage, ClassName, DomainModule, getModule, PersistenceModule,
+    Release
+} from "../../common/Constants";
+import {fileFunctions} from "../../../../editors/functions/FileFunctions";
 
 const fieldNameInput = "street";
 
@@ -30,4 +34,9 @@ Then("the converter is extended with the field", (p: Project, w) => {
     const path = ApiModule + "/src/main/java/org/shboland/convert/" + ClassName + "Converter.java";
 
     return p.fileContains(path, fieldNameInput.charAt(0).toUpperCase() + fieldNameInput.slice(1));
+});
+
+Then("a DateParam class is added to the (.*) module", (p: Project, w, moduleName: string) => {
+    return p.fileExists(getModule(moduleName) + "/src/main/java/"
+        + fileFunctions.toPath(BasePackage) + "/domain/utility/DateParam.java");
 });

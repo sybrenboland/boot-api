@@ -14,7 +14,7 @@ Feature: Add search criteria should add GET with search criteria to the api chai
     Then a JsonSearchResult is added to Domain module in package domain
     Then a JsonAdresSearchCriteria is added to Domain module in package domain
     Then a AdresSearchCriteria is added to Persistence module in package domain
-    Then a SearchCriteriaConverter is added to Api module in package convert
+    Then a AdresSearchCriteriaConverter is added to Api module in package convert
     Then the method list is added to resource/IAdresController in the Api module
     Then the method list is added to resource/AdresController in the Api module
     Then the method findBySearchCriteria is added to service/AdresService in the Api module

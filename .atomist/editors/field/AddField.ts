@@ -108,6 +108,8 @@ export class AddField implements EditProject {
         const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
 
         this.addChangelog(project);
+        this.addFieldToPredicates(project, basePath);
+        this.addFieldToSearchCriteria(project, basePath);
 
         if (this.type === "LocalDateTime") {
             dateFieldFunctions.addDateField(
@@ -119,9 +121,7 @@ export class AddField implements EditProject {
             this.addFieldToDomainObject(project, basePath);
             this.addFieldToConverter(project, basePath);
             this.addFieldToJsonSearchCriteria(project, basePath);
-            this.addFieldToSearchCriteria(project, basePath);
             this.addFieldToSearchCriteriaConverter(project, basePath);
-            this.addFieldToPredicates(project, basePath);
         }
     }
 
@@ -181,16 +181,17 @@ export class AddField implements EditProject {
     }
 
     private addFieldToConverter(project: Project, basePath: string) {
-        const methodPrefix = this.type === "boolean" ? "is" : "get";
 
         const inputJsonHook = "// @InputJsonField";
         let rawJsonInput = `json${this.className}.set${javaFunctions.capitalize(this.fieldName)}` +
-            `(${this.className.toLowerCase()}.${methodPrefix}${javaFunctions.capitalize(this.fieldName)}());
+            `(${this.className.toLowerCase()}.${javaFunctions.methodPrefix(this.type)}` +
+            `${javaFunctions.capitalize(this.fieldName)}());
         ` + inputJsonHook;
 
         const inputBeanHook = "// @InputBeanField";
         let rawBeanInput = `${this.className.toLowerCase()}To.set${javaFunctions.capitalize(this.fieldName)}` +
-            `(${this.className.toLowerCase()}From.${methodPrefix}${javaFunctions.capitalize(this.fieldName)}());
+            `(${this.className.toLowerCase()}From.${javaFunctions.methodPrefix(this.type)}` +
+            `${javaFunctions.capitalize(this.fieldName)}());
         ` + inputBeanHook;
 
         const path = this.apiModule + basePath + "/convert/" + this.className + "Converter.java";
@@ -207,7 +208,7 @@ export class AddField implements EditProject {
     private addFieldToJsonSearchCriteria(project: Project, basePath: string) {
         const inputHook = "// @Input";
         const rawJavaCode = `@QueryParam("${this.fieldName}")
-    private ${this.type} ${this.fieldName};
+    private ${javaFunctions.box(this.type)} ${this.fieldName};
     
     ` + inputHook;
 
@@ -223,7 +224,7 @@ export class AddField implements EditProject {
 
     private addFieldToSearchCriteria(project: Project, basePath: string) {
         const inputHook = "// @Input";
-        const rawJavaCode = `private Optional<${this.type}> ${this.fieldName} = Optional.empty();
+        const rawJavaCode = `private Optional<${javaFunctions.box(this.type)}> ${this.fieldName} = Optional.empty();
     
     ` + inputHook;
 
@@ -232,6 +233,10 @@ export class AddField implements EditProject {
 
         if (project.fileExists(path)) {
             file.replace(inputHook, rawJavaCode);
+
+            if(this.type === "LocalDateTime") {
+                javaFunctions.addImport(file, "java.time.LocalDateTime");
+            }
         } else {
             console.error("SearchCriteria class not added yet!");
         }
@@ -239,13 +244,13 @@ export class AddField implements EditProject {
 
     private addFieldToSearchCriteriaConverter(project: Project, basePath: string) {
         const inputHook = "// @Input";
-        const rawJavaCode = `${this.type} ${this.fieldName} = ` +
+        const rawJavaCode = `${javaFunctions.box(this.type)} ${this.fieldName} = ` +
             `json${this.className}SearchCriteria.get${javaFunctions.capitalize(this.fieldName)}();
         sc.set${javaFunctions.capitalize(this.fieldName)}(Optional.ofNullable(${this.fieldName}));
     
-    ` + inputHook;
+        ` + inputHook;
 
-        const path = this.apiModule + basePath + "/convert/SearchCriteriaConverter.java";
+        const path = this.apiModule + basePath + "/convert/" + this.className + "SearchCriteriaConverter.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
