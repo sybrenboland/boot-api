@@ -3,11 +3,11 @@ Feature: Add search criteria should add GET with search criteria to the api chai
 
   Scenario: AddSearchCriteria should add GET with search criteria
     Given a boot-api project structure
-    When the AddBeanClass is run
-    When the AddResource is run
-    When the AddService is run
-    When the AddRepository is run
-    When the AddSearchCriteria is run
+    When the AddBeanClass is run with className Adres
+    When the AddResource is run with className Adres
+    When the AddService is run with className Adres
+    When the AddRepository is run with className Adres
+    When the AddSearchCriteria is run with className Adres
     Then new dependency to pom: jaxrs-api
     Then new dependency to Domain module pom: jaxrs-api
     Then new dependency to Api module pom: lombok

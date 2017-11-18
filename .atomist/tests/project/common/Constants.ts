@@ -1,5 +1,4 @@
 
-export const ClassName = "Adres";
 export const BasePackage = "org.shboland";
 export const Release = "2.0.0";
 

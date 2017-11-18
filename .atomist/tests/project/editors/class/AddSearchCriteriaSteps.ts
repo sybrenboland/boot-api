@@ -1,14 +1,14 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import {ApiModule, BasePackage, ClassName, DomainModule, getModule, PersistenceModule} from "../../common/Constants";
+import {ApiModule, BasePackage, DomainModule, getModule, PersistenceModule} from "../../common/Constants";
 import {fileFunctions} from "../../../../editors/functions/FileFunctions";
 
 const mavenBasePath = "/src/main/java/";
 
-When("the AddSearchCriteria is run", (p: Project, w: ProjectScenarioWorld) => {
+When("the AddSearchCriteria is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     const editor = w.editor("AddSearchCriteria");
     w.editWith(editor, {
-        className: ClassName,
+        className: classNameInput,
         basePackage: BasePackage,
         persistenceModule: PersistenceModule,
         apiModule: ApiModule,

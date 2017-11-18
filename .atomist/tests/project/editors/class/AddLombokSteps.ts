@@ -1,13 +1,15 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../../editors/functions/FileFunctions";
-import {BasePackage, ClassName, PersistenceModule} from "../../common/Constants";
+import {BasePackage, PersistenceModule} from "../../common/Constants";
 
-const pathInput = PersistenceModule + "/src/main/java/" + fileFunctions.toPath(BasePackage)
-    + "/db/hibernate/bean/" + ClassName + ".java";
+let pathInput: string;
 const lombokVersion = "1.16.17";
 
-When("the AddLombok is run", (p: Project, w: ProjectScenarioWorld) => {
+When("the AddLombok is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+    pathInput = PersistenceModule + "/src/main/java/" + fileFunctions.toPath(BasePackage)
+        + "/db/hibernate/bean/" + classNameInput + ".java";
+
     const editor = w.editor("AddLombok");
     w.editWith(editor, {
         pathToClass: pathInput,

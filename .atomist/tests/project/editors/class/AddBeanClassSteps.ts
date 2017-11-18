@@ -1,17 +1,19 @@
-
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import {ApiModule, BasePackage, ClassName, PersistenceModule, Release} from "../../common/Constants";
+import {BasePackage, PersistenceModule, Release} from "../../common/Constants";
 
+let classNameBean: string;
 const mavenBasePath = "/src/main";
 const beanPath = PersistenceModule + mavenBasePath + "/java/org/shboland/db/hibernate/bean/Adres.java";
 const changelogPath = PersistenceModule + mavenBasePath + "/resources/liquibase/release/"
     + Release + "/db-adres.xml";
 
-When("the AddBeanClass is run", (p: Project, w: ProjectScenarioWorld) => {
+When("the AddBeanClass is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+    classNameBean = classNameInput;
+
     const editor = w.editor("AddBeanClass");
     w.editWith(editor, {
-        className: ClassName,
+        className: classNameBean,
         basePackage: BasePackage,
         module: PersistenceModule,
         release: Release,
@@ -23,7 +25,7 @@ Then("the project has new bean", (p: Project, w) => {
 });
 
 Then("the bean has the given name", (p: Project, w) => {
-    return p.fileContains(beanPath, ClassName);
+    return p.fileContains(beanPath, classNameBean);
 });
 
 Then("a changelog has been added", (p: Project, w) => {

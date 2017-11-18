@@ -1,16 +1,19 @@
-
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../../editors/functions/FileFunctions";
-import {ApiModule, BasePackage, ClassName} from "../../common/Constants";
+import {ApiModule, BasePackage} from "../../common/Constants";
 
-const converterPath = ApiModule + "/src/main/java/"
-    + fileFunctions.toPath(BasePackage) + "/convert/" + ClassName + "Converter.java";
+let classNameConverter: string;
+let converterPath: string;
 
-When("the AddConverter is run", (p: Project, w: ProjectScenarioWorld) => {
+When("the AddConverter is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+    classNameConverter = classNameInput;
+    converterPath = ApiModule + "/src/main/java/"
+        + fileFunctions.toPath(BasePackage) + "/convert/" + classNameConverter + "Converter.java";
+
     const editor = w.editor("AddConverter");
     w.editWith(editor, {
-        className: ClassName,
+        className: classNameConverter,
         basePackage: BasePackage,
         module: ApiModule,
     });
