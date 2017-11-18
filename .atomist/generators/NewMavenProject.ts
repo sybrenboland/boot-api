@@ -84,12 +84,18 @@ export class NewMavenProject implements PopulateProject {
     public domainModuleName: string = "domain";
 
     public populate(project: Project) {
+        this.deleteUselessFiles(project);
         this.updateMasterPom(project);
         this.moveModule(project, "apiModule", this.apiModuleName);
         this.moveModule(project, "persistenceModule", this.persistenceModuleName);
         this.moveModule(project, "domainModule", this.domainModuleName);
         this.updateModulePomParent(project);
         this.addApiDependencies(project);
+    }
+
+    private deleteUselessFiles(project: Project) {
+        project.deleteDirectory(".idea");
+        project.deleteDirectory("boot-api.iml");
     }
 
     private updateMasterPom(project: Project): void {
