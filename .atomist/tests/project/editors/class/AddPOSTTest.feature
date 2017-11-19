@@ -7,6 +7,6 @@ Feature: Adds methods to all layers implementing REST post method
     When the AddService is run with className Adres
     When the AddPOST is run with className Adres
     Then new dependency to pom: spring-boot-starter-web
-    Then the method postAdres is added to resource/IAdresController in the Api module
-    Then the method postAdres is added to resource/AdresController in the Api module
-    Then the method createAdres is added to service/AdresService in the Api module
+    Then the name postAdres is added to class IAdresController in package resource of the Api module
+    Then the name postAdres is added to class AdresController in package resource of the Api module
+    Then the name createAdres is added to class AdresService in package service of the Api module

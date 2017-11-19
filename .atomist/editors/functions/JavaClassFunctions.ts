@@ -80,6 +80,10 @@ export class JavaClassFunctions {
 
         return boxedType;
     }
+
+    public showingOrAbsent(input: string) {
+        return input === "showing";
+    }
 }
 
 export const javaFunctions = new JavaClassFunctions();

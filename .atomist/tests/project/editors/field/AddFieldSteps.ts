@@ -24,13 +24,6 @@ When("the AddField is run for class (.*) with field (.*) with type (.*)",
     });
 });
 
-Then("the changelog is extended with the field", (p: Project, w) => {
-    const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-"
-        + classNameField.toLowerCase() + ".xml";
-
-    return p.fileContains(path, fieldNameField.toUpperCase());
-});
-
 Then("the converter is extended with the field", (p: Project, w) => {
     const path = ApiModule + "/src/main/java/org/shboland/convert/" + classNameField + "Converter.java";
 

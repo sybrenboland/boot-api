@@ -11,13 +11,13 @@ Feature: Add field class should add a given field to the api chain
     When the AddRepository is run with className Adres
     When the AddSearchCriteria is run with className Adres
     When the AddField is run for class Adres with field street with type String
-    Then the changelog is extended with the field
-    Then the method street is added to db/hibernate/bean/Adres in the Persistence module
-    Then the method street is added to domain/JsonAdres in the Domain module
-    Then the method Street is added to convert/AdresConverter in the Api module
-    Then the method street is added to domain/JsonAdresSearchCriteria in the Domain module
-    Then the method street is added to convert/AdresSearchCriteriaConverter in the Api module
-    Then the method street is added to db/repo/AdresRepositoryImpl in the Persistence module
+    Then the changelog is extended with street of class Adres
+    Then the name street is added to class Adres in package db.hibernate.bean of the Persistence module
+    Then the name street is added to class JsonAdres in package domain of the Domain module
+    Then the name Street is added to class AdresConverter in package convert of the Api module
+    Then the name street is added to class JsonAdresSearchCriteria in package domain of the Domain module
+    Then the name street is added to class AdresSearchCriteriaConverter in package convert of the Api module
+    Then the name street is added to class AdresRepositoryImpl in package db.repo of the Persistence module
 
   Scenario: AddField should add a date field to the chain
     Given a boot-api project structure
@@ -29,12 +29,12 @@ Feature: Add field class should add a given field to the api chain
     When the AddRepository is run with className Adres
     When the AddSearchCriteria is run with className Adres
     When the AddField is run for class Adres with field createdDate with type LocalDateTime
-    Then the changelog is extended with the field
-    Then the method createdDate is added to db/hibernate/bean/Adres in the Persistence module
-    Then the method LocalDateTimeAttributeConverter is added to db/hibernate/bean/Adres in the Persistence module
-    Then the method createdDate is added to domain/JsonAdres in the Domain module
-    Then the method CustomDateTimeSerializer is added to domain/JsonAdres in the Domain module
-    Then the method CustomDateTimeDeserializer is added to domain/JsonAdres in the Domain module
-    Then the method CreatedDate is added to convert/AdresConverter in the Api module
+    Then the changelog is extended with createdDate of class Adres
+    Then the name createdDate is added to class Adres in package db.hibernate.bean of the Persistence module
+    Then the name LocalDateTimeAttributeConverter is added to class Adres in package db.hibernate.bean of the Persistence module
+    Then the name createdDate is added to class JsonAdres in package domain of the Domain module
+    Then the name CustomDateTimeSerializer is added to class JsonAdres in package domain of the Domain module
+    Then the name CustomDateTimeDeserializer is added to class JsonAdres in package domain of the Domain module
+    Then the name CreatedDate is added to class AdresConverter in package convert of the Api module
     Then a DateParam class is added to the Domain module
     Then the converter is extended with the field
