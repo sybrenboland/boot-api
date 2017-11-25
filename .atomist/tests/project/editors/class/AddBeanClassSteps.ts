@@ -6,7 +6,7 @@ let classNameBean: string;
 const mavenBasePath = "/src/main";
 const beanPath = PersistenceModule + mavenBasePath + "/java/org/shboland/db/hibernate/bean/Adres.java";
 const changelogPath = PersistenceModule + mavenBasePath + "/resources/liquibase/release/"
-    + Release + "/db-adres.xml";
+    + Release + "/db-1-adres.xml";
 
 When("the AddBeanClass is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameBean = classNameInput;

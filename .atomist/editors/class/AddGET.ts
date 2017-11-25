@@ -120,6 +120,7 @@ export class AddGET implements EditProject {
 export function addServiceMethodFetchBean(project: Project, className: string, basePackage: string, basePath: string) {
 
     const rawJavaMethod = `
+    @Transactional(propagation = Propagation.REQUIRED)
     public Optional<Json${className}> fetch${className}(long ${className.toLowerCase()}Id) {
         ${className} ${className.toLowerCase()} = ` +
         `${className.toLowerCase()}Repository.findOne(${className.toLowerCase()}Id);
@@ -135,6 +136,8 @@ export function addServiceMethodFetchBean(project: Project, className: string, b
     javaFunctions.addImport(file, "java.util.Optional");
     javaFunctions.addImport(file, basePackage + ".domain.Json" + className);
     javaFunctions.addImport(file, basePackage + ".db.hibernate.bean." + className);
+    javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
+    javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
 }
 
 export const addGet = new AddGET();

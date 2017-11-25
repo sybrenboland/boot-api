@@ -121,6 +121,7 @@ export class AddPOST implements EditProject {
     private addServiceMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `
+    @Transactional(propagation = Propagation.REQUIRED)
     public Json${this.className} create${this.className}(Json${this.className} json${this.className}) {
         ${this.className} ${this.className.toLowerCase()} = ` +
             `${this.className.toLowerCase()}Repository.save(` +
@@ -135,6 +136,8 @@ export class AddPOST implements EditProject {
 
         javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
         javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
+        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
+        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
     }
 }
 

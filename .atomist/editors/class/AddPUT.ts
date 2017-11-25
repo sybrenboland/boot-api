@@ -131,6 +131,7 @@ export class AddPUT implements EditProject {
     private addServiceMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `
+    @Transactional(propagation = Propagation.REQUIRED)
     public Json${this.className} update${this.className}(long ${this.className.toLowerCase()}Id, ` +
             `Json${this.className} json${this.className}) {
         ${this.className} current${this.className} = ` +
@@ -149,6 +150,8 @@ export class AddPUT implements EditProject {
 
         javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
         javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
+        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
+        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
         
         if (!file.contains("fetch" + this.className)) {
             addServiceMethodFetchBean(project, this.className, this.basePackage, basePath);

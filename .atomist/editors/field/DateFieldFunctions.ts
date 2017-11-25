@@ -61,25 +61,29 @@ export class DateFieldFunctions {
         const path = this.domainModule + basePath + "/domain/Json" + this.className + ".java";
         const file: File = project.findFile(path);
 
-
-        const rawJavaCode = `@JsonProperty("${this.fieldName}")
-    @JsonSerialize(using = CustomDateTimeSerializer.class)
-    @JsonDeserialize(using = CustomDateTimeDeserializer.class)
-    private ZonedDateTime ${this.fieldName};
-
-    ` + inputHook;
-
-        javaFunctions.addImport(file, "java.time.ZonedDateTime");
-        javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonDeserialize");
-        javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonSerialize");
-
-        this.addDateTimeSerializer(project, basePath);
-        javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeSerializer");
-        this.addDateTimeDeserializer(project, basePath);
-        javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeDeserializer");
-        this.addInvalidDateException(project, basePath);
-
         if (project.fileExists(path)) {
+            const rawJavaCode = `@JsonProperty("${this.fieldName}")
+        @JsonSerialize(using = CustomDateTimeSerializer.class)
+        @JsonDeserialize(using = CustomDateTimeDeserializer.class)
+        private ZonedDateTime ${this.fieldName};
+    
+        ` + inputHook;
+
+            javaFunctions.addImport(file, "java.time.ZonedDateTime");
+            javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonDeserialize");
+            javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonSerialize");
+
+            this.addDateTimeSerializer(project, basePath);
+            javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeSerializer");
+            this.addDateTimeDeserializer(project, basePath);
+            javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeDeserializer");
+            this.addInvalidDateException(project, basePath);
+
+            javaFunctions.addImport(file, "com.fasterxml.jackson.annotation.JsonProperty");
+            javaFunctions.addImport(file, "lombok.AccessLevel");
+            javaFunctions.addImport(file, "lombok.AllArgsConstructor");
+            javaFunctions.addAnnotationToClass(file, "@AllArgsConstructor(access = AccessLevel.PRIVATE)");
+
             file.replace(inputHook, rawJavaCode);
         } else {
             console.error("Domain class not added yet!");

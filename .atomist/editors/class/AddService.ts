@@ -63,12 +63,14 @@ public class ${this.className}Service {
 
     private final ${this.className}Repository ${this.className.toLowerCase()}Repository;
     private final ${this.className}Converter ${this.className.toLowerCase()}Converter;
+    // @FieldInput
 
     @Autowired
     public ${this.className}Service(${this.className}Repository ${this.className.toLowerCase()}Repository, ` +
             `${this.className}Converter ${this.className.toLowerCase()}Converter) {
         this.${this.className.toLowerCase()}Repository = ${this.className.toLowerCase()}Repository;
         this.${this.className.toLowerCase()}Converter = ${this.className.toLowerCase()}Converter;
+        // @ConstructorInput
     }
     
     // @Input

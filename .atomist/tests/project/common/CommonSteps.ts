@@ -21,8 +21,16 @@ Then("the name (.*) is not added to class (.*) in package (.*) of the (.*) modul
     });
 
 Then("the changelog is extended with (.*) of class (.*)", (p: Project, w, name: string, className: string) => {
-    const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-"
+    const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-1-"
         + className.toLowerCase() + ".xml";
+
+    return p.fileContains(path, name.toUpperCase());
+});
+
+Then("the combination changelog is extended with (.*) of class (.*) and class (.*)",
+    (p: Project, w, name: string, classNameOneSide: string, classNameOtherSide: string) => {
+    const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-2-"
+        + classNameOneSide.toLowerCase() + "-" + classNameOtherSide.toLowerCase() + ".xml";
 
     return p.fileContains(path, name.toUpperCase());
 });

@@ -86,6 +86,7 @@ export class AddDomainClass implements EditProject {
                 jacksonDependency,
             );
             pom.addOrReplaceProperty("jackson.version", this.version);
+            pom.addOrReplaceDependency("org.springframework.boot", "spring-boot-starter-hateoas");
         });
 
         // Module pom
@@ -103,13 +104,10 @@ export class AddDomainClass implements EditProject {
         const rawJavaFileContent = `package ${this.basePackage + "." + domainPackage};
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.ResourceSupport;
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class Json${this.className} {
-
-    @JsonProperty("id")
-    private Long id;
+public class Json${this.className} extends ResourceSupport {
 
     // @Input
     

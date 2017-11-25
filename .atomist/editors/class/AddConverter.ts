@@ -1,8 +1,11 @@
+import {Pom} from "@atomist/rug/model/Pom";
 import {Project} from "@atomist/rug/model/Project";
 import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
+import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {fileFunctions} from "../functions/FileFunctions";
+import {javaFunctions} from "../functions/JavaClassFunctions";
 
 /**
  * AddConverter editor
@@ -47,7 +50,16 @@ export class AddConverter implements EditProject {
     public edit(project: Project) {
         const basePath = this.module + "/src/main/java/" + fileFunctions.toPath(this.basePackage);
 
+        this.addDependencies(project);
         this.addConverterClass(project, basePath);
+    }
+
+    private addDependencies(project: Project): void {
+        const eng: PathExpressionEngine = project.context.pathExpressionEngine;
+
+        eng.with<Pom>(project, "/Pom()", pom => {
+            pom.addOrReplaceDependency("org.springframework.boot", "spring-boot-starter-hateoas");
+        });
     }
 
     private addConverterClass(project: Project, basePath: string): void {
@@ -56,7 +68,10 @@ export class AddConverter implements EditProject {
 
 import ${this.basePackage}.db.hibernate.bean.${this.className};
 import ${this.basePackage}.domain.Json${this.className};
+import ${this.basePackage}.resource.${this.className}Controller;
 import org.springframework.stereotype.Service;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @Service
 public class ${this.className}Converter {
@@ -64,8 +79,10 @@ public class ${this.className}Converter {
     public Json${this.className} toJson(${this.className} ${this.className.toLowerCase()}) {
         Json${this.className} json${this.className} = new Json${this.className}();
 
-        json${this.className}.setId(${this.className.toLowerCase()}.getId());
         // @InputJsonField
+        
+        json${this.className}.add(linkTo(${this.className}Controller.class)` +
+            `.slash(${this.className.toLowerCase()}.getId()).withSelfRel());
 
         return json${this.className};
     }

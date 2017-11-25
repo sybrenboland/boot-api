@@ -136,7 +136,7 @@ export class AddField implements EditProject {
   ` + inputHook;
 
         const path = this.persistenceModule + "/src/main/resources/liquibase/release/"
-            + this.release + "/db-" + this.className.toLowerCase() + ".xml";
+            + this.release + "/db-1-" + this.className.toLowerCase() + ".xml";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);

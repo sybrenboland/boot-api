@@ -323,9 +323,7 @@ public class ${this.className}SearchCriteriaConverter {
         List<Json${this.className}> json${this.className}List = new ArrayList<>();
         int numberOf${this.className} = ${this.className.toLowerCase()}Service.findNumberOf${this.className}(sc);
         if (numberOf${this.className} > 0) {
-            ${this.className.toLowerCase()}Service.findBySearchCriteria(sc).stream()` +
-            `.forEach(${this.className.toLowerCase()} -> json${this.className}List.add` +
-            `(${this.className.toLowerCase()}Converter.toJson(${this.className.toLowerCase()})));
+            json${this.className}List = ${this.className.toLowerCase()}Service.findBySearchCriteria(sc);
         }
 
         JsonSearchResult<Json${this.className}> result = JsonSearchResult.<Json${this.className}>builder()
@@ -341,20 +339,9 @@ public class ${this.className}SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-        javaFunctions.addMemberToClass(file,
-            `private final ${this.className}SearchCriteriaConverter ` +
-            `${this.className.toLowerCase()}SearchCriteriaConverter`);
-        javaFunctions.addConstructorArgument(file, this.className + "Controller",
-            `${this.className}SearchCriteriaConverter ${this.className.toLowerCase()}SearchCriteriaConverter`);
-        javaFunctions.addConstructorAssignment(file, this.className.toLowerCase() + "SearchCriteriaConverter");
+        javaFunctions.addToConstructor(file, this.className + "Controller",
+            this.className.toLowerCase() + "SearchCriteriaConverter");
         javaFunctions.addImport(file, this.basePackage + ".convert." + this.className + "SearchCriteriaConverter");
-
-        javaFunctions.addMemberToClass(file,
-            `private final ${this.className}Converter ${this.className.toLowerCase()}Converter`);
-        javaFunctions.addConstructorArgument(file, this.className + "Controller",
-            `${this.className}Converter ${this.className.toLowerCase()}Converter`);
-        javaFunctions.addConstructorAssignment(file, this.className.toLowerCase() + "Converter");
-        javaFunctions.addImport(file, this.basePackage + ".convert." + this.className + "Converter");
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");
         javaFunctions.addImport(file, "lombok.extern.slf4j.Slf4j");
@@ -370,19 +357,12 @@ public class ${this.className}SearchCriteriaConverter {
     private addServiceMethodSearch(project: Project, basePath: string) {
         const rawJavaMethod = `    
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<${this.className}> findBySearchCriteria(${this.className}SearchCriteria sc) {
-
-        List<${this.className}> ${this.className.toLowerCase()}List = ` +
+    public List<Json${this.className}> findBySearchCriteria(${this.className}SearchCriteria sc) {
+            List<${this.className}> ${this.className.toLowerCase()}List = ` +
             `${this.className.toLowerCase()}Repository.findBySearchCriteria(sc);
-        ${this.className.toLowerCase()}List.forEach(${this.className}Service::initialize${this.className});
 
-        return ${this.className.toLowerCase()}List;
-    }
-
-    private static void initialize${this.className}(${this.className} ${this.className.toLowerCase()}) {
-        if (${this.className.toLowerCase()} != null) {
-           // @Initialise
-        }
+        return ${this.className.toLowerCase()}List.stream().` +
+            `map(${this.className.toLowerCase()}Converter::toJson).collect(Collectors.toList());
     }`;
 
         const path = this.apiModule + basePath + "/service/" + this.className + "Service.java";
@@ -392,6 +372,7 @@ public class ${this.className}SearchCriteriaConverter {
         javaFunctions.addImport(file, this.basePackage + ".domain." + this.className + "SearchCriteria");
         javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
         javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
+        javaFunctions.addImport(file, "java.util.stream.Collectors");
     }
 
     private addServiceMethodCount(project: Project, basePath: string) {

@@ -32,21 +32,29 @@ export class JavaClassFunctions {
         }
     }
 
-    public addMemberToClass(file: File, member: string) {
+    public addToConstructor(file: File, className: string, argument: string) {
+        if (!file.contains(this.capitalize(argument))) {
+            this.addMemberToClass(file, "private final " + this.capitalize(argument) + " " + argument);
+            this.addConstructorArgument(file, className, this.capitalize(argument) + " " + argument);
+            this.addConstructorAssignment(file, argument);
+        }
+    }
+
+    private addMemberToClass(file: File, member: string) {
         const memberInputHook = "// @FieldInput";
         const argumentReplacement = member + ";\n    " + memberInputHook;
 
         file.replace(memberInputHook, argumentReplacement);
     }
 
-    public addConstructorArgument(file: File, className: string, argument: string) {
+    private addConstructorArgument(file: File, className: string, argument: string) {
         const constructorInputHook = className + "(";
         const argumentReplacement = constructorInputHook + argument + ", ";
 
         file.replace(constructorInputHook, argumentReplacement);
     }
 
-    public addConstructorAssignment(file: File, argumentName: string) {
+    private addConstructorAssignment(file: File, argumentName: string) {
         const constructorInputHook = "// @ConstructorInput";
         const argumentReplacement = "this." + argumentName + " = " + argumentName + ";\n        " + constructorInputHook;
 
@@ -81,8 +89,12 @@ export class JavaClassFunctions {
         return boxedType;
     }
 
-    public showingOrAbsent(input: string) {
+    public showingOrAbsent(input: string): boolean {
         return input === "showing";
+    }
+
+    public trueOfFalse(input: string): boolean {
+        return input === "true";
     }
 }
 
