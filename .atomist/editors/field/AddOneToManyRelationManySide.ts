@@ -10,24 +10,30 @@ export class AddOneToManyRelationManySide {
     private apiModule: string;
 
     public edit(project: Project, basePath: string, classNameOneInput: string, classNameManyInput: string,
-                basePackageInput: string, apiModuleInput: string) {
+                basePackageInput: string, apiModuleInput: string, biDirectional: boolean, pluralResource: boolean) {
         this.classNameOne = classNameOneInput;
         this.classNameMany = classNameManyInput;
         this.basePackage = basePackageInput;
         this.apiModule = apiModuleInput;
 
-        this.addLinkToConverter(project, basePath);
-        this.addMehtodResourceInterfaceManySide(project, basePath);
-        this.addMethodResourceClassManySide(project, basePath);
-        this.addMethodServiceOneSide(project, basePath);
+        this.addLinkToConverter(project, basePath, pluralResource);
+        this.addMehtodResourceInterfaceManySide(project, basePath, pluralResource);
+
+        if(biDirectional) {
+            this.addMethodResourceClassManySide(project, basePath);
+            this.addMethodServiceOneSide(project, basePath);
+        } else {
+            this.addMethodResourceClassUniDirectional(project, basePath);
+        }
     }
 
-    private addLinkToConverter(project: Project, basePath: string) {
+    private addLinkToConverter(project: Project, basePath: string, pluralResource: boolean) {
         const inputHook = "// @InputJsonField";
         const rawJavaCode = inputHook + `
         
         json${this.classNameMany}.add(linkTo(${this.classNameMany}Controller.class).` +
-            `slash(${this.classNameMany.toLowerCase()}.getId()).slash("/${this.classNameOne.toLowerCase()}s")` +
+            `slash(${this.classNameMany.toLowerCase()}.getId()).slash("/${this.classNameOne.toLowerCase()}` +
+            `${pluralResource ? "s" : ""}")` +
             `.withRel("${this.classNameOne.toLowerCase()}"));`;
 
         const path = this.apiModule + basePath + "/convert/" + this.classNameMany + "Converter.java";
@@ -43,9 +49,10 @@ export class AddOneToManyRelationManySide {
         }
     }
 
-    private addMehtodResourceInterfaceManySide(project: Project, basePath: string) {
+    private addMehtodResourceInterfaceManySide(project: Project, basePath: string, pluralResource: boolean) {
         const rawJavaMethod = `
-    @RequestMapping(path = "/{${this.classNameMany.toLowerCase()}Id}/${this.classNameOne.toLowerCase()}s", ` +
+    @RequestMapping(path = "/{${this.classNameMany.toLowerCase()}Id}/${this.classNameOne.toLowerCase()}` +
+            `${pluralResource ? "s" : ""}", ` +
             `method = RequestMethod.GET)
     ResponseEntity get${this.classNameOne}(@PathVariable long ${this.classNameMany.toLowerCase()}Id);`;
 
@@ -108,6 +115,32 @@ export class AddOneToManyRelationManySide {
         javaFunctions.addToConstructor(file, this.classNameOne + "Service",
             this.classNameMany.toLowerCase() + "Repository");
         javaFunctions.addImport(file, this.basePackage + ".db.repo." + this.classNameMany + "Repository");
+    }
+
+    private addMethodResourceClassUniDirectional(project: Project, basePath: string) {
+        const rawJavaMethod = `
+    @Override
+    public ResponseEntity get${this.classNameOne}(@PathVariable long ${this.classNameMany.toLowerCase()}Id) {
+        // Use only with @MapsId mapping
+        Optional<Json${this.classNameOne}> json${this.classNameOne}Optional = ` +
+            `${this.classNameOne.toLowerCase()}Service.fetch${this.classNameOne}(${this.classNameMany.toLowerCase()}Id);
+
+        return json${this.classNameOne}Optional.isPresent() ? ResponseEntity.ok(json${this.classNameOne}Optional.get()) ` +
+            `: ResponseEntity.notFound().build();
+    }`;
+
+        const path = this.apiModule + basePath + "/resource/" + this.classNameMany + "Controller.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "get" + this.classNameOne + "s", rawJavaMethod);
+
+        javaFunctions.addImport(file, "java.util.Optional");
+        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.classNameOne);
+
+        javaFunctions.addToConstructor(file, this.classNameMany + "Controller",
+            this.classNameOne.toLowerCase() + "Service");
+        javaFunctions.addImport(file, this.basePackage + ".service." + this.classNameOne + "Service");
     }
 }
 

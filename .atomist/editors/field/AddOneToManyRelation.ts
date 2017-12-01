@@ -12,7 +12,10 @@ import {addOneToManyDelete} from "./AddOneToManyDelete";
 
 /**
  * AddOneToManyRelation editor
- * -
+ * - Adds one-many relation on the database objects
+ * - Adds one-many relation on the hibernate beans (bi-directional or uni-directional)
+ * - Adds hateoas links to the converters
+ * - Adds PUT and/or DELETE resources for the relationship (as object)
  */
 @Editor("AddOneToManyRelation", "Adds a one-many relation between two objects")
 @Tags("rug", "api", "persistence", "domain", "shboland", "hibernate", "OneToMany")
@@ -154,7 +157,10 @@ export class AddOneToManyRelation implements EditProject {
 
         const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
 
-        this.extendChangeSet(project);
+        AddOneToManyRelation.extendChangeSetOtherSide(project, this.classNameMany, this.classNameOne,
+            this.persistenceModule, this.release);
+        AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameMany, this.classNameOne,
+            this.persistenceModule, this.release);
         this.extendBeanClassManySide(project, basePath);
         this.addMethodsManySide(project, basePath);
 
@@ -169,23 +175,24 @@ export class AddOneToManyRelation implements EditProject {
         }
         if (javaFunctions.trueOfFalse(this.showInOutputMany)) {
             addOneToManyRelationManySide.edit(project, basePath, this.classNameOne, this.classNameMany,
-                this.basePackage, this.apiModule);
+                this.basePackage, this.apiModule, true, true);
         }
     }
 
-    private extendChangeSet(project: Project) {
+    public static extendChangeSetOtherSide(project: Project, classNameOther: string, classNameMapping: string,
+                                           persistenceModuleInput: string, releaseInput: string) {
         const inputHook = "<!-- @Input -->";
-        const rawChangeSetColumn = `<changeSet id="add_${this.classNameOne.toLowerCase()}_` +
-            `id_${this.classNameMany.toLowerCase()}" author="shboland">
-    <addColumn tableName="${this.classNameMany.toUpperCase()}">
-      <column name="${this.classNameOne.toUpperCase()}_ID" type="int" />
+        const rawChangeSetColumn = `<changeSet id="add_${classNameMapping.toLowerCase()}_` +
+            `id_${classNameOther.toLowerCase()}" author="shboland">
+    <addColumn tableName="${classNameOther.toUpperCase()}">
+      <column name="${classNameMapping.toUpperCase()}_ID" type="int" />
     </addColumn>
   </changeSet>
   
   ` + inputHook;
 
-        const path = this.persistenceModule + "/src/main/resources/liquibase/release/"
-            + this.release + "/db-1-" + this.classNameMany.toLowerCase() + ".xml";
+        const path = persistenceModuleInput + "/src/main/resources/liquibase/release/"
+            + releaseInput + "/db-1-" + classNameOther.toLowerCase() + ".xml";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
@@ -193,23 +200,27 @@ export class AddOneToManyRelation implements EditProject {
         } else {
             console.error("Changset not added yet!");
         }
+    }
+
+    public static addChangeSetForeignKey(project: Project, classNameOther: string, classNameMapping: string, persistenceModuleInput: string,
+                                         releaseInput: string) {
 
         const rawChangeSet = `<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="add_foreignkey_${this.classNameOne.toLowerCase()}_${this.classNameMany.toLowerCase()}" author="shboland" >
-        <addForeignKeyConstraint baseColumnNames="${this.classNameOne.toUpperCase()}_ID"
-                                 baseTableName="${this.classNameMany.toUpperCase()}"
-                                 constraintName="FK_${this.classNameOne.toUpperCase()}_${this.classNameMany.toUpperCase()}"
+    <changeSet id="add_foreignkey_${classNameMapping.toLowerCase()}_${classNameOther.toLowerCase()}" author="shboland" >
+        <addForeignKeyConstraint baseColumnNames="${classNameMapping.toUpperCase()}_ID"
+                                 baseTableName="${classNameOther.toUpperCase()}"
+                                 constraintName="FK_${classNameMapping.toUpperCase()}_${classNameOther.toUpperCase()}"
                                  referencedColumnNames="ID"
-                                 referencedTableName="${this.classNameOne.toUpperCase()}"/>
+                                 referencedTableName="${classNameMapping.toUpperCase()}"/>
     </changeSet>
 </databaseChangeLog>`;
 
-        const pathChangeset = this.persistenceModule + "/src/main/resources/liquibase/release/" + this.release + "/db-2-"
-            + this.classNameOne.toLowerCase() + "-" + this.classNameMany.toLowerCase() + ".xml";
+        const pathChangeset = persistenceModuleInput + "/src/main/resources/liquibase/release/" + releaseInput + "/db-2-"
+            + classNameMapping.toLowerCase() + "-" + classNameOther.toLowerCase() + ".xml";
 
         if (!project.fileExists(pathChangeset)) {
             project.addFile(pathChangeset, rawChangeSet);

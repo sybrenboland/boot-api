@@ -4,7 +4,7 @@ import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {fileFunctions} from "../functions/FileFunctions";
-import {dateFieldFunctions} from "./DateFieldFunctions";
+import {dateFieldFunctions} from "./AddFieldDate";
 import {javaFunctions} from "../functions/JavaClassFunctions";
 
 /**
@@ -175,6 +175,7 @@ export class AddField implements EditProject {
 
         if (project.fileExists(path)) {
             file.replace(inputHook, rawJavaCode);
+            javaFunctions.addImport(file, "com.fasterxml.jackson.annotation.JsonProperty");
         } else {
             console.error("Domain class not added yet!");
         }
