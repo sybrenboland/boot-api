@@ -49,14 +49,14 @@ export class ApiForBean implements EditProject {
 
     @Parameter({
         displayName: "Methods",
-        description: "All methods you want implemented (GET,PUT,POST,SEARCH)",
+        description: "All methods you want implemented (GET,PUT,POST,DELETE,SEARCH)",
         pattern: Pattern.any,
         validInput: "Comma separated http methods e.g. 'GET,POST'",
         minLength: 0,
         maxLength: 100,
         required: false,
     })
-    public methods: string = "PUT,POST,SEARCH,GET";
+    public methods: string = "DELETE,PUT,POST,SEARCH,GET";
 
     @Parameter({
         displayName: "Module name",
@@ -339,6 +339,10 @@ export class ApiForBean implements EditProject {
                     this.addPut(project);
                     break;
                 }
+                case "DELETE": {
+                    this.addDelete(project);
+                    break;
+                }
                 case "SEARCH": {
                     this.addSearchCriteria(project);
                     break;
@@ -378,6 +382,10 @@ export class ApiForBean implements EditProject {
         }
 
         addPut.edit(project);
+    }
+
+    private addDelete(project: Project) {
+
     }
 
     private addSearchCriteria(project: Project) {
