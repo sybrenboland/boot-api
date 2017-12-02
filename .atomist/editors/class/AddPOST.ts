@@ -6,6 +6,7 @@ import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {javaFunctions} from "../functions/JavaClassFunctions";
+import {addExceptionHandler} from "../common/AddExceptionHandler";
 
 /**
  * AddPOST editor
@@ -13,6 +14,7 @@ import {javaFunctions} from "../functions/JavaClassFunctions";
  * - Adds method to resource class and interface
  * - Adds method to service
  * - Adds method to converter
+ * - Adds exception hadler class
  *
  * Requires:
  * - Bean class
@@ -65,6 +67,7 @@ export class AddPOST implements EditProject {
         this.addResourceInterfaceMethod(project, basePath);
         this.addResourceClassMethod(project, basePath);
         this.addServiceMethod(project, basePath);
+        this.addExceptionHandler(project);
     }
 
     private addDependencies(project: Project): void {
@@ -79,7 +82,8 @@ export class AddPOST implements EditProject {
 
         const rawJavaMethod = `    
     @RequestMapping(value = "", method = RequestMethod.POST)
-    ResponseEntity post${this.className}(@RequestBody Json${this.className} ${this.className.toLowerCase()});`;
+    ResponseEntity post${this.className}(@RequestBody Json${this.className} ${this.className.toLowerCase()}) ` +
+            `throws URISyntaxException;`;
 
         const path = basePath + "/resource/I" + this.className + "Controller.java";
         const file: File = project.findFile(path);
@@ -89,6 +93,7 @@ export class AddPOST implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
     }
 
@@ -96,15 +101,12 @@ export class AddPOST implements EditProject {
 
         const rawJavaMethod = `
     @Override
-    public ResponseEntity post${this.className}(@RequestBody Json${this.className} json${this.className}) {
+    public ResponseEntity post${this.className}(@RequestBody Json${this.className} json${this.className}) ` +
+            `throws URISyntaxException {
         Json${this.className} new${this.className} = ` +
             `${this.className.toLowerCase()}Service.create${this.className}(json${this.className});
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{id}")
-                .buildAndExpand(new${this.className}.getId()).toUri();
-
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(new URI(new${this.className}.getLink("self").getHref())).build();
     }`;
 
         const path = basePath + "/resource/" + this.className + "Controller.java";
@@ -112,7 +114,7 @@ export class AddPOST implements EditProject {
         javaFunctions.addFunction(file, "post" + this.className, rawJavaMethod);
 
         javaFunctions.addImport(file, "java.net.URI");
-        javaFunctions.addImport(file, "org.springframework.web.servlet.support.ServletUriComponentsBuilder");
+        javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
@@ -138,6 +140,17 @@ export class AddPOST implements EditProject {
         javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
         javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
         javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
+    }
+
+    private addExceptionHandler(project: Project) {
+        addExceptionHandler.javaException = "URISyntaxException";
+        addExceptionHandler.exceptionPackage = "java.net";
+        addExceptionHandler.httpResponse = "CONFLICT";
+        addExceptionHandler.responseMessage = "There seems to be a problem with application. Please try again.";
+        addExceptionHandler.apiModule = this.module;
+        addExceptionHandler.basePackage = this.basePackage;
+
+        addExceptionHandler.edit(project);
     }
 }
 

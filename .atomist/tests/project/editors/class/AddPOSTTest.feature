@@ -10,3 +10,4 @@ Feature: Adds methods to all layers implementing REST post method
     Then the name postAdres is added to class IAdresController in package resource of the Api module
     Then the name postAdres is added to class AdresController in package resource of the Api module
     Then the name createAdres is added to class AdresService in package service of the Api module
+    Then the name URISyntaxException is added to class ResourceURISyntaxExceptionHandler in package exception of the Api module
