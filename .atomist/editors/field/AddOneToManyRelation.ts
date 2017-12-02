@@ -9,6 +9,8 @@ import {addOneToManyRelationOneSide} from "./AddOneToManyRelationOneSide";
 import {addOneToManyRelationManySide} from "./AddOneToManyRelationManySide";
 import {addOneToManyPut} from "./AddOneToManyPut";
 import {addOneToManyDelete} from "./AddOneToManyDelete";
+import {addManyToManyDelete} from "./AddManyToManyDelete";
+import {addManyToManyPut} from "./AddManyToManyPut";
 
 /**
  * AddOneToManyRelation editor
@@ -284,12 +286,14 @@ export class AddOneToManyRelation implements EditProject {
         this.methodsOneSide.split(",").forEach(method => {
             switch (method) {
                 case "PUT": {
-                    addOneToManyPut.addPut(project, basePath, this.classNameOne, this.classNameMany, this.basePackage, this.apiModule);
+                    addOneToManyPut.addMethodResourceInterface(project, basePath, this.classNameOne, this.classNameMany, this.apiModule);
+                    addOneToManyPut.addMethodResourceClass(project, basePath, this.classNameOne, this.classNameMany, this.apiModule);
                     addOneToManyPut.addMethodServiceOneSide(project, basePath, this.classNameOne, this.classNameMany, this.basePackage, this.apiModule);
                     break;
                 }
                 case "DELETE": {
-                    addOneToManyDelete.addDelete(project, basePath, this.classNameOne, this.classNameMany, this.basePackage, this.apiModule);
+                    addOneToManyDelete.addMethodResourceInterface(project, basePath, this.classNameOne, this.classNameMany, this.apiModule);
+                    addOneToManyDelete.addMethodResourceClass(project, basePath, this.classNameOne, this.classNameMany, this.apiModule);
                     addOneToManyDelete.addMethodServiceOneSide(project, basePath, this.classNameOne, this.classNameMany, this.basePackage, this.apiModule);
                     break;
                 }
@@ -302,12 +306,14 @@ export class AddOneToManyRelation implements EditProject {
         this.methodsManySide.split(",").forEach(method => {
             switch (method) {
                 case "PUT": {
-                    addOneToManyPut.addPut(project, basePath, this.classNameMany, this.classNameOne, this.basePackage, this.apiModule);
+                    addOneToManyPut.addMethodResourceInterface(project, basePath, this.classNameMany, this.classNameOne, this.apiModule);
+                    addOneToManyPut.addMethodResourceClass(project, basePath, this.classNameMany, this.classNameOne, this.apiModule);
                     addOneToManyPut.addMethodServiceManySide(project, basePath, this.classNameOne, this.classNameMany, this.basePackage, this.apiModule);
                     break;
                 }
                 case "DELETE": {
-                    addOneToManyDelete.addDelete(project, basePath, this.classNameMany, this.classNameOne, this.basePackage, this.apiModule);
+                    addOneToManyDelete.addMethodResourceInterface(project, basePath, this.classNameMany, this.classNameOne, this.apiModule);
+                    addOneToManyDelete.addMethodResourceClass(project, basePath, this.classNameMany, this.classNameOne, this.apiModule);
                     addOneToManyDelete.addMethodServiceManySide(project, basePath, this.classNameOne, this.classNameMany, this.basePackage, this.apiModule);
                     break;
                 }
