@@ -62,14 +62,10 @@ export class AddBeanClass implements EditProject {
     public edit(project: Project) {
 
         const basePath = this.module + "/src/main";
-        const pathClass = basePath + "/java/" + fileFunctions.toPath(this.basePackage)
-            + "/db/hibernate/bean/" + this.className + ".java";
-        const pathChangeset = basePath + "/resources/liquibase/release/" + this.release + "/db-1-"
-            + this.className.toLowerCase() + ".xml";
 
         this.addDependencies(project);
-        this.addBeanClass(project, pathClass);
-        this.addChangeSet(project, pathChangeset);
+        this.addBeanClass(project, basePath);
+        this.addChangeSet(project, basePath);
     }
 
     private addDependencies(project: Project): void {
@@ -80,7 +76,7 @@ export class AddBeanClass implements EditProject {
         });
     }
 
-    private addBeanClass(project: Project, pathClass: string): void {
+    private addBeanClass(project: Project, basePath: string): void {
 
         const beanPackage = "db.hibernate.bean";
         const rawJavaFileContent = `package ${this.basePackage + "." + beanPackage};
@@ -99,13 +95,14 @@ public class ${this.className} {
     // @Input
     
 }`;
-
-        if (!project.fileExists(pathClass)) {
-            project.addFile(pathClass, rawJavaFileContent);
+        const path = basePath + "/java/" + fileFunctions.toPath(this.basePackage)
+            + "/db/hibernate/bean/" + this.className + ".java";
+        if (!project.fileExists(path)) {
+            project.addFile(path, rawJavaFileContent);
         }
     }
 
-    private addChangeSet(project: Project, pathChangeset: string): void {
+    private addChangeSet(project: Project, basePath: string): void {
 
         const rawChangesetContent = `<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -123,8 +120,11 @@ public class ${this.className} {
   <!-- @Input -->
 </databaseChangeLog>`;
 
-        if (!project.fileExists(pathChangeset)) {
-            project.addFile(pathChangeset, rawChangesetContent);
+
+        const path = basePath + "/resources/liquibase/release/" + this.release + "/db-1-"
+            + this.className.toLowerCase() + ".xml";
+        if (!project.fileExists(path)) {
+            project.addFile(path, rawChangesetContent);
         }
     }
 }

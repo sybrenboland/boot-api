@@ -21,7 +21,6 @@ When("the AddOneToOneRelation is run with one (.*) (.*) in output with many (.*)
             methodsOtherSide: methodsOtherSide,
             persistenceModule: PersistenceModule,
             apiModule: ApiModule,
-            domainModule: DomainModule,
             release: Release,
         });
 });

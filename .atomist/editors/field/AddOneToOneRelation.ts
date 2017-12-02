@@ -134,17 +134,6 @@ export class AddOneToOneRelation implements EditProject {
     public apiModule: string = "api";
 
     @Parameter({
-        displayName: "Module name",
-        description: "Name of the domain module",
-        pattern: Pattern.any,
-        validInput: "Name",
-        minLength: 0,
-        maxLength: 100,
-        required: false,
-    })
-    public domainModule: string = "domain";
-
-    @Parameter({
         displayName: "Release",
         description: "Release for with database changes are meant",
         pattern: Pattern.any,
