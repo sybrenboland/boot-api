@@ -137,4 +137,4 @@ export class AddDELETE implements EditProject {
     }
 }
 
-export const addDELETE = new AddDELETE();
+export const addDelete = new AddDELETE();

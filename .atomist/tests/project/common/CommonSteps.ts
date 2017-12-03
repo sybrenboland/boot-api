@@ -28,9 +28,9 @@ Then("the changelog is extended with (.*) of class (.*)", (p: Project, w, name: 
 });
 
 Then("the combination changelog is extended with (.*) of class (.*) and class (.*)",
-    (p: Project, w, name: string, classNameOneSide: string, classNameOtherSide: string) => {
+    (p: Project, w, name: string, otherClassName: string, baseClassName: string) => {
     const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-2-"
-        + classNameOneSide.toLowerCase() + "-" + classNameOtherSide.toLowerCase() + ".xml";
+        + otherClassName.toLowerCase() + "-" + baseClassName.toLowerCase() + ".xml";
 
     return p.fileContains(path, name.toUpperCase());
 });

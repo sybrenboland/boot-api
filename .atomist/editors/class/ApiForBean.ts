@@ -11,6 +11,7 @@ import {addLiquibase} from "./AddLiquibase";
 import {addLombok} from "./AddLombok";
 import {addPost} from "./AddPOST";
 import {addPut} from "./AddPUT";
+import {addDelete} from "./AddDELETE";
 import {addRepository} from "./AddRepository";
 import {addResource} from "./AddResource";
 import {addService} from "./AddService";
@@ -181,6 +182,7 @@ export class ApiForBean implements EditProject {
 
     public edit(project: Project) {
 
+        console.log("Starting api for bean editor")
         this.setSpringBootVersion(project);
         this.addConfigFiles(project);
         this.addLiquibase(project);
@@ -386,6 +388,13 @@ export class ApiForBean implements EditProject {
 
     private addDelete(project: Project) {
 
+        addDelete.className = this.className;
+        addDelete.basePackage = this.basePackage;
+        if (this.apiModule !== "") {
+            addDelete.module = this.apiModule;
+        }
+
+        addDelete.edit(project);
     }
 
     private addSearchCriteria(project: Project) {

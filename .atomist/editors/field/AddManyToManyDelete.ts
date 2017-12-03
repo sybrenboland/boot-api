@@ -42,16 +42,23 @@ export class AddManyToManyDelete {
                                     basePackage: string, apiModule: string) {
         const rawJavaMethod = `
     @Transactional(propagation = Propagation.REQUIRED)
-    public boolean delete${classNameOther}(long ${classNameOther.toLowerCase()}Id) {
+    public boolean remove${classNameMapping}(long ${classNameOther.toLowerCase()}Id, ` +
+            `long ${classNameMapping.toLowerCase()}Id) {
         ${classNameOther} ${classNameOther.toLowerCase()} = ${classNameOther.toLowerCase()}Repository.` +
             `findOne(${classNameOther.toLowerCase()}Id);
 
         if (${classNameOther.toLowerCase()} != null) {
-            ${classNameOther.toLowerCase()}Repository.delete(${classNameOther.toLowerCase()});
-            return true;
-        } else {
-            return false;
+            ${classNameMapping} ${classNameMapping.toLowerCase()} = ${classNameMapping.toLowerCase()}Repository.` +
+            `findOne(${classNameMapping.toLowerCase()}Id);
+            if (${classNameMapping.toLowerCase()} != null) {
+
+                ${classNameOther.toLowerCase()}.get${classNameMapping}Set().remove(${classNameMapping.toLowerCase()});
+                ${classNameOther.toLowerCase()}Repository.save(${classNameOther.toLowerCase()});
+                return true;
+            }
         }
+
+        return false;
     }`;
 
         const path = apiModule + basePath + "/service/" + classNameOther + "Service.java";

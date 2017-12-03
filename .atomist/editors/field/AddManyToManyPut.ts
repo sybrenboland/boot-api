@@ -5,7 +5,13 @@ import {javaFunctions} from "../functions/JavaClassFunctions";
 export class AddManyToManyPut {
 
     public addMethodServiceMappingSide(project: Project, basePath: string, classNameMapping: string, classNameOther: string,
-                                   basePackage: string, apiModule: string) {
+                                   basePackage: string, apiModule: string, isBidirectional: boolean) {
+        const innerPartMethod = isBidirectional ?
+            `${classNameMapping.toLowerCase()}.add${classNameOther}(${classNameOther.toLowerCase()});
+                ${classNameMapping.toLowerCase()}Repository.save(${classNameMapping.toLowerCase()});` :
+            `${classNameOther.toLowerCase()}.get${classNameMapping}Set().add(${classNameMapping.toLowerCase()});
+                ${classNameOther.toLowerCase()}Repository.save(${classNameOther.toLowerCase()});`;
+
         const rawJavaMethod = `
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean update${classNameMapping}With${classNameOther}(long ${classNameMapping.toLowerCase()}Id, ` +
@@ -18,8 +24,7 @@ export class AddManyToManyPut {
             `findOne(${classNameOther.toLowerCase()}Id);
             if (${classNameOther.toLowerCase()} != null) {
 
-                ${classNameMapping.toLowerCase()}.add${classNameOther}(${classNameOther.toLowerCase()});
-                ${classNameMapping.toLowerCase()}Repository.save(${classNameMapping.toLowerCase()});
+                ${innerPartMethod}
                 return true;
             }
         }

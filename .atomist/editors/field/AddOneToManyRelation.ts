@@ -161,8 +161,8 @@ export class AddOneToManyRelation implements EditProject {
 
         AddOneToManyRelation.extendChangeSetOtherSide(project, this.classNameMany, this.classNameOne,
             this.persistenceModule, this.release);
-        AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameMany, this.classNameOne,
-            this.persistenceModule, this.release);
+        AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameMany, this.classNameOne + "_id",
+            this.classNameOne, this.persistenceModule, this.release);
         this.extendBeanClassManySide(project, basePath);
         this.addMethodsManySide(project, basePath);
 
@@ -204,25 +204,25 @@ export class AddOneToManyRelation implements EditProject {
         }
     }
 
-    public static addChangeSetForeignKey(project: Project, classNameOther: string, classNameMapping: string, persistenceModuleInput: string,
-                                         releaseInput: string) {
+    public static addChangeSetForeignKey(project: Project, baseClassName: string, baseColumn: string,
+                                         otherClassName: string, persistenceModuleInput: string, releaseInput: string) {
 
         const rawChangeSet = `<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="add_foreignkey_${classNameMapping.toLowerCase()}_${classNameOther.toLowerCase()}" author="shboland" >
-        <addForeignKeyConstraint baseColumnNames="${classNameMapping.toUpperCase()}_ID"
-                                 baseTableName="${classNameOther.toUpperCase()}"
-                                 constraintName="FK_${classNameMapping.toUpperCase()}_${classNameOther.toUpperCase()}"
+    <changeSet id="add_foreignkey_${otherClassName.toLowerCase()}_${baseClassName.toLowerCase()}" author="shboland" >
+        <addForeignKeyConstraint baseColumnNames="${baseColumn.toUpperCase()}"
+                                 baseTableName="${baseClassName.toUpperCase()}"
+                                 constraintName="FK_${otherClassName.toUpperCase()}_${baseClassName.toUpperCase()}"
                                  referencedColumnNames="ID"
-                                 referencedTableName="${classNameMapping.toUpperCase()}"/>
+                                 referencedTableName="${otherClassName.toUpperCase()}"/>
     </changeSet>
 </databaseChangeLog>`;
 
         const pathChangeset = persistenceModuleInput + "/src/main/resources/liquibase/release/" + releaseInput + "/db-2-"
-            + classNameMapping.toLowerCase() + "-" + classNameOther.toLowerCase() + ".xml";
+            + otherClassName.toLowerCase() + "-" + baseClassName.toLowerCase() + ".xml";
 
         if (!project.fileExists(pathChangeset)) {
             project.addFile(pathChangeset, rawChangeSet);

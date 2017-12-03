@@ -153,16 +153,16 @@ export class AddOneToOneRelation implements EditProject {
         if (isBiDirectional) {
             AddOneToManyRelation.extendChangeSetOtherSide(project, this.classNameOther, this.classNameMappedBy,
                 this.persistenceModule, this.release);
-            AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameOther, this.classNameMappedBy,
-                this.persistenceModule, this.release);
+            AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameOther, this.classNameMappedBy + "_id",
+                this.classNameMappedBy, this.persistenceModule, this.release);
 
             this.extendBeanClassOtherSideBiDirectional(project, basePath);
             this.extendBeanClassMappedBySide(project, basePath);
 
         } else {
             this.extendChangeSet(project);
-            AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameOther, this.classNameMappedBy,
-                this.persistenceModule, this.release);
+            AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameOther, this.classNameMappedBy + "_id",
+                this.classNameMappedBy, this.persistenceModule, this.release);
             this.extendBeanClassOtherSide(project, basePath);
         }
 

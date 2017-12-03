@@ -22,8 +22,8 @@ export class AddOneToManyRelationOneSide {
         this.addMehtodResourceInterfaceOneSide(project, basePath);
         this.addMethodResourceClassOneSide(project, basePath);
         this.addMethodServiceManySide(project, basePath);
-        //this.addFieldSearchCriteria(project, basePath);
-        //this.addFieldToPredicates(project, basePath);
+        this.addFieldSearchCriteria(project, basePath);
+        this.addFieldToPredicates(project, basePath);
     }
 
     private addLinkToConverter(project: Project, basePath: string) {

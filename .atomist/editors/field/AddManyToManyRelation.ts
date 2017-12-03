@@ -9,6 +9,8 @@ import {addOneToManyRelationOneSide} from "./AddOneToManyRelationOneSide";
 import {addOneToManyPut} from "./AddOneToManyPut";
 import {addOneToManyDelete} from "./AddOneToManyDelete";
 import {AddOneToManyRelation} from "./AddOneToManyRelation";
+import {addManyToManyPut} from "./AddManyToManyPut";
+import {addManyToManyDelete} from "./AddManyToManyDelete";
 
 /**
  * AddManyToManyRelation editor
@@ -149,16 +151,22 @@ export class AddManyToManyRelation implements EditProject {
         const isBiDirectional = javaFunctions.trueOfFalse(this.biDirectional);
 
         this.addCombinationTableChangeSet(project);
-        AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameMappedBy,
+        AddOneToManyRelation.addChangeSetForeignKey(project,
             this.classNameMappedBy + "_" + this.classNameOther,
+            this.classNameMappedBy + "_id",
+            this.classNameMappedBy,
             this.persistenceModule,
             this.release);
-        AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameOther,
+        AddOneToManyRelation.addChangeSetForeignKey(project,
             this.classNameMappedBy + "_" + this.classNameOther,
+            this.classNameOther + "_id",
+            this.classNameOther,
             this.persistenceModule,
             this.release);
 
-        this.extendBeanClassMappingSide(project, basePath);
+        if (isBiDirectional) {
+            this.extendBeanClassMappingSide(project, basePath);
+        }
         this.extendBeanClassOtherSide(project, basePath);
 
         if (javaFunctions.trueOfFalse(this.showInOutputMapped)) {
@@ -255,13 +263,15 @@ export class AddManyToManyRelation implements EditProject {
                 case "PUT": {
                     addOneToManyPut.addMethodResourceInterface(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
                     addOneToManyPut.addMethodResourceClass(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
-                    addOneToManyPut.addMethodServiceOneSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    addManyToManyPut.addMethodServiceMappingSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule, isBiDirectional);
                     break;
                 }
                 case "DELETE": {
-                    addOneToManyDelete.addMethodResourceInterface(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
-                    addOneToManyDelete.addMethodResourceClass(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
-                    addOneToManyDelete.addMethodServiceOneSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    if (isBiDirectional) {
+                        addOneToManyDelete.addMethodResourceInterface(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
+                        addOneToManyDelete.addMethodResourceClass(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
+                        addManyToManyDelete.addMethodServiceMappingSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    }
                     break;
                 }
             }
@@ -275,13 +285,13 @@ export class AddManyToManyRelation implements EditProject {
                 case "PUT": {
                     addOneToManyPut.addMethodResourceInterface(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
                     addOneToManyPut.addMethodResourceClass(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
-                    addOneToManyPut.addMethodServiceManySide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    addManyToManyPut.addMethodServiceOtherSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
                     break;
                 }
                 case "DELETE": {
                     addOneToManyDelete.addMethodResourceInterface(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
                     addOneToManyDelete.addMethodResourceClass(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
-                    addOneToManyDelete.addMethodServiceManySide(project, basePath, this.classNameMappedBy   , this.classNameOther, this.basePackage, this.apiModule);
+                    addManyToManyDelete.addMethodServiceOtherSide(project, basePath, this.classNameMappedBy   , this.classNameOther, this.basePackage, this.apiModule);
                     break;
                 }
             }
