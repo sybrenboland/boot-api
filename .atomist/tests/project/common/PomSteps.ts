@@ -11,6 +11,7 @@ Given("a boot-api project structure", (p: Project) => {
     p.addFile(ApiModule + "/" + pomFile, pomFunctions.basicPomContent());
     p.addFile(PersistenceModule + "/" + pomFile, pomFunctions.basicPomContent());
     p.addFile(DomainModule + "/" + pomFile, pomFunctions.basicPomContent());
+    p.addFile("README.md", "# Spring Boot API");
 });
 
 Then("new dependency to pom: (.*)$", (p: Project, w, dependency) => {

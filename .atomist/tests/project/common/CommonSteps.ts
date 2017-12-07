@@ -31,6 +31,11 @@ Then("the name (.*) is not added to class (.*) in package (.*) of the (.*) modul
             + "/" + fileFunctions.toPath(packageName) + "/" + className + ".java", name);
     });
 
+Then("the name (.*) is added to configuration file (.*) of module (.*)",
+    (p: Project, w, name: string, fileName: string, moduleName: string) => {
+        return p.fileContains(getModule(moduleName) + "/src/main/resources/" + fileName + ".yml", name);
+    });
+
 Then("the changelog is extended with (.*) of class (.*)", (p: Project, w, name: string, className: string) => {
     const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-1-"
         + className.toLowerCase() + ".xml";
