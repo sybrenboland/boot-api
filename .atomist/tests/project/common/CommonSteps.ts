@@ -3,10 +3,21 @@ import {Then} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../editors/functions/FileFunctions";
 import {BasePackage, getModule, PersistenceModule, Release} from "./Constants";
 
+Then("the README contains info about (.*)",
+    (p: Project, w, name: string) => {
+        return p.fileContains("README.md", name);
+    });
+
 Then("the (.*) module contains (.*) properties in (.*)",
     (p: Project, w, module: string, configSubject: string, configFile: string) => {
         return p.fileContains(getModule(module) + "/src/main/resources/" + configFile, configSubject);
 });
+
+Then("the name (.*) is added to (.*) class of the (.*) module",
+    (p: Project, w, name: string, className: string, moduleName: string) => {
+        return p.fileContains(getModule(moduleName) + "/src/main/java/" + fileFunctions.toPath(BasePackage)
+            + "/" + className + ".java", name);
+    });
 
 Then("the name (.*) is added to class (.*) in package (.*) of the (.*) module",
     (p: Project, w, name: string, className: string, packageName: string, moduleName: string) => {

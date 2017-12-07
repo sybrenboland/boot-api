@@ -40,6 +40,15 @@ export class JavaClassFunctions {
         }
     }
 
+    public extendClass(file: File, childClassName: string, parentClassName: string) {
+        const extendLiteral = "extends";
+        if (!file.contains(extendLiteral)) {
+            file.replace("class " + childClassName, "class " + childClassName + " extends " + parentClassName);
+        } else {
+            console.error("Class already extends anther class!");
+        }
+    }
+
     private addMemberToClass(file: File, member: string) {
         const memberInputHook = "// @FieldInput";
         const argumentReplacement = member + ";\n    " + memberInputHook;

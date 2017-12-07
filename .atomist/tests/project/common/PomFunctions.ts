@@ -8,6 +8,7 @@ export class PomFunctions {
     <modelVersion>4.0.0</modelVersion>
     <artifactId>test</artifactId>
     <name>Test Pom</name>
+    <packaging>jar</packaging>
     
     <parent>
         <groupId></groupId>
