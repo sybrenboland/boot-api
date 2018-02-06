@@ -1,16 +1,28 @@
-import {File} from "@atomist/rug/model/File";
 import {Project} from "@atomist/rug/model/Project";
 import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {fileFunctions} from "../functions/FileFunctions";
 import {javaFunctions} from "../functions/JavaClassFunctions";
-import {addOneToManyRelationOneSide} from "./AddOneToManyRelationOneSide";
-import {addOneToManyPut} from "./AddOneToManyPut";
-import {addOneToManyDelete} from "./AddOneToManyDelete";
-import {AddOneToManyRelation} from "./AddOneToManyRelation";
-import {addManyToManyPut} from "./AddManyToManyPut";
-import {addManyToManyDelete} from "./AddManyToManyDelete";
+import {AddCombinationTableChangeSet} from "./function/database/AddCombinationTableChangeSet";
+import {AddForeignKeyChangeSet} from "./function/database/AddForeignKeyChangeSet";
+import {AddOtherSideManyBean} from "./function/bean/manyToMany/AddOtherSideManyBean";
+import {AddMappingSideManyBean} from "./function/bean/manyToMany/AddMappingSideManyBean";
+import {AddResourceInterfaceOneGetMethod} from "./function/method/oneToMany/AddResourceInterfaceOneGetMethod";
+import {AddResourceOneGetMethod} from "./function/method/oneToMany/AddResourceOneGetMethod";
+import {AddLinkToConverterOne} from "./function/method/oneToMany/AddLinkToConverterOne";
+import {AddFieldToSearchCriteria} from "./function/method/AddFieldToSearchCriteria";
+import {AddFieldToPredicates} from "./function/method/AddFieldToPredicates";
+import {AddServiceOneGetMethod} from "./function/method/oneToMany/AddServiceOneGetMethod";
+import {Params} from "./function/Params";
+import {AddResourceInterfacePutMethod} from "./function/method/AddResourceInterfacePutMethod";
+import {AddResourcePutMethod} from "./function/method/AddResourcePutMethod";
+import {AddResourceInterfaceDeleteMethod} from "./function/method/AddResourceInterfaceDeleteMethod";
+import {AddResourceDeleteMethod} from "./function/method/AddResourceDeleteMethod";
+import {AddServiceMappingDeleteMethod} from "./function/method/manyToMany/AddServiceMappingDeleteMethod";
+import {AddServiceMappingPutMethod} from "./function/method/manyToMany/AddServiceMappingPutMethod";
+import {AddServiceOtherPutMethod} from "./function/method/manyToMany/AddServiceOtherPutMethod";
+import {AddServiceOtherDeleteMethod} from "./function/method/manyToMany/AddServiceOtherDeleteMethod";
 
 /**
  * AddManyToManyRelation editor
@@ -144,158 +156,79 @@ export class AddManyToManyRelation implements EditProject {
     })
     public release: string = "1.0.0";
 
-
     public edit(project: Project) {
 
-        const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
-        const isBiDirectional = javaFunctions.trueOfFalse(this.biDirectional);
+        let builder = new AddCombinationTableChangeSet(this.classNameMappedBy, this.classNameOther)
+            .and(new AddForeignKeyChangeSet(this.classNameMappedBy + "_" + this.classNameOther, this.classNameMappedBy + "_id", this.classNameMappedBy))
+            .and(new AddForeignKeyChangeSet(this.classNameMappedBy + "_" + this.classNameOther, this.classNameOther + "_id", this.classNameOther))
+            .and(new AddOtherSideManyBean(this.classNameMappedBy, this.classNameOther));
 
-        this.addCombinationTableChangeSet(project);
-        AddOneToManyRelation.addChangeSetForeignKey(project,
-            this.classNameMappedBy + "_" + this.classNameOther,
-            this.classNameMappedBy + "_id",
-            this.classNameMappedBy,
-            this.persistenceModule,
-            this.release);
-        AddOneToManyRelation.addChangeSetForeignKey(project,
-            this.classNameMappedBy + "_" + this.classNameOther,
-            this.classNameOther + "_id",
-            this.classNameOther,
-            this.persistenceModule,
-            this.release);
-
-        if (isBiDirectional) {
-            this.extendBeanClassMappingSide(project, basePath);
+        if (javaFunctions.trueOfFalse(this.biDirectional)) {
+            builder.and(new AddMappingSideManyBean(this.classNameMappedBy, this.classNameOther));
         }
-        this.extendBeanClassOtherSide(project, basePath);
 
         if (javaFunctions.trueOfFalse(this.showInOutputMapped)) {
-             addOneToManyRelationOneSide.edit(project, basePath, this.classNameMappedBy, this.classNameOther,
-                 this.basePackage, this.persistenceModule, this.apiModule);
+            builder.and(new AddResourceInterfaceOneGetMethod(this.classNameMappedBy, this.classNameOther))
+                .and(new AddResourceOneGetMethod(this.classNameMappedBy, this.classNameOther))
+                .and(new AddServiceOneGetMethod(this.classNameMappedBy, this.classNameOther))
+                .and(new AddLinkToConverterOne(this.classNameMappedBy, this.classNameOther))
+                .and(new AddFieldToSearchCriteria(this.classNameMappedBy, this.classNameOther))
+                .and(new AddFieldToPredicates(this.classNameMappedBy, this.classNameOther));
         }
         if (javaFunctions.trueOfFalse(this.showInOutputOther)) {
-            addOneToManyRelationOneSide.edit(project, basePath, this.classNameOther, this.classNameMappedBy,
-                this.basePackage, this.persistenceModule, this.apiModule);
+            builder.and(new AddResourceInterfaceOneGetMethod(this.classNameOther, this.classNameMappedBy))
+                .and(new AddResourceOneGetMethod(this.classNameOther, this.classNameMappedBy))
+                .and(new AddServiceOneGetMethod(this.classNameOther, this.classNameMappedBy))
+                .and(new AddLinkToConverterOne(this.classNameOther, this.classNameMappedBy))
+                .and(new AddFieldToSearchCriteria(this.classNameOther, this.classNameMappedBy))
+                .and(new AddFieldToPredicates(this.classNameOther, this.classNameMappedBy));
         }
-
-        this.addMethodsMappingSide(project, basePath, isBiDirectional);
-        this.addMethodsOtherSide(project, basePath, isBiDirectional);
-    }
-
-    private addCombinationTableChangeSet(project: Project) {
-        const rawChangeSet = `<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
- 
-  <changeSet id="create_${this.classNameMappedBy.toLowerCase()}_${this.classNameOther.toLowerCase()}" author="shboland">
-    <createTable tableName="${this.classNameMappedBy.toUpperCase()}_${this.classNameOther.toUpperCase()}">
-      <column name="${this.classNameMappedBy.toLowerCase()}_id" type="int" >
-        <constraints nullable="false" />
-      </column>
-      <column name="${this.classNameOther.toLowerCase()}_id" type="int" >
-        <constraints nullable="false" />
-      </column>
-    </createTable>
-  </changeSet>
-
-</databaseChangeLog>
-`;
-
-        const path = this.persistenceModule + "/src/main/resources/liquibase/release/" + this.release + "/db-1-"
-            + this.classNameMappedBy.toLowerCase() + "-" + this.classNameOther.toLowerCase() + ".xml";
-
-        if (!project.fileExists(path)) {
-            project.addFile(path, rawChangeSet);
-        }
-
-    }
-
-    private extendBeanClassMappingSide(project: Project, basePath: string) {
-        const inputHook = "// @Input";
-        const rawJavaCode = `@ManyToMany(mappedBy = "${this.classNameMappedBy.toLowerCase()}Set")
-    private Set<${this.classNameOther}> ${this.classNameOther.toLowerCase()}Set = new HashSet<>();
-    
-    ` + inputHook;
-
-        const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.classNameMappedBy + ".java";
-        const file: File = project.findFile(beanPath);
-
-        if (project.fileExists(beanPath)) {
-            file.replace(inputHook, rawJavaCode);
-            javaFunctions.addImport(file, "java.util.Set");
-            javaFunctions.addImport(file, "java.util.HashSet");
-        } else {
-            console.error("Bean class mapping side not added yet!");
-        }
-    }
-
-    private extendBeanClassOtherSide(project: Project, basePath: string) {
-        const inputHook = "// @Input";
-        const rawJavaCode = `@ManyToMany
-    @JoinTable(name = "${this.classNameMappedBy.toLowerCase()}_${this.classNameOther.toLowerCase()}",
-            joinColumns = @JoinColumn(name = "${this.classNameOther.toLowerCase()}_id"),
-            inverseJoinColumns = @JoinColumn(name = "${this.classNameMappedBy.toLowerCase()}_id")
-    )
-    private Set<${this.classNameMappedBy}> ${this.classNameMappedBy.toLowerCase()}Set = new HashSet<>();
-    
-    ` + inputHook;
-
-        const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.classNameOther + ".java";
-        const file: File = project.findFile(beanPath);
-
-        if (project.fileExists(beanPath)) {
-            file.replace(inputHook, rawJavaCode);
-            javaFunctions.addImport(file, "java.util.Set");
-            javaFunctions.addImport(file, "java.util.HashSet");
-            javaFunctions.addImport(file, "javax.persistence.ManyToMany");
-            javaFunctions.addImport(file, "javax.persistence.JoinColumn");
-            javaFunctions.addImport(file, "javax.persistence.JoinTable");
-        } else {
-            console.error("Bean class other side not added yet!");
-        }
-    }
-
-    private addMethodsMappingSide(project: Project, basePath: string, isBiDirectional: boolean) {
 
         this.methodsMappingSide.split(",").forEach(method => {
             switch (method) {
                 case "PUT": {
-                    addOneToManyPut.addMethodResourceInterface(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
-                    addOneToManyPut.addMethodResourceClass(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
-                    addManyToManyPut.addMethodServiceMappingSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule, isBiDirectional);
+                    builder.and(new AddResourceInterfacePutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddResourcePutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddServiceMappingPutMethod(this.classNameMappedBy, this.classNameOther));
                     break;
                 }
                 case "DELETE": {
-                    if (isBiDirectional) {
-                        addOneToManyDelete.addMethodResourceInterface(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
-                        addOneToManyDelete.addMethodResourceClass(project, basePath, this.classNameMappedBy, this.classNameOther, this.apiModule);
-                        addManyToManyDelete.addMethodServiceMappingSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    if (javaFunctions.trueOfFalse(this.biDirectional)) {
+                        builder.and(new AddResourceInterfaceDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddResourceDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddServiceMappingDeleteMethod(this.classNameMappedBy, this.classNameOther));
                     }
                     break;
                 }
             }
         });
-    }
-
-    private addMethodsOtherSide(project: Project, basePath: string, isBiDirectional: boolean) {
 
         this.methodsOtherSide.split(",").forEach(method => {
             switch (method) {
                 case "PUT": {
-                    addOneToManyPut.addMethodResourceInterface(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
-                    addOneToManyPut.addMethodResourceClass(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
-                    addManyToManyPut.addMethodServiceOtherSide(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    builder.and(new AddResourceInterfacePutMethod(this.classNameOther, this.classNameMappedBy))
+                        .and(new AddResourcePutMethod(this.classNameOther, this.classNameMappedBy))
+                        .and(new AddServiceOtherPutMethod(this.classNameMappedBy, this.classNameOther));
                     break;
                 }
                 case "DELETE": {
-                    addOneToManyDelete.addMethodResourceInterface(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
-                    addOneToManyDelete.addMethodResourceClass(project, basePath, this.classNameOther, this.classNameMappedBy, this.apiModule);
-                    addManyToManyDelete.addMethodServiceOtherSide(project, basePath, this.classNameMappedBy   , this.classNameOther, this.basePackage, this.apiModule);
+                    builder.and(new AddResourceInterfaceDeleteMethod(this.classNameOther, this.classNameMappedBy))
+                        .and(new AddResourceDeleteMethod(this.classNameOther, this.classNameMappedBy))
+                        .and(new AddServiceOtherDeleteMethod(this.classNameMappedBy, this.classNameOther));
                     break;
                 }
             }
         });
+
+        const params: Params = new Params(
+            '/src/main/java/' + fileFunctions.toPath(this.basePackage),
+            this.biDirectional,
+            this.basePackage,
+            this.persistenceModule,
+            this.apiModule,
+            this.release);
+
+        builder.execute(project, params);
     }
 }
 
