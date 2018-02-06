@@ -1,17 +1,30 @@
-import {File} from "@atomist/rug/model/File";
 import {Project} from "@atomist/rug/model/Project";
 import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {fileFunctions} from "../functions/FileFunctions";
 import {javaFunctions} from "../functions/JavaClassFunctions";
-import {addOneToManyRelationOneSide} from "./AddOneToManyRelationOneSide";
-import {addOneToManyRelationManySide} from "./AddOneToManyRelationManySide";
-import {addOneToManyPut} from "./AddOneToManyPut";
-import {addOneToManyDelete} from "./AddOneToManyDelete";
-import {AddOneToManyRelation, addOneToManyRelation} from "./AddOneToManyRelation";
-import {addOneToOnePut} from "./AddOneToOnePut";
-import {addOneToOneDelete} from "./AddOneToOneDelete";
+import {Params} from "./function/Params";
+import {AddReferenceColumn} from "./function/database/AddReferenceColumn";
+import {AddForeignKeyChangeSet} from "./function/database/AddForeignKeyChangeSet";
+import {AddOtherSideOneBeanBi} from "./function/bean/oneToOne/AddOtherSideOneBeanBi";
+import {AddMappingSideOneBean} from "./function/bean/oneToOne/AddMappingSideOneBean";
+import {ResetPrimaryKeyToForeignKey} from "./function/bean/oneToOne/ResetPrimaryKeyToForeignKey";
+import {AddOtherSideOneBeanUni} from "./function/bean/oneToOne/AddOtherSideOneBeanUni";
+import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConverterMany";
+import {AddResourceInterfaceGetMethodMany} from "./function/method/manyToMany/AddResourceInterfaceManyGetMethod";
+import {AddResourceGetMethodManyBi} from "./function/method/manyToMany/AddResourceManyGetMethodBi";
+import {AddServiceGetMethodMany} from "./function/method/manyToMany/AddServiceManyGetMethod";
+import {AddResourceGetMethodManyUni} from "./function/method/manyToMany/AddResourceManyGetMethodUni";
+import {AddResourceInterfaceOnePutMethod} from "./function/method/oneToOne/AddResourceInterfaceOnePutMethod";
+import {AddResourceOnePutMethod} from "./function/method/oneToOne/AddResourceOnePutMethod";
+import {AddServiceOnePutMethodBi} from "./function/method/oneToOne/AddServiceOnePutMethodBi";
+import {AddResourceInterfaceOneDeleteMethod} from "./function/method/oneToOne/AddResourceInterfaceOneDeleteMethod";
+import {AddResourceOneDeleteMethodUni} from "./function/method/oneToOne/AddResourceOneDeleteMethodUni";
+import {AddResourceOneDeleteMethodBi} from "./function/method/oneToOne/AddResourceOneDeleteMethodBi";
+import {AddServiceOneDeleteMethod} from "./function/method/oneToOne/AddServiceOneDeleteMethod";
+import {OverrideSetter} from "./function/method/oneToOne/OverrideSetter";
+import {AddServiceOnePutMethodUni} from "./function/method/oneToOne/AddServiceOnePutMethodUni";
 
 /**
  * AddOneToOneRelation editor
@@ -144,155 +157,95 @@ export class AddOneToOneRelation implements EditProject {
     })
     public release: string = "1.0.0";
 
-
     public edit(project: Project) {
 
-        const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
-        const isBiDirectional = javaFunctions.trueOfFalse(this.biDirectional);
+        const biDirectional = javaFunctions.trueOfFalse(this.biDirectional);
+        let builder = new AddForeignKeyChangeSet(this.classNameOther, this.classNameMappedBy + "_id", this.classNameMappedBy);
 
-        if (isBiDirectional) {
-            AddOneToManyRelation.extendChangeSetOtherSide(project, this.classNameOther, this.classNameMappedBy,
-                this.persistenceModule, this.release);
-            AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameOther, this.classNameMappedBy + "_id",
-                this.classNameMappedBy, this.persistenceModule, this.release);
-
-            this.extendBeanClassOtherSideBiDirectional(project, basePath);
-            this.extendBeanClassMappedBySide(project, basePath);
-
+        if (biDirectional) {
+            builder.and(new AddReferenceColumn(this.classNameOther, this.classNameMappedBy))
+                .and(new AddOtherSideOneBeanBi(this.classNameMappedBy, this.classNameOther))
+                .and(new AddMappingSideOneBean(this.classNameMappedBy, this.classNameOther));
         } else {
-            this.extendChangeSet(project);
-            AddOneToManyRelation.addChangeSetForeignKey(project, this.classNameOther, this.classNameMappedBy + "_id",
-                this.classNameMappedBy, this.persistenceModule, this.release);
-            this.extendBeanClassOtherSide(project, basePath);
+            builder.and(new AddOtherSideOneBeanUni(this.classNameMappedBy, this.classNameOther))
+                .and(new ResetPrimaryKeyToForeignKey(this.classNameMappedBy, this.classNameOther));
         }
 
         if (javaFunctions.trueOfFalse(this.showInOutputMapped)) {
-            addOneToManyRelationManySide.edit(project, basePath, this.classNameOther, this.classNameMappedBy,
-                this.basePackage, this.apiModule, isBiDirectional, false);
+            builder.and(new AddLinkToConverterMany(this.classNameOther, this.classNameMappedBy, false))
+                .and(new AddResourceInterfaceGetMethodMany(this.classNameMappedBy, this.classNameOther, false));
+
+            if(biDirectional) {
+                builder.and(new AddResourceGetMethodManyBi(this.classNameMappedBy, this.classNameOther))
+                    .and(new AddServiceGetMethodMany(this.classNameMappedBy, this.classNameOther));
+            } else {
+                builder.and(new AddResourceGetMethodManyUni(this.classNameMappedBy, this.classNameOther));
+            }
         }
+
         if (javaFunctions.trueOfFalse(this.showInOutputOther)) {
-            addOneToManyRelationManySide.edit(project, basePath, this.classNameMappedBy, this.classNameOther,
-                this.basePackage, this.apiModule, true, false);
+            builder.and(new AddLinkToConverterMany(this.classNameMappedBy, this.classNameOther, false))
+                .and(new AddResourceInterfaceGetMethodMany(this.classNameOther, this.classNameMappedBy, false))
+                .and(new AddResourceGetMethodManyUni(this.classNameOther, this.classNameMappedBy));
         }
-
-        this.addMethodsMappingSide(project, basePath, isBiDirectional);
-        this.addMethodsOtherSide(project, basePath, isBiDirectional);
-    }
-
-    private extendChangeSet(project: Project) {
-        const inputHook = "<!-- @Input -->";
-        const rawChangeSetColumn = `<changeSet id="change_id_${this.classNameOther.toLowerCase()}" author="shboland">
-    <renameColumn tableName="${this.classNameOther.toUpperCase()}" oldColumnName="id" ` +
-            `newColumnName="${this.classNameMappedBy.toLowerCase()}_id" />
-  </changeSet>
-  
-  ` + inputHook;
-
-        const path = this.persistenceModule + "/src/main/resources/liquibase/release/"
-            + this.release + "/db-1-" + this.classNameOther.toLowerCase() + ".xml";
-
-        if (project.fileExists(path)) {
-            const file: File = project.findFile(path);
-            file.replace(inputHook, rawChangeSetColumn);
-        } else {
-            console.error("Changset not added yet!");
-        }
-    }
-
-    private extendBeanClassOtherSide(project: Project, basePath: string) {
-        const inputHook = "// @Input";
-        const rawJavaCode = `@OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private ${this.classNameMappedBy} ${this.classNameMappedBy.toLowerCase()};
-    
-    ` + inputHook;
-
-        const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.classNameOther + ".java";
-        const beanFile: File = project.findFile(beanPath);
-
-        if (project.fileExists(beanPath)) {
-            beanFile.replace(inputHook, rawJavaCode);
-        } else {
-            console.error("Bean class many side not added yet!");
-        }
-    }
-
-    private extendBeanClassOtherSideBiDirectional(project: Project, basePath: string) {
-        const inputHook = "// @Input";
-        const rawJavaCode = `@OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "${this.classNameMappedBy.toLowerCase()}_id")
-    private ${this.classNameMappedBy} ${this.classNameMappedBy.toLowerCase()};
-    
-    ` + inputHook;
-
-        const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.classNameOther + ".java";
-        const beanFile: File = project.findFile(beanPath);
-
-        if (project.fileExists(beanPath)) {
-            beanFile.replace(inputHook, rawJavaCode);
-        } else {
-            console.error("Bean class many side not added yet!");
-        }
-    }
-
-    private extendBeanClassMappedBySide(project: Project, basePath: string) {
-        const inputHook = "// @Input";
-        const rawJavaCode = `@OneToOne(mappedBy = "${this.classNameMappedBy.toLowerCase()}")
-    private ${this.classNameOther} ${this.classNameOther.toLowerCase()};
-    
-    ` + inputHook;
-
-        const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.classNameMappedBy + ".java";
-        const beanFile: File = project.findFile(beanPath);
-
-        if (project.fileExists(beanPath)) {
-            beanFile.replace(inputHook, rawJavaCode);
-        } else {
-            console.error("Bean class one side not added yet!");
-        }
-    }
-
-    private addMethodsMappingSide(project: Project, basePath: string, isBiDirectional: boolean) {
 
         this.methodsMappingSide.split(",").forEach(method => {
             switch (method) {
                 case "PUT": {
-                    addOneToOnePut.addPutBiDirectional(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    builder.and(new AddResourceInterfaceOnePutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddResourceOnePutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddServiceOnePutMethodBi(this.classNameMappedBy, this.classNameOther));
                     break;
                 }
                 case "DELETE": {
-                    if (isBiDirectional) {
-                        addOneToOneDelete.addDeleteBiDirectional(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                    if (biDirectional) {
+                        builder.and(new AddResourceInterfaceOneDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddResourceOneDeleteMethodBi(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddServiceOneDeleteMethod(this.classNameMappedBy, this.classNameOther));
                     } else {
-                        addOneToOneDelete.addDeleteUniDirectional(project, basePath, this.classNameMappedBy, this.classNameOther, this.basePackage, this.apiModule);
+                        builder.and(new AddResourceInterfaceOneDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddResourceOneDeleteMethodUni(this.classNameMappedBy, this.classNameOther));
                     }
                     break;
                 }
             }
         });
-    }
-
-    private addMethodsOtherSide(project: Project, basePath: string, isBiDirectional: boolean) {
 
         this.methodsOtherSide.split(",").forEach(method => {
             switch (method) {
                 case "PUT": {
-                    if (isBiDirectional) {
-                        addOneToOnePut.addPutBiDirectional(project, basePath, this.classNameOther, this.classNameMappedBy, this.basePackage, this.apiModule);
-                        addOneToOnePut.overrideSetter(project, basePath, this.classNameMappedBy, this.classNameOther, this.persistenceModule);
+                    if (biDirectional) {
+                        builder.and(new AddResourceInterfaceOnePutMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddResourceOnePutMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddServiceOnePutMethodBi(this.classNameOther, this.classNameMappedBy))
+                            .and(new OverrideSetter(this.classNameMappedBy, this.classNameOther));
                     } else {
-                        addOneToOnePut.addPutUniDirectional(project, basePath, this.classNameOther, this.classNameMappedBy, this.basePackage, this.apiModule);
+                        builder.and(new AddResourceInterfaceOnePutMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddResourceOnePutMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddServiceOnePutMethodUni(this.classNameOther, this.classNameMappedBy));
                     }
                     break;
                 }
                 case "DELETE": {
-                    if (isBiDirectional) {
-                        addOneToOneDelete.addDeleteBiDirectional(project, basePath, this.classNameOther, this.classNameMappedBy, this.basePackage, this.apiModule);
+                    if (biDirectional) {
+                        builder.and(new AddResourceInterfaceOneDeleteMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddResourceOneDeleteMethodBi(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddServiceOneDeleteMethod(this.classNameOther, this.classNameMappedBy));
                     }
                     break;
                 }
             }
         });
+
+        const params: Params = new Params(
+            '/src/main/java/' + fileFunctions.toPath(this.basePackage),
+            this.biDirectional,
+            this.basePackage,
+            this.persistenceModule,
+            this.apiModule,
+            this.release);
+
+        builder.execute(project, params);
     }
 }
 
