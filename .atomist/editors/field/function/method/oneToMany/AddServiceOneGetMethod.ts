@@ -13,19 +13,15 @@ export class AddServiceOneGetMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
-    public List<Json${this.otherClass}> fetch${this.otherClass}sFor${this.oneClass}` +
+    public List<${this.otherClass}> fetch${this.otherClass}sFor${this.oneClass}` +
             `(long ${this.oneClass.toLowerCase()}Id) {
         ${this.otherClass}SearchCriteria ${this.otherClass.toLowerCase()}SearchCriteria = ` +
-            `new ${this.otherClass}SearchCriteria();
-        ${this.otherClass.toLowerCase()}SearchCriteria.set${this.oneClass}Id` +
-            `(Optional.of(${this.oneClass.toLowerCase()}Id));
-        List<${this.otherClass}> ${this.otherClass.toLowerCase()}List = ` +
-            `${this.otherClass.toLowerCase()}Repository.` +
-            `findBySearchCriteria(${this.otherClass.toLowerCase()}SearchCriteria);
+            ` ${this.otherClass}SearchCriteria.builder()
+                .${this.oneClass.toLowerCase()}Id(Optional.of(${this.oneClass.toLowerCase()}Id))
+                .build();
 
-        return ${this.otherClass.toLowerCase()}List.stream().` +
-            `map(${this.otherClass.toLowerCase()}Converter::toJson).collect(Collectors.toList());
+        return ${this.otherClass.toLowerCase()}Repository.` +
+            `findBySearchCriteria(${this.otherClass.toLowerCase()}SearchCriteria);
     }`;
 
         const path = params.apiModule + params.basePath + "/service/" + this.otherClass + "Service.java";
@@ -33,9 +29,6 @@ export class AddServiceOneGetMethod extends EditFunction {
         javaFunctions.addFunction(file, "fetch" + this.otherClass + "sFor" + this.oneClass, rawJavaMethod);
 
         javaFunctions.addImport(file, "java.util.List");
-        javaFunctions.addImport(file, params.basePackage + ".domain.Json" + this.otherClass);
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
     }
 }

@@ -14,7 +14,7 @@ import {AddOtherSideOneBeanUni} from "./function/bean/oneToOne/AddOtherSideOneBe
 import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConverterMany";
 import {AddResourceInterfaceGetMethodMany} from "./function/method/manyToMany/AddResourceInterfaceManyGetMethod";
 import {AddResourceGetMethodManyBi} from "./function/method/manyToMany/AddResourceManyGetMethodBi";
-import {AddServiceGetMethodMany} from "./function/method/manyToMany/AddServiceManyGetMethod";
+import {AddServiceGetMethodMany} from "./function/method/oneToMany/AddServiceManyGetMethod";
 import {AddResourceGetMethodManyUni} from "./function/method/manyToMany/AddResourceManyGetMethodUni";
 import {AddResourceInterfaceOnePutMethod} from "./function/method/oneToOne/AddResourceInterfaceOnePutMethod";
 import {AddResourceOnePutMethod} from "./function/method/oneToOne/AddResourceOnePutMethod";
@@ -23,7 +23,6 @@ import {AddResourceInterfaceOneDeleteMethod} from "./function/method/oneToOne/Ad
 import {AddResourceOneDeleteMethodUni} from "./function/method/oneToOne/AddResourceOneDeleteMethodUni";
 import {AddResourceOneDeleteMethodBi} from "./function/method/oneToOne/AddResourceOneDeleteMethodBi";
 import {AddServiceOneDeleteMethod} from "./function/method/oneToOne/AddServiceOneDeleteMethod";
-import {OverrideSetter} from "./function/method/oneToOne/OverrideSetter";
 import {AddServiceOnePutMethodUni} from "./function/method/oneToOne/AddServiceOnePutMethodUni";
 
 /**
@@ -217,8 +216,7 @@ export class AddOneToOneRelation implements EditProject {
                     if (biDirectional) {
                         builder.and(new AddResourceInterfaceOnePutMethod(this.classNameOther, this.classNameMappedBy))
                             .and(new AddResourceOnePutMethod(this.classNameOther, this.classNameMappedBy))
-                            .and(new AddServiceOnePutMethodBi(this.classNameOther, this.classNameMappedBy))
-                            .and(new OverrideSetter(this.classNameMappedBy, this.classNameOther));
+                            .and(new AddServiceOnePutMethodBi(this.classNameOther, this.classNameMappedBy));
                     } else {
                         builder.and(new AddResourceInterfaceOnePutMethod(this.classNameOther, this.classNameMappedBy))
                             .and(new AddResourceOnePutMethod(this.classNameOther, this.classNameMappedBy))

@@ -15,14 +15,15 @@ export class AddResourceOneGetMethod extends EditFunction {
         const rawJavaMethod = `
     @Override
     public ResponseEntity get${this.otherClass}s(@PathVariable long ${this.oneClass.toLowerCase()}Id) {
-        List<Json${this.otherClass}> json${this.otherClass}List = ` +
+        List<${this.otherClass}> ${this.otherClass.toLowerCase()}List = ` +
             `${this.otherClass.toLowerCase()}Service.fetch${this.otherClass}sFor${this.oneClass}` +
             `(${this.oneClass.toLowerCase()}Id);
 
-        if (json${this.otherClass}List.isEmpty()) {
+        if (${this.otherClass.toLowerCase()}List.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
-            return ResponseEntity.ok(json${this.otherClass}List);
+            return ResponseEntity.ok(${this.otherClass.toLowerCase()}List.stream()` +
+            `.map(${this.otherClass.toLowerCase()}Converter::toJson).collect(Collectors.toList()));
         }
     }`;
 
@@ -31,12 +32,17 @@ export class AddResourceOneGetMethod extends EditFunction {
         javaFunctions.addFunction(file, "get" + this.otherClass + "s", rawJavaMethod);
 
         javaFunctions.addImport(file, "java.util.List");
+        javaFunctions.addImport(file, " java.util.stream.Collectors");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, params.basePackage + ".domain.Json" + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
 
         javaFunctions.addToConstructor(file, this.oneClass + "Controller",
             this.otherClass.toLowerCase() + "Service");
         javaFunctions.addImport(file, params.basePackage + ".service." + this.otherClass + "Service");
+
+        javaFunctions.addToConstructor(file, this.oneClass + "Controller",
+            this.otherClass.toLowerCase() + "Converter");
+        javaFunctions.addImport(file, params.basePackage + ".convert." + this.otherClass + "Converter");
     }
 }

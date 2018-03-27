@@ -24,7 +24,7 @@ import {AddFieldToSearchCriteria} from "./function/method/AddFieldToSearchCriter
 import {AddFieldToPredicates} from "./function/method/AddFieldToPredicates";
 import {AddResourceInterfaceGetMethodMany} from "./function/method/manyToMany/AddResourceInterfaceManyGetMethod";
 import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConverterMany";
-import {AddServiceGetMethodMany} from "./function/method/manyToMany/AddServiceManyGetMethod";
+import {AddServiceGetMethodMany} from "./function/method/oneToMany/AddServiceManyGetMethod";
 import {AddResourceGetMethodManyBi} from "./function/method/manyToMany/AddResourceManyGetMethodBi";
 import {AddResourceGetMethodManyUni} from "./function/method/manyToMany/AddResourceManyGetMethodUni";
 import {Params} from "./function/Params";

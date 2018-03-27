@@ -13,13 +13,12 @@ export class AddServiceMappingPutMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const innerPartMethod = javaFunctions.trueOfFalse(params.biDirectional) ?
-            `${this.oneClass.toLowerCase()}.add${this.otherClass}(${this.otherClass.toLowerCase()});
+            `${this.oneClass.toLowerCase()}.get${this.otherClass}Set().add(${this.otherClass.toLowerCase()});
                 ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass.toLowerCase()});` :
-            `${this.otherClass.toLowerCase()}.get${this.oneClass}Set().add(${this.oneClass.toLowerCase()});
-                ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass.toLowerCase()});`;
+            `${this.oneClass.toLowerCase()}.get${this.otherClass}Set().add(${this.otherClass.toLowerCase()});
+                ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass.toLowerCase()});`;
 
         const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
     public boolean update${this.oneClass}With${this.otherClass}(long ${this.oneClass.toLowerCase()}Id, ` +
             `long ${this.otherClass.toLowerCase()}Id) {
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
@@ -43,8 +42,6 @@ export class AddServiceMappingPutMethod extends EditFunction {
         javaFunctions.addFunction(file, "update" + this.oneClass + "With" + this.otherClass, rawJavaMethod);
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
 
         javaFunctions.addToConstructor(file, this.oneClass + "Service",
             this.otherClass.toLowerCase() + "Repository");

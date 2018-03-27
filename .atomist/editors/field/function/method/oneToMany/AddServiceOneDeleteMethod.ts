@@ -12,7 +12,6 @@ export class AddServiceOneDeleteMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
     public boolean remove${this.otherClass}(long ${this.oneClass.toLowerCase()}Id, ` +
             `long ${this.otherClass.toLowerCase()}Id) {
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
@@ -24,8 +23,13 @@ export class AddServiceOneDeleteMethod extends EditFunction {
             if (${this.otherClass.toLowerCase()} != null && ${this.otherClass.toLowerCase()}.get${this.oneClass}() != null && ` +
             `${this.oneClass.toLowerCase()}.getId().equals(${this.otherClass.toLowerCase()}.get${this.oneClass}().getId())) {
 
-                ${this.oneClass.toLowerCase()}.remove${this.otherClass}(${this.otherClass.toLowerCase()});
-                ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass.toLowerCase()});
+                List<${this.otherClass}> new${this.otherClass}List = ${this.oneClass.toLowerCase()}.get${this.otherClass}List();
+                new${this.otherClass}List.remove(${this.otherClass.toLowerCase()});
+                
+                ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.toBuilder()
+                        .${this.otherClass.toLowerCase()}List(new${this.otherClass}List)
+                        .build();
+                ${this.oneClass.toLowerCase()}Repository.save(new${this.oneClass});
                 return true;
             }
         }
@@ -38,8 +42,6 @@ export class AddServiceOneDeleteMethod extends EditFunction {
         javaFunctions.addFunction(file, "remove" + this.otherClass, rawJavaMethod);
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
 
         javaFunctions.addToConstructor(file, this.oneClass + "Service", this.otherClass.toLowerCase() + "Repository");
         javaFunctions.addImport(file, params.basePackage + ".db.repo." + this.otherClass + "Repository");

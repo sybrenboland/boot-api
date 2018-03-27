@@ -13,7 +13,6 @@ export class AddServiceManyPutMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
     public boolean update${this.otherClass}With${this.oneClass}(long ${this.otherClass.toLowerCase()}Id, ` +
             `long ${this.oneClass.toLowerCase()}Id) {
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.` +
@@ -24,8 +23,10 @@ export class AddServiceManyPutMethod extends EditFunction {
             `${this.oneClass.toLowerCase()}Repository.findOne(${this.oneClass.toLowerCase()}Id);
             if (${this.oneClass.toLowerCase()} != null) {
 
-                ${this.otherClass.toLowerCase()}.set${this.oneClass}(${this.oneClass.toLowerCase()});
-                ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass.toLowerCase()});
+                ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
+                        .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()})
+                        .build();
+                ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
                 return true;
             }
         }
@@ -38,8 +39,6 @@ export class AddServiceManyPutMethod extends EditFunction {
         javaFunctions.addFunction(file, "update" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.oneClass);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
 
         javaFunctions.addToConstructor(file, this.otherClass + "Service",
             this.oneClass.toLowerCase() + "Repository");

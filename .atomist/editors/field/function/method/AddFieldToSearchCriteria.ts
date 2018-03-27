@@ -12,7 +12,7 @@ export class AddFieldToSearchCriteria extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const inputHook = "// @Input";
-        const rawJavaCode = `private Optional<Long> ${this.oneClass}Id = Optional.empty();
+        const rawJavaCode = `private Optional<Long> ${this.oneClass.toLowerCase()}Id = Optional.empty();
     
     ` + inputHook;
 

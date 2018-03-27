@@ -11,13 +11,12 @@ export class AddLinkToConverterMany extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
-        const inputHook = "// @InputJsonField";
-        const rawJavaCode = inputHook + `
-        
-        json${this.otherClass}.add(linkTo(${this.otherClass}Controller.class).` +
+        const inputHook = "// @InputLink";
+        const rawJavaCode = `json${this.otherClass}.add(linkTo(${this.otherClass}Controller.class).` +
             `slash(${this.otherClass.toLowerCase()}.getId()).slash("/${this.oneClass.toLowerCase()}` +
             `${this.pluralResource ? "s" : ""}")` +
-            `.withRel("${this.oneClass.toLowerCase()}"));`;
+            `.withRel("${this.oneClass.toLowerCase()}"));
+            ` + inputHook;
 
         const path = params.apiModule + params.basePath + "/convert/" + this.otherClass + "Converter.java";
 

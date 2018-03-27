@@ -13,7 +13,6 @@ export class AddServiceOnePutMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
     public boolean update${this.oneClass}With${this.otherClass}(long ${this.oneClass.toLowerCase()}Id, ` +
             `long ${this.otherClass.toLowerCase()}Id) {
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
@@ -24,8 +23,13 @@ export class AddServiceOnePutMethod extends EditFunction {
             `${this.otherClass.toLowerCase()}Repository.findOne(${this.otherClass.toLowerCase()}Id);
             if (${this.otherClass.toLowerCase()} != null) {
 
-                ${this.oneClass.toLowerCase()}.add${this.otherClass}(${this.otherClass.toLowerCase()});
-                ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass.toLowerCase()});
+                List<${this.otherClass}> new${this.otherClass}List = ${this.oneClass.toLowerCase()}.get${this.otherClass}List();
+                new${this.otherClass}List.add(${this.otherClass.toLowerCase()});
+                
+                ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.toBuilder()
+                        .${this.otherClass.toLowerCase()}List(new${this.otherClass}List)
+                        .build();
+                ${this.oneClass.toLowerCase()}Repository.save(new${this.oneClass});
                 return true;
             }
         }
@@ -38,8 +42,6 @@ export class AddServiceOnePutMethod extends EditFunction {
         javaFunctions.addFunction(file, "update" + this.oneClass + "With" + this.otherClass, rawJavaMethod);
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
 
         javaFunctions.addToConstructor(file, this.oneClass + "Service",
             this.otherClass.toLowerCase() + "Repository");

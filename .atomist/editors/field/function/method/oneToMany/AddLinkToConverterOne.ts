@@ -12,7 +12,7 @@ export class AddLinkToConverterOne extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
-        const inputHook = "// @InputJsonField";
+        const inputHook = "// @InputLink";
         const rawJavaCode = inputHook + `
         
         json${this.oneClass}.add(linkTo(${this.oneClass}Controller.class).` +

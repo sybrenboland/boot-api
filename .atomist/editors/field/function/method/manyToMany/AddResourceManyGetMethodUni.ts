@@ -16,11 +16,11 @@ export class AddResourceGetMethodManyUni extends EditFunction {
     @Override
     public ResponseEntity get${this.oneClass}(@PathVariable long ${this.otherClass.toLowerCase()}Id) {
         // Use only with @MapsId mapping
-        Optional<Json${this.oneClass}> json${this.oneClass}Optional = ` +
+        Optional<${this.oneClass}> ${this.oneClass.toLowerCase()}Optional = ` +
             `${this.oneClass.toLowerCase()}Service.fetch${this.oneClass}(${this.otherClass.toLowerCase()}Id);
 
-        return json${this.oneClass}Optional.isPresent() ? ResponseEntity.ok(json${this.oneClass}Optional.get()) ` +
-            `: ResponseEntity.notFound().build();
+        return ${this.oneClass.toLowerCase()}Optional.isPresent() ? ResponseEntity` +
+            `.ok(${this.oneClass.toLowerCase()}Optional.get()) : ResponseEntity.notFound().build();
     }`;
 
         const path = params.apiModule + params.basePath + "/resource/" + this.otherClass + "Controller.java";

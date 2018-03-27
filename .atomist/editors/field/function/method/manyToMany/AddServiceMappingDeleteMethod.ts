@@ -13,7 +13,6 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
     public boolean remove${this.otherClass}(long ${this.oneClass.toLowerCase()}Id, ` +
             `long ${this.otherClass.toLowerCase()}Id) {
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
@@ -26,7 +25,8 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
             `${this.otherClass.toLowerCase()}Id).findFirst();
 
             if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
-                ${this.oneClass.toLowerCase()}.remove${this.otherClass}(${this.otherClass.toLowerCase()}Optional.get());
+            
+                ${this.oneClass.toLowerCase()}.get${this.otherClass}Set().remove(${this.otherClass.toLowerCase()}Optional.get());
                 ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass.toLowerCase()});
                 return true;
             }
@@ -40,7 +40,5 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
         javaFunctions.addFunction(file, "remove" + this.otherClass, rawJavaMethod);
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
     }
 }

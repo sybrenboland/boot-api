@@ -17,12 +17,12 @@ export class AddResourceOnePutMethod extends EditFunction {
             `(@PathVariable long ${this.oneClass.toLowerCase()}Id, ` +
             `@RequestBody Json${this.otherClass} json${this.otherClass}) {
 
-        Json${this.otherClass} newJson${this.otherClass} = ${this.oneClass.toLowerCase()}Service.` +
+        ${this.otherClass} new${this.otherClass} = ${this.oneClass.toLowerCase()}Service.` +
             `update${this.oneClass}With${this.otherClass}(${this.oneClass.toLowerCase()}Id, ` +
-            `json${this.otherClass});
+            `${this.otherClass.toLowerCase()}Converter.fromJson(json${this.otherClass}));
 
-        return  newJson${this.otherClass} != null ?
-                ResponseEntity.ok(newJson${this.otherClass}) :
+        return  new${this.otherClass} != null ?
+                ResponseEntity.ok(${this.otherClass.toLowerCase()}Converter.toJson(new${this.otherClass})) :
                 ResponseEntity.notFound().build();
     }`;
 
@@ -33,5 +33,11 @@ export class AddResourceOnePutMethod extends EditFunction {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, params.basePackage + ".domain.Json" + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.oneClass);
+        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+
+        javaFunctions.addToConstructor(file, this.oneClass + "Controller",
+            this.otherClass.toLowerCase() + "Converter");
+        javaFunctions.addImport(file, params.basePackage + ".convert." + this.otherClass + "Converter");
     }
 }
