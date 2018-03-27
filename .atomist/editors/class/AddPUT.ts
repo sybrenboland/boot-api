@@ -7,6 +7,7 @@ import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {addServiceMethodFetchBean} from "./AddGET";
 import {javaFunctions} from "../functions/JavaClassFunctions";
+import { addServiceMethodSaveBean } from "./AddPOST";
 
 /**
  * AddPUT editor
@@ -65,7 +66,8 @@ export class AddPUT implements EditProject {
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePath);
         this.addResourceClassMethod(project, basePath);
-        this.addServiceMethod(project, basePath);
+        addServiceMethodFetchBean(project, this.className, this.basePackage, basePath);
+        addServiceMethodSaveBean(project, this.className, this.basePackage, basePath);
     }
 
     private addDependencies(project: Project): void {
@@ -104,17 +106,19 @@ export class AddPUT implements EditProject {
             `(@PathVariable long ${this.className.toLowerCase()}Id, ` +
             `@RequestBody Json${this.className} json${this.className}) {
 
-        Optional<Json${this.className}> ${this.className.toLowerCase()}Optional = ` +
-            `${this.className.toLowerCase()}Service.fetch${this.className}(${this.className.toLowerCase()}Id);
+        Optional<${this.className}> ${this.className.toLowerCase()}Optional = ${this.className.toLowerCase()}Service` +
+            `.fetch${this.className}(${this.className.toLowerCase()}Id);
 
+        ${this.className} saved${this.className};
         if (!${this.className.toLowerCase()}Optional.isPresent()) {
-            return ResponseEntity.notFound().build();
+            saved${this.className} = ${this.className.toLowerCase()}Service` +
+            `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}));
+        } else {
+            saved${this.className} = ${this.className.toLowerCase()}Service` +
+            `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}, ${this.className.toLowerCase()}Id));
         }
 
-        Json${this.className} new${this.className} = ${this.className.toLowerCase()}Service.update${this.className}` +
-            `(${this.className.toLowerCase()}Id, json${this.className});
-
-        return ResponseEntity.ok(new${this.className});
+        return ResponseEntity.ok(${this.className.toLowerCase()}Converter.toJson(saved${this.className}));
     }`;
 
         const path = basePath + "/resource/" + this.className + "Controller.java";
@@ -126,36 +130,6 @@ export class AddPUT implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
-    }
-
-    private addServiceMethod(project: Project, basePath: string): void {
-
-        const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
-    public Json${this.className} update${this.className}(long ${this.className.toLowerCase()}Id, ` +
-            `Json${this.className} json${this.className}) {
-        ${this.className} current${this.className} = ` +
-            `${this.className.toLowerCase()}Repository.findOne(${this.className.toLowerCase()}Id);
-
-        ${this.className} new${this.className} = ` +
-            `${this.className.toLowerCase()}Repository.save(` +
-            `${this.className.toLowerCase()}Converter.copyFields(json${this.className}, current${this.className}));
-
-        return ${this.className.toLowerCase()}Converter.toJson(new${this.className});
-    }`;
-
-        const path = basePath + "/service/" + this.className + "Service.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "update" + this.className, rawJavaMethod);
-
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
-        javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
-        
-        if (!file.contains("fetch" + this.className)) {
-            addServiceMethodFetchBean(project, this.className, this.basePackage, basePath);
-        }
     }
 }
 

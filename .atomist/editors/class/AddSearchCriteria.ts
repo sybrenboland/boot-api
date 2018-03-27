@@ -231,9 +231,11 @@ public class Json${this.className}SearchCriteria {
 
 import java.util.Optional;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Builder;
 
-@Data
+@Getter
+@Builder
 public class ${this.className}SearchCriteria {
 
     private int maxResults = 10;
@@ -266,21 +268,22 @@ public class ${this.className}SearchCriteriaConverter {
 
     public ${this.className}SearchCriteria createSearchCriteria` +
             `(Json${this.className}SearchCriteria json${this.className}SearchCriteria) {
-        ${this.className}SearchCriteria sc = new ${this.className}SearchCriteria();
+        ${this.className}SearchCriteria.${this.className}SearchCriteriaBuilder searchCriteriaBuilder = ` +
+            `${this.className}SearchCriteria.builder();
 
-        sc.setStart(json${this.className}SearchCriteria.getStart());
+        searchCriteriaBuilder.start(json${this.className}SearchCriteria.getStart());
         if (json${this.className}SearchCriteria.getMaxResults() > 0) {
-            sc.setMaxResults(json${this.className}SearchCriteria.getMaxResults());
+            searchCriteriaBuilder.maxResults(json${this.className}SearchCriteria.getMaxResults());
         } else {
             throw new ConvertException("Maximum number of results should be a positive number.");
         }
 
         Long id = json${this.className}SearchCriteria.getId();
-        sc.setId(Optional.ofNullable(id));
+        searchCriteriaBuilder.id(Optional.ofNullable(id));
         
         // @Input
 
-        return sc;
+        return searchCriteriaBuilder.build();
     }
     
     // @Function input
@@ -320,15 +323,16 @@ public class ${this.className}SearchCriteriaConverter {
             return ResponseEntity.badRequest().build();
         }
 
-        List<Json${this.className}> json${this.className}List = new ArrayList<>();
+        List<${this.className}> ${this.className.toLowerCase()}List = new ArrayList<>();
         int numberOf${this.className} = ${this.className.toLowerCase()}Service.findNumberOf${this.className}(sc);
         if (numberOf${this.className} > 0) {
-            json${this.className}List = ${this.className.toLowerCase()}Service.findBySearchCriteria(sc);
+            ${this.className.toLowerCase()}List = ${this.className.toLowerCase()}Service.findBySearchCriteria(sc);
         }
 
         JsonSearchResult<Json${this.className}> result = JsonSearchResult.<Json${this.className}>builder()
-                .results(json${this.className}List)
-                .numberOfResults(json${this.className}List.size())
+                .results(${this.className.toLowerCase()}List.stream()` +
+            `.map(${this.className.toLowerCase()}Converter::toJson).collect(Collectors.toList()))
+                .numberOfResults(${this.className.toLowerCase()}List.size())
                 .grandTotalNumberOfResults(numberOf${this.className})
                 .build();
 
@@ -352,17 +356,13 @@ public class ${this.className}SearchCriteriaConverter {
         javaFunctions.addImport(file, "java.util.ArrayList");
         javaFunctions.addImport(file, "java.util.List");
         javaFunctions.addImport(file, "javax.ws.rs.BeanParam");
+        javaFunctions.addImport(file, "java.util.stream.Collectors");
     }
 
     private addServiceMethodSearch(project: Project, basePath: string) {
-        const rawJavaMethod = `    
-    @Transactional(propagation = Propagation.REQUIRED)
-    public List<Json${this.className}> findBySearchCriteria(${this.className}SearchCriteria sc) {
-            List<${this.className}> ${this.className.toLowerCase()}List = ` +
-            `${this.className.toLowerCase()}Repository.findBySearchCriteria(sc);
-
-        return ${this.className.toLowerCase()}List.stream().` +
-            `map(${this.className.toLowerCase()}Converter::toJson).collect(Collectors.toList());
+        const rawJavaMethod = `
+    public List<${this.className}> findBySearchCriteria(${this.className}SearchCriteria sc) {
+        return ${this.className.toLowerCase()}Repository.findBySearchCriteria(sc);
     }`;
 
         const path = this.apiModule + basePath + "/service/" + this.className + "Service.java";
@@ -370,14 +370,10 @@ public class ${this.className}SearchCriteriaConverter {
         javaFunctions.addFunction(file, "findBySearchCriteria", rawJavaMethod);
 
         javaFunctions.addImport(file, this.basePackage + ".domain." + this.className + "SearchCriteria");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
-        javaFunctions.addImport(file, "java.util.stream.Collectors");
     }
 
     private addServiceMethodCount(project: Project, basePath: string) {
-        const rawJavaMethod = `    
-    @Transactional(propagation = Propagation.REQUIRED)
+        const rawJavaMethod = `  
     public int findNumberOf${this.className}(${this.className}SearchCriteria sc) {
         return ${this.className.toLowerCase()}Repository.findNumberOf${this.className}BySearchCriteria(sc);
     }

@@ -53,23 +53,22 @@ export class AddService implements EditProject {
 
         const rawJavaFileContent = `package ${this.basePackage}.service;
 
-import ${this.basePackage}.convert.${this.className}Converter;
 import ${this.basePackage}.db.repo.${this.className}Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class ${this.className}Service {
 
     private final ${this.className}Repository ${this.className.toLowerCase()}Repository;
-    private final ${this.className}Converter ${this.className.toLowerCase()}Converter;
     // @FieldInput
 
     @Autowired
-    public ${this.className}Service(${this.className}Repository ${this.className.toLowerCase()}Repository, ` +
-            `${this.className}Converter ${this.className.toLowerCase()}Converter) {
+    public ${this.className}Service(${this.className}Repository ${this.className.toLowerCase()}Repository) {
         this.${this.className.toLowerCase()}Repository = ${this.className.toLowerCase()}Repository;
-        this.${this.className.toLowerCase()}Converter = ${this.className.toLowerCase()}Converter;
         // @ConstructorInput
     }
     

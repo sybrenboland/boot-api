@@ -66,7 +66,7 @@ export class AddPOST implements EditProject {
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePath);
         this.addResourceClassMethod(project, basePath);
-        this.addServiceMethod(project, basePath);
+        addServiceMethodSaveBean(project, this.className, this.basePackage, basePath);
         this.addExceptionHandler(project);
     }
 
@@ -103,10 +103,12 @@ export class AddPOST implements EditProject {
     @Override
     public ResponseEntity post${this.className}(@RequestBody Json${this.className} json${this.className}) ` +
             `throws URISyntaxException {
-        Json${this.className} new${this.className} = ` +
-            `${this.className.toLowerCase()}Service.create${this.className}(json${this.className});
+            
+        ${this.className} new${this.className} = ${this.className.toLowerCase()}Service` +
+            `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}));
 
-        return ResponseEntity.created(new URI(new${this.className}.getLink("self").getHref())).build();
+        return ResponseEntity.created(new URI(${this.className.toLowerCase()}Converter` +
+            `.toJson(new${this.className}).getLink("self").getHref())).build();
     }`;
 
         const path = basePath + "/resource/" + this.className + "Controller.java";
@@ -120,28 +122,6 @@ export class AddPOST implements EditProject {
         javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
     }
 
-    private addServiceMethod(project: Project, basePath: string): void {
-
-        const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
-    public Json${this.className} create${this.className}(Json${this.className} json${this.className}) {
-        ${this.className} ${this.className.toLowerCase()} = ` +
-            `${this.className.toLowerCase()}Repository.save(` +
-            `${this.className.toLowerCase()}Converter.copyFields(json${this.className}, new ${this.className}()));
-
-        return ${this.className.toLowerCase()}Converter.toJson(${this.className.toLowerCase()});
-    }`;
-
-        const path = basePath + "/service/" + this.className + "Service.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "create" + this.className, rawJavaMethod);
-
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
-        javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
-    }
-
     private addExceptionHandler(project: Project) {
         addExceptionHandler.javaException = "URISyntaxException";
         addExceptionHandler.exceptionPackage = "java.net";
@@ -152,6 +132,20 @@ export class AddPOST implements EditProject {
 
         addExceptionHandler.edit(project);
     }
+}
+
+export function addServiceMethodSaveBean(project: Project, className: string, basePackage: string, basePath: string) {
+
+    const rawJavaMethod = `
+    public ${className} save(${className} ${className.toLowerCase()}) {
+        return ${className.toLowerCase()}Repository.save(${className.toLowerCase()});
+    }`;
+
+    const path = basePath + "/service/" + className + "Service.java";
+    const file: File = project.findFile(path);
+    javaFunctions.addFunction(file, "save", rawJavaMethod);
+
+    javaFunctions.addImport(file, basePackage + ".db.hibernate.bean." + className);
 }
 
 export const addPost = new AddPOST();

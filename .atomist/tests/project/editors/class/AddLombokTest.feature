@@ -6,10 +6,8 @@ Feature: Adds lombok annotations with imports to a java class
     When the AddBeanClass is run with className Adres
     When the AddLombok is run with className Adres
     Then new bean contains the import lombok.Getter
-    Then new bean contains the import lombok.Setter
     Then new bean contains the import lombok.Builder
     Then new bean contains the import lombok.NoArgsConstructor
     Then new bean contains the annotation @Getter
-    Then new bean contains the annotation @Setter
     Then new bean contains the annotation @Builder
     Then new bean contains the annotation @NoArgsConstructor

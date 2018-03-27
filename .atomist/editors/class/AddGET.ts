@@ -98,11 +98,12 @@ export class AddGET implements EditProject {
     @Override
     public ResponseEntity<Json${this.className}> get${this.className}` +
             `(@PathVariable long ${this.className.toLowerCase()}Id) {
-        Optional<Json${this.className}> ${this.className.toLowerCase()}Optional = ` +
+        Optional<${this.className}> ${this.className.toLowerCase()}Optional = ` +
             `${this.className.toLowerCase()}Service.fetch${this.className}(${this.className.toLowerCase()}Id);
 
         return ${this.className.toLowerCase()}Optional.isPresent() ?
-                ResponseEntity.ok(${this.className.toLowerCase()}Optional.get()) :
+                ResponseEntity.ok(${this.className.toLowerCase()}Converter` +
+            `.toJson(${this.className.toLowerCase()}Optional.get())) :
                 ResponseEntity.notFound().build();
     }`;
 
@@ -114,19 +115,18 @@ export class AddGET implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
     }
 }
 
 export function addServiceMethodFetchBean(project: Project, className: string, basePackage: string, basePath: string) {
 
     const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
-    public Optional<Json${className}> fetch${className}(long ${className.toLowerCase()}Id) {
+    public Optional<${className}> fetch${className}(long ${className.toLowerCase()}Id) {
         ${className} ${className.toLowerCase()} = ` +
         `${className.toLowerCase()}Repository.findOne(${className.toLowerCase()}Id);
 
-        return ${className.toLowerCase()} == null ? Optional.empty() : ` +
-        `Optional.of(${className.toLowerCase()}Converter.toJson(${className.toLowerCase()}));
+        return ${className.toLowerCase()} == null ? Optional.empty() : Optional.of(${className.toLowerCase()});
     }`;
 
     const path = basePath + "/service/" + className + "Service.java";
@@ -134,10 +134,7 @@ export function addServiceMethodFetchBean(project: Project, className: string, b
     javaFunctions.addFunction(file, "fetch" + className, rawJavaMethod);
 
     javaFunctions.addImport(file, "java.util.Optional");
-    javaFunctions.addImport(file, basePackage + ".domain.Json" + className);
     javaFunctions.addImport(file, basePackage + ".db.hibernate.bean." + className);
-    javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-    javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
 }
 
 export const addGet = new AddGET();

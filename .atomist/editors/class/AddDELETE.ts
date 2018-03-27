@@ -114,7 +114,6 @@ export class AddDELETE implements EditProject {
     private addServiceMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `
-    @Transactional(propagation = Propagation.REQUIRED)
     public boolean delete${this.className}(long ${this.className.toLowerCase()}Id) {
         ${this.className} ${this.className.toLowerCase()} = ${this.className.toLowerCase()}Repository.` +
             `findOne(${this.className.toLowerCase()}Id);
@@ -132,8 +131,6 @@ export class AddDELETE implements EditProject {
         javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
 
         javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Propagation");
-        javaFunctions.addImport(file, "org.springframework.transaction.annotation.Transactional");
     }
 }
 

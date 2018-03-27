@@ -87,6 +87,7 @@ public interface I${this.className}Controller {
         const rawJavaFileContent = `package ${this.basePackage}.resource;
 
 import ${this.basePackage}.service.${this.className}Service;
+import ${this.basePackage}.convert.${this.className}Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -94,11 +95,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ${this.className}Controller implements I${this.className}Controller {
 
     private final ${this.className}Service ${this.className.toLowerCase()}Service;
+    private final ${this.className}Converter ${this.className.toLowerCase()}Converter;
     // @FieldInput
 
     @Autowired
-    public ${this.className}Controller(${this.className}Service ${this.className.toLowerCase()}Service) {
+    public ${this.className}Controller(${this.className}Service ${this.className.toLowerCase()}Service, ` +
+            `${this.className}Converter ${this.className.toLowerCase()}Converter) {
         this.${this.className.toLowerCase()}Service = ${this.className.toLowerCase()}Service;
+        this.${this.className.toLowerCase()}Converter = ${this.className.toLowerCase()}Converter;
         // @ConstructorInput
     }
     
