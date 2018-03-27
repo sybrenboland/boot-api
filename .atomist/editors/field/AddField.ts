@@ -184,16 +184,14 @@ export class AddField implements EditProject {
     private addFieldToConverter(project: Project, basePath: string) {
 
         const inputJsonHook = "// @InputJsonField";
-        let rawJsonInput = `json${this.className}.set${javaFunctions.capitalize(this.fieldName)}` +
-            `(${this.className.toLowerCase()}.${javaFunctions.methodPrefix(this.type)}` +
-            `${javaFunctions.capitalize(this.fieldName)}());
-        ` + inputJsonHook;
+        let rawJsonInput = `.${this.fieldName}(${this.className.toLowerCase()}` +
+            `.get${javaFunctions.capitalize(this.fieldName)}())
+                ` + inputJsonHook;
 
         const inputBeanHook = "// @InputBeanField";
-        let rawBeanInput = `${this.className.toLowerCase()}To.set${javaFunctions.capitalize(this.fieldName)}` +
-            `(${this.className.toLowerCase()}From.${javaFunctions.methodPrefix(this.type)}` +
-            `${javaFunctions.capitalize(this.fieldName)}());
-        ` + inputBeanHook;
+        let rawBeanInput = `.${this.fieldName}(json${this.className}` +
+            `.get${javaFunctions.capitalize(this.fieldName)}())
+                ` + inputBeanHook;
 
         const path = this.apiModule + basePath + "/convert/" + this.className + "Converter.java";
         const file: File = project.findFile(path);
@@ -247,7 +245,7 @@ export class AddField implements EditProject {
         const inputHook = "// @Input";
         const rawJavaCode = `${javaFunctions.box(this.type)} ${this.fieldName} = ` +
             `json${this.className}SearchCriteria.get${javaFunctions.capitalize(this.fieldName)}();
-        sc.set${javaFunctions.capitalize(this.fieldName)}(Optional.ofNullable(${this.fieldName}));
+        searchCriteriaBuilder.${this.fieldName}(Optional.ofNullable(${this.fieldName}));
     
         ` + inputHook;
 

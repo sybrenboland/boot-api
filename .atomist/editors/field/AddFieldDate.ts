@@ -95,18 +95,16 @@ export class DateFieldFunctions {
         const file: File = project.findFile(path);
 
         const inputJsonHook = "// @InputJsonField";
-        const rawJsonInput = `if (${this.className.toLowerCase()}.get${javaFunctions.capitalize(this.fieldName)}() != null) {
-            json${this.className}.set${javaFunctions.capitalize(this.fieldName)}(${this.className.toLowerCase()}.` +
-            `get${javaFunctions.capitalize(this.fieldName)}().atZone(ZoneId.of("UTC")));
-        }
-        ` + inputJsonHook;
+        const rawJsonInput = `.${this.fieldName}(${this.className.toLowerCase()}` +
+            `.get${javaFunctions.capitalize(this.fieldName)}() != null ? ${this.className.toLowerCase()}` +
+            `.get${javaFunctions.capitalize(this.fieldName)}().atZone(ZoneId.of("UTC")) : null)
+                ` + inputJsonHook;
 
         const inputBeanHook = "// @InputBeanField";
-        const rawBeanInput = `if (${this.className.toLowerCase()}From.get${javaFunctions.capitalize(this.fieldName)}() != null) {
-            ${this.className.toLowerCase()}To.set${javaFunctions.capitalize(this.fieldName)}` +
-            `(${this.className.toLowerCase()}From.get${javaFunctions.capitalize(this.fieldName)}().to${this.type}());
-        }
-        ` + inputBeanHook;
+        const rawBeanInput = `.${this.fieldName}(json${this.className}` +
+            `.get${javaFunctions.capitalize(this.fieldName)}() != null ? json${this.className}` +
+            `.get${javaFunctions.capitalize(this.fieldName)}().to${this.type}() : null)
+                ` + inputBeanHook;
 
         javaFunctions.addImport(file, "java.time.ZoneId");
 
@@ -249,7 +247,7 @@ class InvalidDateException extends RuntimeException {
 
         if (project.fileExists(path)) {
             file.replace(inputHook, rawJavaCode);
-            javaFunctions.addImport(file, "nl.myorg.domain.utility.DateParam");
+            javaFunctions.addImport(file, this.basePackage + ".domain.utility.DateParam");
         } else {
             console.error("JsonSearchCriteria class not added yet!");
         }
@@ -261,7 +259,7 @@ class InvalidDateException extends RuntimeException {
         const inputHook = "// @Input";
         const rawJavaCode = `DateParam ${this.fieldName}Param = ` +
             `json${this.className}SearchCriteria.get${javaFunctions.capitalize(this.fieldName)}Param();
-        sc.set${javaFunctions.capitalize(this.fieldName)}` +
+        searchCriteriaBuilder.${this.fieldName}` +
             `(${this.fieldName}Param != null ? parseLocalDateTime(${this.fieldName}Param) : Optional.empty());
     
     ` + inputHook;

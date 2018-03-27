@@ -75,23 +75,36 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @Service
 public class ${this.className}Converter {
-
+    
     public Json${this.className} toJson(${this.className} ${this.className.toLowerCase()}) {
-        Json${this.className} json${this.className} = new Json${this.className}();
-
-        // @InputJsonField
+        Json${this.className} json${this.className} = Json${this.className}.builder()
+                // @InputJsonField
+                .build();
         
         json${this.className}.add(linkTo(${this.className}Controller.class)` +
             `.slash(${this.className.toLowerCase()}.getId()).withSelfRel());
+        // @InputLink
 
         return json${this.className};
     }
     
-    public ${this.className} copyFields(Json${this.className} ${this.className.toLowerCase()}From, ` +
-            `${this.className} ${this.className.toLowerCase()}To) {
-        // @InputBeanField
+    public ${this.className} fromJson(Json${this.className} json${this.className}) {
+        return ${this.className.toLowerCase()}Builder(json${this.className}).build();
+    }
 
-        return ${this.className.toLowerCase()}To;
+    public ${this.className} fromJson(Json${this.className} json${this.className}, ` +
+            `long ${this.className.toLowerCase()}Id) {
+        return ${this.className.toLowerCase()}Builder(json${this.className})
+                .id(${this.className.toLowerCase()}Id)
+                .build();
+    }
+
+    private ${this.className}.${this.className}Builder ${this.className.toLowerCase()}Builder(` +
+            `Json${this.className} json${this.className}) {
+
+        return ${this.className}.builder()
+                // @InputBeanField
+        ;
     }
 }`;
 
