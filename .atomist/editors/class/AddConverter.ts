@@ -5,7 +5,6 @@ import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {fileFunctions} from "../functions/FileFunctions";
-import {javaFunctions} from "../functions/JavaClassFunctions";
 
 /**
  * AddConverter editor

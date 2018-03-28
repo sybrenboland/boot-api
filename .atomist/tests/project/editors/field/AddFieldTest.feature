@@ -38,3 +38,20 @@ Feature: Add field class should add a given field to the api chain
     Then the name CreatedDate is added to class AdresConverter in package convert of the Api module
     Then a DateParam class is added to the Domain module
     Then the converter is extended with the field
+
+  Scenario: AddField should abort if the type is not supported
+    Given a boot-api project structure
+    When the AddBeanClass is run with className Adres
+    When the AddDomainClass is run with className Adres
+    When the AddConverter is run with className Adres
+    When the AddResource is run with className Adres
+    When the AddService is run with className Adres
+    When the AddRepository is run with className Adres
+    When the AddSearchCriteria is run with className Adres
+    When the AddField is run for class Adres with field createdDate with type JavaDate
+    Then the name createdDate is not added to class Adres in package db.hibernate.bean of the Persistence module
+    Then the name LocalDateTimeAttributeConverter is not added to class Adres in package db.hibernate.bean of the Persistence module
+    Then the name createdDate is not added to class JsonAdres in package domain of the Domain module
+    Then the name CustomDateTimeSerializer is not added to class JsonAdres in package domain of the Domain module
+    Then the name CustomDateTimeDeserializer is not added to class JsonAdres in package domain of the Domain module
+    Then the name CreatedDate is not added to class AdresConverter in package convert of the Api module

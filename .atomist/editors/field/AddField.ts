@@ -117,23 +117,29 @@ export class AddField implements EditProject {
 
     public edit(project: Project) {
 
-        const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
+        const supportedTypes = ['String', 'int', 'long', 'boolean', 'LocalDateTime'];
+        if (supportedTypes.some(type => type === this.type)) {
 
-        this.addChangelog(project);
-        this.addFieldToPredicates(project, basePath);
-        this.addFieldToSearchCriteria(project, basePath);
+            const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
 
-        if (this.type === "LocalDateTime") {
-            dateFieldFunctions.addDateField(
-                this.fieldName, this.type, this.className, this.basePackage,
-                this.persistenceModule, this.apiModule, this.domainModule,
-                project, basePath);
+            this.addChangelog(project);
+            this.addFieldToPredicates(project, basePath);
+            this.addFieldToSearchCriteria(project, basePath);
+
+            if (this.type === "LocalDateTime") {
+                dateFieldFunctions.addDateField(
+                    this.fieldName, this.type, this.className, this.basePackage,
+                    this.persistenceModule, this.apiModule, this.domainModule,
+                    project, basePath);
+            } else {
+                this.addFieldToBean(project, basePath);
+                this.addFieldToDomainObject(project, basePath);
+                this.addFieldToConverter(project, basePath);
+                this.addFieldToJsonSearchCriteria(project, basePath);
+                this.addFieldToSearchCriteriaConverter(project, basePath);
+            }
         } else {
-            this.addFieldToBean(project, basePath);
-            this.addFieldToDomainObject(project, basePath);
-            this.addFieldToConverter(project, basePath);
-            this.addFieldToJsonSearchCriteria(project, basePath);
-            this.addFieldToSearchCriteriaConverter(project, basePath);
+            console.error('Type \'' + this.type + '\' is not supported');
         }
     }
 
