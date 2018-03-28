@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<assembly>
+	<id>db</id>
+	<formats>
+		<format>tar.gz</format>
+	</formats>
+	<fileSets>
+		<!-- Configuration files -->
+		<fileSet>
+			<directory>src/main/db</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>**/*.*</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>
