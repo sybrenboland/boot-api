@@ -1,7 +1,7 @@
 import {Project} from "@atomist/rug/model/Project";
 import {Then} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../editors/functions/FileFunctions";
-import {BasePackage, getModule, PersistenceModule, Release} from "./Constants";
+import { BasePackage, DatabaseModule, getModule, Release } from "./Constants";
 
 Then("the README contains info about (.*)",
     (p: Project, w, name: string) => {
@@ -37,16 +37,15 @@ Then("the name (.*) is added to configuration file (.*) of module (.*)",
     });
 
 Then("the changelog is extended with (.*) of class (.*)", (p: Project, w, name: string, className: string) => {
-    const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-1-"
-        + className.toLowerCase() + ".xml";
+    const path = DatabaseModule + "/src/main/db/liquibase/release/" + Release + "/tables/tables-changelog.xml";
 
     return p.fileContains(path, name.toUpperCase());
 });
 
 Then("the combination changelog is extended with (.*) of class (.*) and class (.*)",
     (p: Project, w, name: string, otherClassName: string, baseClassName: string) => {
-    const path = PersistenceModule + "/src/main/resources/liquibase/release/" + Release + "/db-2-"
-        + otherClassName.toLowerCase() + "-" + baseClassName.toLowerCase() + ".xml";
+    const path = DatabaseModule + "/src/main/db/liquibase/release/" + Release +
+        "/constraints/foreign-key/fk-changelog.xml";
 
     return p.fileContains(path, name.toUpperCase());
 });

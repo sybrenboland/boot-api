@@ -26,17 +26,6 @@ export class AddLiquibase implements EditProject {
     public apiModule: string = "api";
 
     @Parameter({
-        displayName: "Module name",
-        description: "Name of the module we want to add",
-        pattern: Pattern.any,
-        validInput: "Name",
-        minLength: 0,
-        maxLength: 100,
-        required: false,
-    })
-    public persistenceModule: string = "persistence";
-
-    @Parameter({
         displayName: "Version",
         description: "Version of liquibase",
         pattern: Pattern.any,
@@ -61,7 +50,6 @@ export class AddLiquibase implements EditProject {
     public edit(project: Project) {
         this.addDependencies(project);
         this.addApplicationYaml(project);
-        this.addMasterChangeLog(project);
         this.addDatabaseDockerComposeYaml(project);
     }
 
@@ -115,28 +103,11 @@ spring:
     username: pgroot
     password: pgpass
 liquibase:
-  change-log: classpath:/liquibase/db-changelog.xml
+  change-log: classpath:/src/main/db/liquibase/master-changelog.xml
 `;
 
         if (!project.fileExists(resourceApplicationYamlPath)) {
             project.addFile(resourceApplicationYamlPath, rawApplicationYaml);
-        }
-    }
-
-    private addMasterChangeLog(project: Project): void {
-
-        const masterChangeLogPath = this.persistenceModule + "/src/main/resources/liquibase/db-changelog.xml";
-        const rawMasterChangeLog = `<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-
-  <includeAll path="release/" relativeToChangelogFile="true"/>
-</databaseChangeLog>
-`;
-
-        if (!project.fileExists(masterChangeLogPath)) {
-            project.addFile(masterChangeLogPath, rawMasterChangeLog);
         }
     }
 

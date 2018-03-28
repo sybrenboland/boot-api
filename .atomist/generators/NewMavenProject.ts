@@ -83,12 +83,24 @@ export class NewMavenProject implements PopulateProject {
     })
     public domainModuleName: string = "domain";
 
+    @Parameter({
+        displayName: "Database module name",
+        description: "Name of the module for the database description",
+        pattern: Pattern.any,
+        validInput: "Just a name",
+        minLength: 1,
+        maxLength: 50,
+        required: false,
+    })
+    public databaseModuleName: string = "db";
+
     public populate(project: Project) {
         this.deleteUselessFiles(project);
         this.updateMasterPom(project);
         this.moveModule(project, "apiModule", this.apiModuleName);
         this.moveModule(project, "persistenceModule", this.persistenceModuleName);
         this.moveModule(project, "domainModule", this.domainModuleName);
+        this.moveModule(project, "dbModule", this.databaseModuleName);
         this.updateModulePomParent(project);
         this.addApiDependencies(project);
     }
@@ -108,9 +120,10 @@ export class NewMavenProject implements PopulateProject {
     }
 
     private moveModule(project: Project, oldModuleName: string, newModuleName: string): void {
-        const pomFile: File = project.findFile(oldModuleName + "/pom.xml");
-        project.addFile(newModuleName + "/pom.xml", pomFile.content.replace(oldModuleName, newModuleName));
-        project.deleteDirectory(oldModuleName);
+
+        project.replaceInPath(oldModuleName, newModuleName);
+        const pomFile: File = project.findFile(newModuleName + '/pom.xml');
+        pomFile.replace(oldModuleName, newModuleName);
 
         const masterPomFile: File = project.findFile("pom.xml");
         masterPomFile.replace(oldModuleName, newModuleName);

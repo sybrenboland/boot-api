@@ -2,7 +2,7 @@
 Feature: Adds methods to all layers implementing REST put method
 
   Scenario: AddPUT should add an implementation of the REST put method
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddResource is run with className Adres
     When the AddService is run with className Adres
     When the AddPUT is run with className Adres

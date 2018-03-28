@@ -2,7 +2,7 @@
 Feature: Package as War makes the spring boot application runnable on an application server
 
   Scenario: PackageAsWar should package the api module as war file
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddSpringBoot is run
     When the PackageAsWar is run
     Then new dependency to pom: spring-boot-starter-tomcat

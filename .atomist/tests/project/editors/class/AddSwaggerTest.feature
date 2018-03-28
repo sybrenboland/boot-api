@@ -2,7 +2,7 @@
 Feature: Adds swagger configuration file and dependencies
 
   Scenario: AddSwagger should ad a swagger configuration file and dependencies
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddSwagger is run
     Then new dependency to pom: springfox-swagger2
     Then new dependency to pom: springfox-swagger-ui

@@ -1,6 +1,8 @@
+import {File} from "@atomist/rug/model/File";
 import {EditFunction} from "../EditFunction";
 import {Params} from "../Params";
 import {Project} from "@atomist/rug/model/Project";
+import { liquibaseFunctions } from "../../../functions/LiquibaseFunctions";
 
 
 export class AddForeignKeyChangeSet extends EditFunction {
@@ -10,25 +12,27 @@ export class AddForeignKeyChangeSet extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
-        const rawChangeSet = `<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="add_foreignkey_${this.otherClass.toLowerCase()}_${this.baseClass.toLowerCase()}" author="shboland" >
+        liquibaseFunctions.checkRelease(project, params.databaseModule, params.release);
+
+        const inputHook = '<!-- @Input -->';
+        const rawChangeSet = `<changeSet id="add_foreignkey_${this.otherClass.toLowerCase()}_${this.baseClass.toLowerCase()}" author="shboland" >
         <addForeignKeyConstraint baseColumnNames="${this.baseColumn.toUpperCase()}"
                                  baseTableName="${this.baseClass.toUpperCase()}"
                                  constraintName="FK_${this.otherClass.toUpperCase()}_${this.baseClass.toUpperCase()}"
                                  referencedColumnNames="ID"
                                  referencedTableName="${this.otherClass.toUpperCase()}"/>
     </changeSet>
-</databaseChangeLog>`;
+    
+` + inputHook;
 
-        const pathChangeset = params.persistenceModule + "/src/main/resources/liquibase/release/" + params.release + "/db-2-"
-            + this.otherClass.toLowerCase() + "-" + this.baseClass.toLowerCase() + ".xml";
-
-        if (!project.fileExists(pathChangeset)) {
-            project.addFile(pathChangeset, rawChangeSet);
+        const path = params.databaseModule + "/src/main/db/liquibase/release/" + params.release +
+            "/constraints/foreign-key/fk-changelog.xml";
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            file.replace(inputHook, rawChangeSet);
+        } else {
+            console.error("Changset not added yet!");
         }
     }
 }

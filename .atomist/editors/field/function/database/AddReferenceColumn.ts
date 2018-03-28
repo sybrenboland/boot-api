@@ -2,6 +2,7 @@ import {EditFunction} from "../EditFunction";
 import {Params} from "../Params";
 import {Project} from "@atomist/rug/model/Project";
 import {File} from "@atomist/rug/model/File";
+import { liquibaseFunctions } from "../../../functions/LiquibaseFunctions";
 
 export class AddReferenceColumn extends EditFunction {
 
@@ -10,22 +11,23 @@ export class AddReferenceColumn extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
-        const inputHook = "<!-- @Input -->";
-        const rawChangeSetColumn = `<changeSet id="add_${this.otherClass.toLowerCase()}_` +
+
+        liquibaseFunctions.checkRelease(project, params.databaseModule, params.release);
+
+        const inputHook = '<!-- @Input -->';
+        const rawChangeSet = `<changeSet id="add_${this.otherClass.toLowerCase()}_` +
             `id_${this.baseClass.toLowerCase()}" author="shboland">
     <addColumn tableName="${this.baseClass.toUpperCase()}">
       <column name="${this.otherClass.toUpperCase()}_ID" type="int" />
     </addColumn>
   </changeSet>
   
-  ` + inputHook;
+` + inputHook;
 
-        const path = params.persistenceModule + "/src/main/resources/liquibase/release/"
-            + params.release + "/db-1-" + this.baseClass.toLowerCase() + ".xml";
-
+        const path = params.databaseModule + "/src/main/db/liquibase/release/" + params.release + "/tables/tables-changelog.xml";
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
-            file.replace(inputHook, rawChangeSetColumn);
+            file.replace(inputHook, rawChangeSet);
         } else {
             console.error("Changset not added yet!");
         }

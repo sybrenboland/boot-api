@@ -146,6 +146,17 @@ export class AddOneToOneRelation implements EditProject {
     public apiModule: string = "api";
 
     @Parameter({
+        displayName: "Database module name",
+        description: "Name of the module for the database description",
+        pattern: Pattern.any,
+        validInput: "Name",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public databaseModule: string = "db";
+
+    @Parameter({
         displayName: "Release",
         description: "Release for with database changes are meant",
         pattern: Pattern.any,
@@ -241,6 +252,7 @@ export class AddOneToOneRelation implements EditProject {
             this.basePackage,
             this.persistenceModule,
             this.apiModule,
+            this.databaseModule,
             this.release);
 
         builder.execute(project, params);

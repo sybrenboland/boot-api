@@ -2,7 +2,7 @@
 Feature: Add Many-Many relation should add a relation between two beans
 
   Scenario: Add Many-Many relation should add a relation with no output of either class
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person
@@ -45,7 +45,7 @@ Feature: Add Many-Many relation should add a relation between two beans
     Then the name removeCar is added to class PersonService in package service of the Api module
 
   Scenario: Add Many-Many relation should add a relation with output of both classes
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person
@@ -88,7 +88,7 @@ Feature: Add Many-Many relation should add a relation between two beans
     Then the name removeCar is not added to class PersonService in package service of the Api module
 
   Scenario: Add Many-Many relation should add a relation with output of only the one side class
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person
@@ -131,7 +131,7 @@ Feature: Add Many-Many relation should add a relation between two beans
     Then the name removeCar is not added to class PersonService in package service of the Api module
 
   Scenario: Add Many-Many relation should add a relation with output of only the many side class
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person

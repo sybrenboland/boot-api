@@ -1,6 +1,9 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import {ApiModule, BasePackage, DomainModule, getModule, PersistenceModule, Release} from "../../common/Constants";
+import {
+    ApiModule, BasePackage, DatabaseModule, DomainModule, getModule, PersistenceModule,
+    Release
+} from "../../common/Constants";
 import {fileFunctions} from "../../../../editors/functions/FileFunctions";
 
 let classNameField: string;
@@ -20,6 +23,7 @@ When("the AddField is run for class (.*) with field (.*) with type (.*)",
         apiModule: ApiModule,
         domainModule: DomainModule,
         persistenceModule: PersistenceModule,
+        databaseModule: DatabaseModule,
         release: Release,
     });
 });

@@ -2,7 +2,7 @@
 Feature: Add search criteria should add GET with search criteria to the api chain
 
   Scenario: AddSearchCriteria should add GET with search criteria
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Adres
     When the AddResource is run with className Adres
     When the AddService is run with className Adres

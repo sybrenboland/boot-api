@@ -2,7 +2,7 @@
 Feature: Add config class should add configuration files to modules
 
   Scenario: AddConfig should add config files
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddConfig is run
     Then new dependency to pom: spring-cloud-starter-config
     Then a Persistence configuration file has been added to Persistence module

@@ -18,8 +18,7 @@ export class ResetPrimaryKeyToForeignKey extends EditFunction {
   
   ` + inputHook;
 
-        const path = params.persistenceModule + "/src/main/resources/liquibase/release/"
-            + params.release + "/db-1-" + this.otherClass.toLowerCase() + ".xml";
+        const path = params.databaseModule + "/src/main/db/liquibase/release/" + params.release + "/tables/tables-changelog.xml";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);

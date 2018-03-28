@@ -1,20 +1,10 @@
-
-import {Project} from "@atomist/rug/model/Project";
-import {Given, Then} from "@atomist/rug/test/project/Core";
-import {ApiModule, DomainModule, getModule, PersistenceModule} from "./Constants";
-import {pomFunctions} from "./PomFunctions";
+import { Project } from "@atomist/rug/model/Project";
+import { Then } from "@atomist/rug/test/project/Core";
+import { getModule } from "./Constants";
 
 export const pomFile = "pom.xml";
 
-Given("a boot-api project structure", (p: Project) => {
-    p.addFile(pomFile, pomFunctions.basicPomContent());
-    p.addFile(ApiModule + "/" + pomFile, pomFunctions.basicPomContent());
-    p.addFile(PersistenceModule + "/" + pomFile, pomFunctions.basicPomContent());
-    p.addFile(DomainModule + "/" + pomFile, pomFunctions.basicPomContent());
-    p.addFile("README.md", "# Spring Boot API");
-});
-
-Then("new dependency to pom: (.*)$", (p: Project, w, dependency) => {
+Then("new dependency to pom: (.*)$", (p: Project, w, dependency: string) => {
     return p.fileContains(pomFile, dependency);
 });
 

@@ -2,7 +2,7 @@
 Feature: Adds methods to all layers implementing REST get method
 
   Scenario: AddGET should add an implementation of the REST get method
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddResource is run with className Adres
     When the AddService is run with className Adres
     When the AddGET is run with className Adres

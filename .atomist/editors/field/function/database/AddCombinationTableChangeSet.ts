@@ -1,6 +1,8 @@
+import {File} from "@atomist/rug/model/File";
 import {EditFunction} from "../EditFunction";
 import {Params} from "../Params";
 import {Project} from "@atomist/rug/model/Project";
+import { liquibaseFunctions } from "../../../functions/LiquibaseFunctions";
 
 
 export class AddCombinationTableChangeSet extends EditFunction {
@@ -10,12 +12,11 @@ export class AddCombinationTableChangeSet extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
-        const rawChangeSet = `<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
- 
-  <changeSet id="create_${this.oneClass.toLowerCase()}_${this.otherClass.toLowerCase()}" author="shboland">
+
+        liquibaseFunctions.checkRelease(project, params.databaseModule, params.release);
+
+        const inputHook = '<!-- @Input -->';
+        const rawChangeSet = `<changeSet id="create_${this.oneClass.toLowerCase()}_${this.otherClass.toLowerCase()}" author="shboland">
     <createTable tableName="${this.oneClass.toUpperCase()}_${this.otherClass.toUpperCase()}">
       <column name="${this.oneClass.toLowerCase()}_id" type="int" >
         <constraints nullable="false" />
@@ -25,15 +26,15 @@ export class AddCombinationTableChangeSet extends EditFunction {
       </column>
     </createTable>
   </changeSet>
+  
+` + inputHook;
 
-</databaseChangeLog>
-`;
-
-        const path = params.persistenceModule + "/src/main/resources/liquibase/release/" + params.release + "/db-1-"
-            + this.oneClass.toLowerCase() + "-" + this.otherClass.toLowerCase() + ".xml";
-
-        if (!project.fileExists(path)) {
-            project.addFile(path, rawChangeSet);
+        const path = params.databaseModule + "/src/main/db/liquibase/release/" + params.release + "/tables/tables-changelog.xml";
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            file.replace(inputHook, rawChangeSet);
+        } else {
+            console.error("Changset not added yet!");
         }
     }
 }

@@ -6,6 +6,7 @@ export class Params {
         public basePackage: string,
         public persistenceModule: string,
         public apiModule: string,
+        public databaseModule: string,
         public release: string,
     ) {}
 }

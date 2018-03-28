@@ -1,7 +1,7 @@
-import {Project} from "@atomist/rug/model/Project";
-import {ProjectScenarioWorld, When} from "@atomist/rug/test/project/Core";
-import {ApiModule, BasePackage, DomainModule, PersistenceModule, Release} from "../../common/Constants";
-import {javaFunctions} from "../../../../editors/functions/JavaClassFunctions";
+import { Project } from "@atomist/rug/model/Project";
+import { ProjectScenarioWorld, When } from "@atomist/rug/test/project/Core";
+import { ApiModule, BasePackage, DatabaseModule, PersistenceModule, Release } from "../../common/Constants";
+import { javaFunctions } from "../../../../editors/functions/JavaClassFunctions";
 
 When("the AddManyToManyRelation is run with one (.*) (.*) in output with many (.*) (.*) in output (.*), with (.*) as methods on the mapping side and (.*) as methods on the other side",
     (p: Project, w: ProjectScenarioWorld, classNameMappingSide: string, isMappingSideInOutput: string,
@@ -21,6 +21,7 @@ When("the AddManyToManyRelation is run with one (.*) (.*) in output with many (.
             methodsOtherSide: methodsOtherSide,
             persistenceModule: PersistenceModule,
             apiModule: ApiModule,
+            databaseModule: DatabaseModule,
             release: Release,
         });
-});
+    });

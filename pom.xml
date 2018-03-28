@@ -50,5 +50,6 @@
         <module>apiModule</module>
         <module>persistenceModule</module>
         <module>domainModule</module>
+        <module>dbModule</module>
     </modules>
 </project>

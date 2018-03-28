@@ -6,6 +6,7 @@ import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {fileFunctions} from "../functions/FileFunctions";
 import {dateFieldFunctions} from "./AddFieldDate";
 import {javaFunctions} from "../functions/JavaClassFunctions";
+import { liquibaseFunctions } from "../functions/LiquibaseFunctions";
 
 /**
  * AddField editor
@@ -93,6 +94,17 @@ export class AddField implements EditProject {
     public domainModule: string = "domain";
 
     @Parameter({
+        displayName: "Database module name",
+        description: "Name of the module for the database description",
+        pattern: Pattern.any,
+        validInput: "Name",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public databaseModule: string = "db";
+
+    @Parameter({
         displayName: "Release",
         description: "Release for with database changes are meant",
         pattern: Pattern.any,
@@ -126,6 +138,9 @@ export class AddField implements EditProject {
     }
 
     private addChangelog(project: Project) {
+
+        liquibaseFunctions.checkRelease(project, this.databaseModule, this.release);
+
         const inputHook = "<!-- @Input -->";
         const rawChangSet = `<changeSet id="add_${this.fieldName}_${this.className.toLowerCase()}" author="shboland">
     <addColumn tableName="${this.className.toUpperCase()}">
@@ -135,8 +150,8 @@ export class AddField implements EditProject {
   
   ` + inputHook;
 
-        const path = this.persistenceModule + "/src/main/resources/liquibase/release/"
-            + this.release + "/db-1-" + this.className.toLowerCase() + ".xml";
+        const path = this.databaseModule + "/src/main/db/liquibase/release/"
+            + this.release + "/tables/tables-changelog.xml";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);

@@ -1,8 +1,8 @@
 
-Feature: Package as War makes the spring boot application runnable on an application server
+Feature: Add Actuator should add actuator functionality
 
-  Scenario: PackageAsWar should package the api module as war file
-    Given a boot-api project structure
+  Scenario: AddActuator should add actuator dependency
+    When the NewMavenProject is run
     When the AddSpringBoot is run
     When the AddConfig is run
     When the AddActuator is run

@@ -2,7 +2,7 @@
 Feature: Add field class should add a given field to the api chain
 
   Scenario: AddField should add a basic field to the chain
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Adres
     When the AddDomainClass is run with className Adres
     When the AddConverter is run with className Adres
@@ -20,7 +20,7 @@ Feature: Add field class should add a given field to the api chain
     Then the name street is added to class AdresRepositoryImpl in package db.repo of the Persistence module
 
   Scenario: AddField should add a date field to the chain
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Adres
     When the AddDomainClass is run with className Adres
     When the AddConverter is run with className Adres

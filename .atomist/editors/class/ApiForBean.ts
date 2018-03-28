@@ -93,6 +93,17 @@ export class ApiForBean implements EditProject {
     public domainModule: string = "";
 
     @Parameter({
+        displayName: "Module name",
+        description: "Name of the database module",
+        pattern: Pattern.any,
+        validInput: "Name",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public databaseModule: string = "";
+
+    @Parameter({
         displayName: "Release",
         description: "Release for with database changes are meant",
         pattern: Pattern.any,
@@ -182,7 +193,6 @@ export class ApiForBean implements EditProject {
 
     public edit(project: Project) {
 
-        console.log("Starting api for bean editor")
         this.setSpringBootVersion(project);
         this.addConfigFiles(project);
         this.addLiquibase(project);
@@ -228,9 +238,6 @@ export class ApiForBean implements EditProject {
         if (this.apiModule !== "") {
             addLiquibase.apiModule = this.apiModule;
         }
-        if (this.persistenceModule !== "") {
-            addLiquibase.persistenceModule = this.persistenceModule;
-        }
         if (this.liquibaseVersion !== "") {
             addLiquibase.liquibaseVersion = this.liquibaseVersion;
         }
@@ -246,7 +253,10 @@ export class ApiForBean implements EditProject {
         addBeanClass.className = this.className;
         addBeanClass.basePackage = this.basePackage;
         if (this.persistenceModule !== "") {
-            addBeanClass.module = this.persistenceModule;
+            addBeanClass.persistenceModule = this.persistenceModule;
+        }
+        if (this.databaseModule !== "") {
+            addBeanClass.databaseModule = this.databaseModule;
         }
         if (this.release !== "") {
             addBeanClass.release = this.release;
