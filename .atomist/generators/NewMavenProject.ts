@@ -97,10 +97,10 @@ export class NewMavenProject implements PopulateProject {
     public populate(project: Project) {
         this.deleteUselessFiles(project);
         this.updateMasterPom(project);
-        this.moveModule(project, "apiModule", this.apiModuleName);
-        this.moveModule(project, "persistenceModule", this.persistenceModuleName);
-        this.moveModule(project, "domainModule", this.domainModuleName);
-        this.moveModule(project, "dbModule", this.databaseModuleName);
+        this.moveModule(project, "api-module", this.apiModuleName);
+        this.moveModule(project, "persistence-module", this.persistenceModuleName);
+        this.moveModule(project, "domain-module", this.domainModuleName);
+        this.moveModule(project, "db-module", this.databaseModuleName);
         this.updateModulePomParent(project);
         this.addApiDependencies(project);
     }
