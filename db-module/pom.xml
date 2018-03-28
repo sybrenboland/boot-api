@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>persistenceModule</artifactId>
+    <artifactId>db-module</artifactId>
 
     <dependencies>
     </dependencies>

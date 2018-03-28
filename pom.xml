@@ -47,9 +47,10 @@
     </build>
 
     <modules>
-        <module>apiModule</module>
-        <module>persistenceModule</module>
-        <module>domainModule</module>
+        <module>api-module</module>
+        <module>persistence-module</module>
+        <module>domain-module</module>
+        <module>db-module</module>
         <module>dbModule</module>
     </modules>
 </project>
