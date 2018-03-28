@@ -51,6 +51,5 @@
         <module>persistence-module</module>
         <module>domain-module</module>
         <module>db-module</module>
-        <module>dbModule</module>
     </modules>
 </project>
