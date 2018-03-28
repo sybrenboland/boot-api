@@ -17,6 +17,12 @@ The first step is to install the following items in order to run rugs locally:
 [docker]: https://docs.docker.com/install/
 [node]: https://nodejs.org/
 
+Then install all dependencies.
+```
+> cd .atomist
+> npm install
+```
+
 Next up install the rug archive locally from the root of this project:
 ```
 > rug install
