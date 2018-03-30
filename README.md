@@ -11,10 +11,12 @@ The first step is to install the following items in order to run rugs locally:
 
 -   [Rug CLI][rug-cli]
 -   [Docker][docker]
+-   [Maven][maven]
 -   [Node.js][node]
 
 [rug-cli]: http://docs.atomist.com/user-guide/interfaces/cli/install/
 [docker]: https://docs.docker.com/install/
+[maven]: https://maven.apache.org/install.html
 [node]: https://nodejs.org/
 
 Then install all dependencies.
@@ -66,16 +68,10 @@ And lets say our customer has a name.
                type=String
 ```
 
-Now start up the database
-```
-> docker-compose up
-```
-
-Finnaly build and start the application
+Now build and start up the application
 ```
 > mvn clean install
-> cd api
-> mvn spring-boot:run
+> docker-compose up
 ```
 
 Try it out! With the [swagger UI] for your new API.
@@ -83,6 +79,17 @@ Try it out! With the [swagger UI] for your new API.
 [swagger UI]: http://localhost:8888/api/swagger-ui.html
 
 ## Development
+
+You might want to run the database separate
+```
+> docker-compose up postgres-container
+```
+
+And the application from your IDE or with:
+```
+> cd api
+> mvn spring-boot:run
+```
 
 To test your self created rugs use the rug-cli:
 ```
