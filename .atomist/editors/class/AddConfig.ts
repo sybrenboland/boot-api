@@ -40,6 +40,17 @@ export class AddConfig implements EditProject {
     public apiModule: string = "api";
 
     @Parameter({
+        displayName: "Core apiModule name",
+        description: "Name of the apiModule with the business logic",
+        pattern: Pattern.any,
+        validInput: "Just a name",
+        minLength: 1,
+        maxLength: 50,
+        required: false,
+    })
+    public coreModule: string = "core";
+
+    @Parameter({
         displayName: "Persistence module name",
         description: "Name of the persistence module",
         pattern: Pattern.any,
@@ -65,6 +76,7 @@ export class AddConfig implements EditProject {
         this.addDependencies(project);
         this.addPersistenceConfig(project);
         this.addDomainConfig(project);
+        this.addCoreConfig(project);
         this.addApiConfig(project);
         this.addBootstrapYaml(project);
     }
@@ -113,6 +125,26 @@ public class DomainConfiguration {
         }
     }
 
+    private addCoreConfig(project: Project) {
+        const configPath = this.coreModule + "/src/main/java/"
+            + fileFunctions.toPath(this.basePackage) + "/configuration/CoreConfiguration.java";
+        const rawJavaFileContent = `package ${this.basePackage}.configuration;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+@Configuration
+@Import({PersistenceConfiguration.class})
+@ComponentScan(basePackages = { "${this.basePackage}.service" })
+public class CoreConfiguration {
+}
+`;
+        if (!project.fileExists(configPath)) {
+            project.addFile(configPath, rawJavaFileContent);
+        }
+    }
+
     private addApiConfig(project: Project) {
         const configPath = this.apiModule + "/src/main/java/"
             + fileFunctions.toPath(this.basePackage) + "/configuration/ApiConfiguration.java";
@@ -122,7 +154,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({PersistenceConfiguration.class, DomainConfiguration.class})
+@Import({CoreConfiguration.class, DomainConfiguration.class})
 public class ApiConfiguration {
 }
 `;

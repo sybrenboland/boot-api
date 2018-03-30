@@ -55,16 +55,28 @@ export class AddGET implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public module: string = "api";
+    public apiModule: string = "api";
+
+    @Parameter({
+        displayName: "Core apiModule name",
+        description: "Name of the apiModule with the business logic",
+        pattern: Pattern.any,
+        validInput: "Just a name",
+        minLength: 1,
+        maxLength: 50,
+        required: false,
+    })
+    public coreModule: string = "core";
 
     public edit(project: Project) {
 
-        const basePath = this.module + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePathApi = this.apiModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePathCore = this.coreModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
 
         this.addDependencies(project);
-        this.addResourceInterfaceMethod(project, basePath);
-        this.addResourceClassMethod(project, basePath);
-        addServiceMethodFetchBean(project, this.className, this.basePackage, basePath);
+        this.addResourceInterfaceMethod(project, basePathApi);
+        this.addResourceClassMethod(project, basePathApi);
+        addServiceMethodFetchBean(project, this.className, this.basePackage, basePathCore);
     }
 
     private addDependencies(project: Project): void {

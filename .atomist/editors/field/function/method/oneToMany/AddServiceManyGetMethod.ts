@@ -20,7 +20,7 @@ export class AddServiceGetMethodMany extends EditFunction {
             `get${this.oneClass}() != null ? ${this.otherClass.toLowerCase()}.get${this.oneClass}() : null;
     }`;
 
-        const path = params.apiModule + params.basePath + "/service/" + this.oneClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/service/" + this.oneClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "fetch" + this.oneClass + "sFor" + this.otherClass, rawJavaMethod);
 

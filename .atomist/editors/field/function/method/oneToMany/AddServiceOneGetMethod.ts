@@ -24,7 +24,7 @@ export class AddServiceOneGetMethod extends EditFunction {
             `findBySearchCriteria(${this.otherClass.toLowerCase()}SearchCriteria);
     }`;
 
-        const path = params.apiModule + params.basePath + "/service/" + this.otherClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/service/" + this.otherClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "fetch" + this.otherClass + "sFor" + this.oneClass, rawJavaMethod);
 

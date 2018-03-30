@@ -62,6 +62,17 @@ export class NewMavenProject implements PopulateProject {
     public apiModuleName: string = "api";
 
     @Parameter({
+        displayName: "Core module name",
+        description: "Name of the module with the business logic",
+        pattern: Pattern.any,
+        validInput: "Just a name",
+        minLength: 1,
+        maxLength: 50,
+        required: false,
+    })
+    public coreModuleName: string = "core";
+
+    @Parameter({
         displayName: "Persistence module name",
         description: "Name of the module for the persistence classes",
         pattern: Pattern.any,
@@ -98,11 +109,13 @@ export class NewMavenProject implements PopulateProject {
         this.deleteUselessFiles(project);
         this.updateMasterPom(project);
         this.moveModule(project, "api-module", this.apiModuleName);
+        this.moveModule(project, "core-module", this.coreModuleName);
         this.moveModule(project, "persistence-module", this.persistenceModuleName);
         this.moveModule(project, "domain-module", this.domainModuleName);
         this.moveModule(project, "db-module", this.databaseModuleName);
         this.updateModulePomParent(project);
         this.addApiDependencies(project);
+        this.addCoreDependencies(project);
     }
 
     private deleteUselessFiles(project: Project) {
@@ -121,9 +134,9 @@ export class NewMavenProject implements PopulateProject {
 
     private moveModule(project: Project, oldModuleName: string, newModuleName: string): void {
 
-        project.replaceInPath(oldModuleName, newModuleName);
-        const pomFile: File = project.findFile(newModuleName + '/pom.xml');
+        const pomFile: File = project.findFile(oldModuleName + '/pom.xml');
         pomFile.replace(oldModuleName, newModuleName);
+        project.replaceInPath(oldModuleName, newModuleName);
 
         const masterPomFile: File = project.findFile("pom.xml");
         masterPomFile.replace(oldModuleName, newModuleName);
@@ -144,11 +157,21 @@ export class NewMavenProject implements PopulateProject {
         const eng: PathExpressionEngine = project.context.pathExpressionEngine;
         eng.with<Pom>(project, "//Pom()", pom => {
             if (pom.artifactId() === this.apiModuleName) {
-                pom.addOrReplaceDependencyOfVersion(this.groupId, this.persistenceModuleName, this.version);
+                pom.addOrReplaceDependencyOfVersion(this.groupId, this.coreModuleName, this.version);
                 pom.addOrReplaceDependencyOfVersion(this.groupId, this.domainModuleName, this.version);
+                pom.addOrReplaceDependencyOfVersion(this.groupId, this.databaseModuleName, this.version);
             }
         });
     }
+
+    private addCoreDependencies(project: Project) {
+            const eng: PathExpressionEngine = project.context.pathExpressionEngine;
+            eng.with<Pom>(project, "//Pom()", pom => {
+                if (pom.artifactId() === this.coreModuleName) {
+                    pom.addOrReplaceDependencyOfVersion(this.groupId, this.persistenceModuleName, this.version);
+                }
+            });
+        }
 }
 
 export const newMavenProject = new NewMavenProject();

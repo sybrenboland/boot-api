@@ -134,7 +134,7 @@ export class AddManyToManyRelation implements EditProject {
     public persistenceModule: string = "persistence";
 
     @Parameter({
-        displayName: "Module name",
+        displayName: "Api module name",
         description: "Name of the api module",
         pattern: Pattern.any,
         validInput: "Name",
@@ -143,6 +143,17 @@ export class AddManyToManyRelation implements EditProject {
         required: false,
     })
     public apiModule: string = "api";
+
+    @Parameter({
+        displayName: "Core module name",
+        description: "Name of the module with the business logic",
+        pattern: Pattern.any,
+        validInput: "Name",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public coreModule: string = "core";
 
     @Parameter({
         displayName: "Database module name",
@@ -237,6 +248,7 @@ export class AddManyToManyRelation implements EditProject {
             this.persistenceModule,
             this.apiModule,
             this.databaseModule,
+            this.coreModule,
             this.release);
 
         builder.execute(project, params);

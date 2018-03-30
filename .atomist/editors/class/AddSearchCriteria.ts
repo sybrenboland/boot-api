@@ -81,6 +81,17 @@ export class AddSearchCriteria implements EditProject {
     public domainModule: string = "domain";
 
     @Parameter({
+        displayName: "Core apiModule name",
+        description: "Name of the apiModule with the business logic",
+        pattern: Pattern.any,
+        validInput: "Just a name",
+        minLength: 1,
+        maxLength: 50,
+        required: false,
+    })
+    public coreModule: string = "core";
+
+    @Parameter({
         displayName: "Version",
         description: "Version of resteasy",
         pattern: Pattern.any,
@@ -365,7 +376,7 @@ public class ${this.className}SearchCriteriaConverter {
         return ${this.className.toLowerCase()}Repository.findBySearchCriteria(sc);
     }`;
 
-        const path = this.apiModule + basePath + "/service/" + this.className + "Service.java";
+        const path = this.coreModule + basePath + "/service/" + this.className + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "findBySearchCriteria", rawJavaMethod);
 
@@ -379,7 +390,7 @@ public class ${this.className}SearchCriteriaConverter {
     }
     `;
 
-        const path = this.apiModule + basePath + "/service/" + this.className + "Service.java";
+        const path = this.coreModule + basePath + "/service/" + this.className + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, `findNumberOf${this.className}`, rawJavaMethod);
 

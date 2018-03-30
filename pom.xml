@@ -48,6 +48,7 @@
 
     <modules>
         <module>api-module</module>
+        <module>core-module</module>
         <module>persistence-module</module>
         <module>domain-module</module>
         <module>db-module</module>

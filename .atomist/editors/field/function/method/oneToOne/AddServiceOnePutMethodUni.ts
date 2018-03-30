@@ -29,7 +29,7 @@ export class AddServiceOnePutMethodUni extends EditFunction {
         return null;
     }`;
 
-        const path = params.apiModule + params.basePath + "/service/" + this.oneClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/service/" + this.oneClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "update" + this.oneClass + "With" + this.otherClass,
             rawJavaMethod);

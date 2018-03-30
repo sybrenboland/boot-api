@@ -32,7 +32,7 @@ export class AddServiceOtherDeleteMethod extends EditFunction {
         return false;
     }`;
 
-        const path = params.apiModule + params.basePath + "/service/" + this.otherClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/service/" + this.otherClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "remove" + this.oneClass, rawJavaMethod);
 

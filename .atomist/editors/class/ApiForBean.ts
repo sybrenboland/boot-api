@@ -82,6 +82,17 @@ export class ApiForBean implements EditProject {
     public apiModule: string = "";
 
     @Parameter({
+        displayName: "Core apiModule name",
+        description: "Name of the apiModule with the business logic",
+        pattern: Pattern.any,
+        validInput: "Just a name",
+        minLength: 1,
+        maxLength: 50,
+        required: false,
+    })
+    public coreModule: string = "core";
+
+    @Parameter({
         displayName: "Module name",
         description: "Name of the domain module",
         pattern: Pattern.any,
@@ -317,8 +328,8 @@ export class ApiForBean implements EditProject {
 
         addService.className = this.className;
         addService.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
-            addService.module = this.apiModule;
+        if (this.coreModule !== "") {
+            addService.module = this.coreModule;
         }
 
         addService.edit(project);
@@ -368,7 +379,10 @@ export class ApiForBean implements EditProject {
         addGet.className = this.className;
         addGet.basePackage = this.basePackage;
         if (this.apiModule !== "") {
-            addGet.module = this.apiModule;
+            addGet.apiModule = this.apiModule;
+        }
+        if (this.coreModule !== "") {
+            addGet.coreModule = this.coreModule;
         }
 
         addGet.edit(project);
@@ -379,7 +393,10 @@ export class ApiForBean implements EditProject {
         addPost.className = this.className;
         addPost.basePackage = this.basePackage;
         if (this.apiModule !== "") {
-            addPost.module = this.apiModule;
+            addPost.apiModule = this.apiModule;
+        }
+        if (this.coreModule !== "") {
+            addPost.coreModule = this.coreModule;
         }
 
         addPost.edit(project);
@@ -390,7 +407,10 @@ export class ApiForBean implements EditProject {
         addPut.className = this.className;
         addPut.basePackage = this.basePackage;
         if (this.apiModule !== "") {
-            addPut.module = this.apiModule;
+            addPut.apiModule = this.apiModule;
+        }
+        if (this.coreModule !== "") {
+            addPut.coreModule = this.coreModule;
         }
 
         addPut.edit(project);
@@ -401,7 +421,10 @@ export class ApiForBean implements EditProject {
         addDelete.className = this.className;
         addDelete.basePackage = this.basePackage;
         if (this.apiModule !== "") {
-            addDelete.module = this.apiModule;
+            addDelete.apiModule = this.apiModule;
+        }
+        if (this.coreModule !== "") {
+            addDelete.coreModule = this.coreModule;
         }
 
         addDelete.edit(project);
