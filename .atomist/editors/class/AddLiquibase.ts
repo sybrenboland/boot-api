@@ -103,7 +103,7 @@ spring:
     username: pgroot
     password: pgpass
 liquibase:
-  change-log: classpath:/src/main/db/liquibase/master-changelog.xml
+  change-log: classpath:/db/liquibase/master-changelog.xml
 `;
 
         if (!project.fileExists(resourceApplicationYamlPath)) {
@@ -114,7 +114,7 @@ liquibase:
     private addDatabaseDockerComposeYaml(project: Project): void {
 
         const pathDockerComposeYaml = "docker-compose.yml";
-        const rawDockerComposeYaml = `postgres:
+        const rawDockerComposeYaml = `postgres-container:
   image: postgres:9.6.3
   ports:
     - 5482:5432

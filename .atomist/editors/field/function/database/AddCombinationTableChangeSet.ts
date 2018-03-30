@@ -29,7 +29,7 @@ export class AddCombinationTableChangeSet extends EditFunction {
   
 ` + inputHook;
 
-        const path = params.databaseModule + "/src/main/db/liquibase/release/" + params.release + "/tables/tables-changelog.xml";
+        const path = params.databaseModule + "/src/main/resources/db/liquibase/release/" + params.release + "/tables/tables-changelog.xml";
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
             file.replace(inputHook, rawChangeSet);

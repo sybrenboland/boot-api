@@ -76,7 +76,7 @@ export class AddBeanClass implements EditProject {
 
         this.addDependencies(project);
         this.addBeanClass(project, this.persistenceModule + "/src/main");
-        this.addChangeSet(project, this.databaseModule + "/src/main/db/liquibase");
+        this.addChangeSet(project, this.databaseModule + "/src/main/resources/db/liquibase");
     }
 
     private addDependencies(project: Project): void {

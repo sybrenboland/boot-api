@@ -26,7 +26,7 @@ export class AddForeignKeyChangeSet extends EditFunction {
     
 ` + inputHook;
 
-        const path = params.databaseModule + "/src/main/db/liquibase/release/" + params.release +
+        const path = params.databaseModule + "/src/main/resources/db/liquibase/release/" + params.release +
             "/constraints/foreign-key/fk-changelog.xml";
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);

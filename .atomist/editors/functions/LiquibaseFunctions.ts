@@ -9,7 +9,7 @@ export class LiquibaseFunctions {
     public checkRelease(project: Project, databaseModule: string, release: string) {
 
         this.release = release;
-        this.basePath = databaseModule + '/src/main/db/liquibase';
+        this.basePath = databaseModule + '/src/main/resources/db/liquibase';
 
         const path = this.basePath + '/release/' + release + '/changelog.xml';
         if (!project.fileExists(path)) {

@@ -156,7 +156,7 @@ export class AddField implements EditProject {
   
   ` + inputHook;
 
-        const path = this.databaseModule + "/src/main/db/liquibase/release/"
+        const path = this.databaseModule + "/src/main/resources/db/liquibase/release/"
             + this.release + "/tables/tables-changelog.xml";
 
         if (project.fileExists(path)) {
