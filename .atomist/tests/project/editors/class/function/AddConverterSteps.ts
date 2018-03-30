@@ -1,7 +1,7 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import {fileFunctions} from "../../../../editors/functions/FileFunctions";
-import {ApiModule, BasePackage} from "../../common/Constants";
+import {fileFunctions} from "../../../../../editors/functions/FileFunctions";
+import {ApiModule, BasePackage} from "../../../common/Constants";
 
 let classNameConverter: string;
 let converterPath: string;

@@ -5,16 +5,14 @@ import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
-import {javaFunctions} from "../functions/JavaClassFunctions";
-import {addExceptionHandler} from "../common/AddExceptionHandler";
+import {javaFunctions} from "../../functions/JavaClassFunctions";
 
 /**
- * AddPOST editor
+ * AddDELETE editor
  * - Adds maven dependencies
  * - Adds method to resource class and interface
  * - Adds method to service
  * - Adds method to converter
- * - Adds exception hadler class
  *
  * Requires:
  * - Bean class
@@ -23,9 +21,9 @@ import {addExceptionHandler} from "../common/AddExceptionHandler";
  * - Service class
  * - Repository
  */
-@Editor("AddPOST", "adds REST post method")
-@Tags("rug", "api", "POST", "shboland")
-export class AddPOST implements EditProject {
+@Editor("AddDELETE", "adds REST put method")
+@Tags("rug", "api", "AddDELETE", "shboland")
+export class AddDELETE implements EditProject {
     @Parameter({
         displayName: "Class name",
         description: "Name of the class we want to add",
@@ -78,8 +76,7 @@ export class AddPOST implements EditProject {
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
-        addServiceMethodSaveBean(project, this.className, this.basePackage, basePathCore);
-        this.addExceptionHandler(project);
+        this.addServiceMethod(project, basePathCore);
     }
 
     private addDependencies(project: Project): void {
@@ -93,71 +90,60 @@ export class AddPOST implements EditProject {
     private addResourceInterfaceMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `    
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    ResponseEntity post${this.className}(@RequestBody Json${this.className} ${this.className.toLowerCase()}) ` +
-            `throws URISyntaxException;`;
+    @RequestMapping(value = "/{${this.className.toLowerCase()}Id}", method = RequestMethod.DELETE)
+    ResponseEntity delete${this.className}(@PathVariable("${this.className.toLowerCase()}Id") ` +
+            `long ${this.className.toLowerCase()}Id);`;
 
         const path = basePath + "/resource/I" + this.className + "Controller.java";
         const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "post" + this.className, rawJavaMethod);
+        javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
 
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
+        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, "java.net.URISyntaxException");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
     }
 
     private addResourceClassMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `
     @Override
-    public ResponseEntity post${this.className}(@RequestBody Json${this.className} json${this.className}) ` +
-            `throws URISyntaxException {
-            
-        ${this.className} new${this.className} = ${this.className.toLowerCase()}Service` +
-            `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}));
+    public ResponseEntity delete${this.className}(@PathVariable long ${this.className.toLowerCase()}Id) {
 
-        return ResponseEntity.created(new URI(${this.className.toLowerCase()}Converter` +
-            `.toJson(new${this.className}).getLink("self").getHref())).build();
+        return ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toLowerCase()}Id) ?
+                ResponseEntity.ok().build() :
+                ResponseEntity.notFound().build();
     }`;
 
         const path = basePath + "/resource/" + this.className + "Controller.java";
         const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "post" + this.className, rawJavaMethod);
+        javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
 
-        javaFunctions.addImport(file, "java.net.URI");
-        javaFunctions.addImport(file, "java.net.URISyntaxException");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
+        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
     }
 
-    private addExceptionHandler(project: Project) {
-        addExceptionHandler.javaException = "URISyntaxException";
-        addExceptionHandler.exceptionPackage = "java.net";
-        addExceptionHandler.httpResponse = "CONFLICT";
-        addExceptionHandler.responseMessage = "There seems to be a problem with application. Please try again.";
-        addExceptionHandler.apiModule = this.apiModule;
-        addExceptionHandler.basePackage = this.basePackage;
+    private addServiceMethod(project: Project, basePath: string): void {
 
-        addExceptionHandler.edit(project);
-    }
-}
+        const rawJavaMethod = `
+    public boolean delete${this.className}(long ${this.className.toLowerCase()}Id) {
+        ${this.className} ${this.className.toLowerCase()} = ${this.className.toLowerCase()}Repository.` +
+            `findOne(${this.className.toLowerCase()}Id);
 
-export function addServiceMethodSaveBean(project: Project, className: string, basePackage: string, basePath: string) {
-
-    const rawJavaMethod = `
-    public ${className} save(${className} ${className.toLowerCase()}) {
-        return ${className.toLowerCase()}Repository.save(${className.toLowerCase()});
+        if (${this.className.toLowerCase()} != null) {
+            ${this.className.toLowerCase()}Repository.delete(${this.className.toLowerCase()});
+            return true;
+        } else {
+            return false;
+        }
     }`;
 
-    const path = basePath + "/service/" + className + "Service.java";
-    const file: File = project.findFile(path);
-    javaFunctions.addFunction(file, "save", rawJavaMethod);
+        const path = basePath + "/service/" + this.className + "Service.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
 
-    javaFunctions.addImport(file, basePackage + ".db.hibernate.bean." + className);
+        javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
+    }
 }
 
-export const addPost = new AddPOST();
+export const addDelete = new AddDELETE();

@@ -2,22 +2,22 @@ import {Project} from "@atomist/rug/model/Project";
 import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
-import {addBeanClass} from "./AddBeanClass";
-import {addConfig} from "./AddConfig";
-import {addConverter} from "./AddConverter";
-import {addDomainClass} from "./AddDomainClass";
-import {addGet} from "./AddGET";
-import {addLiquibase} from "./AddLiquibase";
-import {addLombok} from "./AddLombok";
-import {addPost} from "./AddPOST";
-import {addPut} from "./AddPUT";
-import {addDelete} from "./AddDELETE";
-import {addRepository} from "./AddRepository";
-import {addResource} from "./AddResource";
-import {addService} from "./AddService";
-import {addSpringBoot} from "./AddSpringBoot";
-import {addSwagger} from "./AddSwagger";
-import {addSearchCriteria} from "./AddSearchCriteria";
+import {addBeanClass} from "./function/AddBeanClass";
+import {addConfig} from "../common/AddConfig";
+import {addConverter} from "./function/AddConverter";
+import {addDomainClass} from "./function/AddDomainClass";
+import {addGet} from "./function/AddGET";
+import {addLiquibase} from "../common/AddLiquibase";
+import {addLombok} from "../common/AddLombok";
+import {addPost} from "./function/AddPOST";
+import {addPut} from "./function/AddPUT";
+import {addDelete} from "./function/AddDELETE";
+import {addRepository} from "./function/AddRepository";
+import {addResource} from "./function/AddResource";
+import {addService} from "./function/AddService";
+import {addSpringBoot} from "../common/AddSpringBoot";
+import {addSwagger} from "../common/AddSwagger";
+import {addSearchCriteria} from "./function/AddSearchCriteria";
 
 /**
  * ApiForBean editor

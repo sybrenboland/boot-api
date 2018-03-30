@@ -1,6 +1,6 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import { BasePackage, DatabaseModule, PersistenceModule, Release } from "../../common/Constants";
+import { BasePackage, DatabaseModule, PersistenceModule, Release } from "../../../common/Constants";
 
 let classNameBean: string;
 const mavenBasePath = "/src/main";

@@ -5,10 +5,12 @@ import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
-import {javaFunctions} from "../functions/JavaClassFunctions";
+import {addServiceMethodFetchBean} from "./AddGET";
+import {javaFunctions} from "../../functions/JavaClassFunctions";
+import { addServiceMethodSaveBean } from "./AddPOST";
 
 /**
- * AddDELETE editor
+ * AddPUT editor
  * - Adds maven dependencies
  * - Adds method to resource class and interface
  * - Adds method to service
@@ -21,9 +23,9 @@ import {javaFunctions} from "../functions/JavaClassFunctions";
  * - Service class
  * - Repository
  */
-@Editor("AddDELETE", "adds REST put method")
-@Tags("rug", "api", "AddDELETE", "shboland")
-export class AddDELETE implements EditProject {
+@Editor("AddPUT", "adds REST put method")
+@Tags("rug", "api", "AddPUT", "shboland")
+export class AddPUT implements EditProject {
     @Parameter({
         displayName: "Class name",
         description: "Name of the class we want to add",
@@ -76,7 +78,8 @@ export class AddDELETE implements EditProject {
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
-        this.addServiceMethod(project, basePathCore);
+        addServiceMethodFetchBean(project, this.className, this.basePackage, basePathCore);
+        addServiceMethodSaveBean(project, this.className, this.basePackage, basePathCore);
     }
 
     private addDependencies(project: Project): void {
@@ -90,60 +93,56 @@ export class AddDELETE implements EditProject {
     private addResourceInterfaceMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `    
-    @RequestMapping(value = "/{${this.className.toLowerCase()}Id}", method = RequestMethod.DELETE)
-    ResponseEntity delete${this.className}(@PathVariable("${this.className.toLowerCase()}Id") ` +
-            `long ${this.className.toLowerCase()}Id);`;
+    @RequestMapping(value = "/{${this.className.toLowerCase()}Id}", method = RequestMethod.PUT)
+    ResponseEntity put${this.className}(` +
+            `@PathVariable("${this.className.toLowerCase()}Id") long ${this.className.toLowerCase()}Id, ` +
+            `@RequestBody Json${this.className} json${this.className});`;
 
         const path = basePath + "/resource/I" + this.className + "Controller.java";
         const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
+        javaFunctions.addFunction(file, "put" + this.className, rawJavaMethod);
 
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
     }
 
     private addResourceClassMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `
     @Override
-    public ResponseEntity delete${this.className}(@PathVariable long ${this.className.toLowerCase()}Id) {
+    public ResponseEntity<Json${this.className}> put${this.className}` +
+            `(@PathVariable long ${this.className.toLowerCase()}Id, ` +
+            `@RequestBody Json${this.className} json${this.className}) {
 
-        return ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toLowerCase()}Id) ?
-                ResponseEntity.ok().build() :
-                ResponseEntity.notFound().build();
+        Optional<${this.className}> ${this.className.toLowerCase()}Optional = ${this.className.toLowerCase()}Service` +
+            `.fetch${this.className}(${this.className.toLowerCase()}Id);
+
+        ${this.className} saved${this.className};
+        if (!${this.className.toLowerCase()}Optional.isPresent()) {
+            saved${this.className} = ${this.className.toLowerCase()}Service` +
+            `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}));
+        } else {
+            saved${this.className} = ${this.className.toLowerCase()}Service` +
+            `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}, ${this.className.toLowerCase()}Id));
+        }
+
+        return ResponseEntity.ok(${this.className.toLowerCase()}Converter.toJson(saved${this.className}));
     }`;
 
         const path = basePath + "/resource/" + this.className + "Controller.java";
         const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
+        javaFunctions.addFunction(file, "put" + this.className, rawJavaMethod);
 
+        javaFunctions.addImport(file, "java.util.Optional");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-    }
-
-    private addServiceMethod(project: Project, basePath: string): void {
-
-        const rawJavaMethod = `
-    public boolean delete${this.className}(long ${this.className.toLowerCase()}Id) {
-        ${this.className} ${this.className.toLowerCase()} = ${this.className.toLowerCase()}Repository.` +
-            `findOne(${this.className.toLowerCase()}Id);
-
-        if (${this.className.toLowerCase()} != null) {
-            ${this.className.toLowerCase()}Repository.delete(${this.className.toLowerCase()});
-            return true;
-        } else {
-            return false;
-        }
-    }`;
-
-        const path = basePath + "/service/" + this.className + "Service.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
-
-        javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
     }
 }
 
-export const addDelete = new AddDELETE();
+export const addPut = new AddPUT();

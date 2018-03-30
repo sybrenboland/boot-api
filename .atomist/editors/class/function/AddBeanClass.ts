@@ -5,8 +5,8 @@ import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
-import {fileFunctions} from "../functions/FileFunctions";
-import { liquibaseFunctions } from "../functions/LiquibaseFunctions";
+import {fileFunctions} from "../../functions/FileFunctions";
+import { liquibaseFunctions } from "../../functions/LiquibaseFunctions";
 
 /**
  * AddBeanClass editor

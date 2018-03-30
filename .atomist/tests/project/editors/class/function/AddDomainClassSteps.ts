@@ -1,7 +1,7 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import {fileFunctions} from "../../../../editors/functions/FileFunctions";
-import {BasePackage, DomainModule, getModule} from "../../common/Constants";
+import {fileFunctions} from "../../../../../editors/functions/FileFunctions";
+import {BasePackage, DomainModule, getModule} from "../../../common/Constants";
 
 let classNameDomainClass: string;
 const jacksonVersion = "2.9.0";
