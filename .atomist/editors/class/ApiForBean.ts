@@ -3,21 +3,22 @@ import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {addBeanClass} from "./function/AddBeanClass";
-import {addConfig} from "../common/AddConfig";
+import {addConfig} from "../general/AddConfig";
 import {addConverter} from "./function/AddConverter";
 import {addDomainClass} from "./function/AddDomainClass";
 import {addGet} from "./function/AddGET";
-import {addLiquibase} from "../common/AddLiquibase";
-import {addLombok} from "../common/AddLombok";
+import {addLiquibase} from "../general/AddLiquibase";
+import {addLombok} from "../general/AddLombok";
 import {addPost} from "./function/AddPOST";
 import {addPut} from "./function/AddPUT";
 import {addDelete} from "./function/AddDELETE";
 import {addRepository} from "./function/AddRepository";
 import {addResource} from "./function/AddResource";
 import {addService} from "./function/AddService";
-import {addSpringBoot} from "../common/AddSpringBoot";
-import {addSwagger} from "../common/AddSwagger";
+import {addSpringBoot} from "../general/AddSpringBoot";
+import {addSwagger} from "../general/AddSwagger";
 import {addSearchCriteria} from "./function/AddSearchCriteria";
+import { addDocker } from "../general/AddDocker";
 
 /**
  * ApiForBean editor
@@ -126,6 +127,17 @@ export class ApiForBean implements EditProject {
     public release: string = "";
 
     @Parameter({
+        displayName: "Port number",
+        description: "Port on which the service is exposed",
+        pattern: Pattern.port,
+        validInput: "Port",
+        minLength: 0,
+        maxLength: 4,
+        required: false,
+    })
+    public port: string = "";
+
+    @Parameter({
         displayName: "Version",
         description: "Version of Spring Boot",
         pattern: Pattern.any,
@@ -202,6 +214,29 @@ export class ApiForBean implements EditProject {
     })
     public restEasyVersion: string = "";
 
+    @Parameter({
+        displayName: "Docker image prefix",
+        description: "Prefix of the docker image",
+        pattern: Pattern.any,
+        validInput: "Name",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public dockerImagePrefix: string = "";
+
+    @Parameter({
+        displayName: "Version",
+        description: "Version of docker plugin",
+        pattern: Pattern.any,
+        validInput: "Release number",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public dockerPluginVersion: string = "";
+
+
     public edit(project: Project) {
 
         this.setSpringBootVersion(project);
@@ -216,6 +251,7 @@ export class ApiForBean implements EditProject {
         this.addResource(project);
         this.addMethods(project);
         this.addSwagger(project);
+        this.addDocker(project);
     }
 
     private setSpringBootVersion(project: Project) {
@@ -239,6 +275,9 @@ export class ApiForBean implements EditProject {
         }
         if (this.domainModule !== "") {
             addConfig.domainModule = this.domainModule;
+        }
+        if (this.port !== "") {
+            addConfig.port = this.port;
         }
 
         addConfig.edit(project);
@@ -461,6 +500,27 @@ export class ApiForBean implements EditProject {
         }
 
         addSwagger.edit(project);
+    }
+
+    private addDocker(project: Project) {
+        addDocker.basePackage = this.basePackage;
+        if (this.apiModule !== "") {
+            addDocker.apiModule = this.apiModule;
+        }
+        if (this.dockerImagePrefix !== "") {
+            addDocker.dockerImagePrefix = this.dockerImagePrefix;
+        }
+        if (this.dockerPluginVersion !== "") {
+            addDocker.dockerPluginVersion = this.dockerPluginVersion;
+        }
+        if (this.release !== "") {
+            addDocker.release = this.release;
+        }
+        if (this.port !== "") {
+            addDocker.port = this.port;
+        }
+
+        addDocker.edit(project);
     }
 }
 

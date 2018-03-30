@@ -8,6 +8,14 @@ Then("new dependency to pom: (.*)$", (p: Project, w, dependency: string) => {
     return p.fileContains(pomFile, dependency);
 });
 
+Then("new property to pom: (.*)$", (p: Project, w, dependency: string) => {
+    return p.fileContains(pomFile, dependency);
+});
+
 Then("new dependency to (.*) module pom: (.*)$", (p: Project, w, module, dependency) => {
+    return p.fileContains(getModule(module) + "/" + pomFile, dependency);
+});
+
+Then("new plugin to (.*) module pom: (.*)$", (p: Project, w, module, dependency) => {
     return p.fileContains(getModule(module) + "/" + pomFile, dependency);
 });
