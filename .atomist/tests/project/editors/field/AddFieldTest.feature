@@ -11,7 +11,7 @@ Feature: Add field class should add a given field to the api chain
     When the AddRepository is run with className Adres
     When the AddSearchCriteria is run with className Adres
     When the AddField is run for class Adres with field street with type String
-    Then the changelog is extended with street of class Adres
+    Then the changelog is extended with street
     Then the name street is added to class Adres in package db.hibernate.bean of the Persistence module
     Then the name street is added to class JsonAdres in package domain of the Domain module
     Then the name Street is added to class AdresConverter in package convert of the Api module
@@ -29,7 +29,7 @@ Feature: Add field class should add a given field to the api chain
     When the AddRepository is run with className Adres
     When the AddSearchCriteria is run with className Adres
     When the AddField is run for class Adres with field createdDate with type LocalDateTime
-    Then the changelog is extended with createdDate of class Adres
+    Then the changelog is extended with createdDate
     Then the name createdDate is added to class Adres in package db.hibernate.bean of the Persistence module
     Then the name LocalDateTimeAttributeConverter is added to class Adres in package db.hibernate.bean of the Persistence module
     Then the name createdDate is added to class JsonAdres in package domain of the Domain module
@@ -40,7 +40,7 @@ Feature: Add field class should add a given field to the api chain
     Then the converter is extended with the field
 
   Scenario: AddField should abort if the type is not supported
-    Given a boot-api project structure
+    When the NewMavenProject is run
     When the AddBeanClass is run with className Adres
     When the AddDomainClass is run with className Adres
     When the AddConverter is run with className Adres

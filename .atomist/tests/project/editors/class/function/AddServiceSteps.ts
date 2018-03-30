@@ -1,7 +1,7 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../../../editors/functions/FileFunctions";
-import {ApiModule, BasePackage, getModule} from "../../../common/Constants";
+import { BasePackage, CoreModule, getModule } from "../../../common/Constants";
 
 let classNameService: string;
 
@@ -12,7 +12,7 @@ When("the AddService is run with className (.*)", (p: Project, w: ProjectScenari
     w.editWith(editor, {
         className: classNameService,
         basePackage: BasePackage,
-        module: ApiModule,
+        module: CoreModule,
     });
 });
 

@@ -21,6 +21,7 @@ Then("the parent of the master pom is spring boot", (p: Project, w) => {
 });
 
 Then("an application class is added to the (.*) module", (p: Project, w, moduleName: string) => {
+
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
         + fileFunctions.toPath(BasePackage) + "/Application.java");
 });

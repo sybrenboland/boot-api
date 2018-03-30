@@ -72,6 +72,17 @@ export class AddConfig implements EditProject {
     })
     public domainModule: string = "domain";
 
+    @Parameter({
+        displayName: "Port number",
+        description: "Port on which the service is exposed",
+        pattern: Pattern.port,
+        validInput: "Port",
+        minLength: 0,
+        maxLength: 4,
+        required: false,
+    })
+    public port: string = "8888";
+
     public edit(project: Project) {
         this.addDependencies(project);
         this.addPersistenceConfig(project);
@@ -173,7 +184,7 @@ spring:
   application:
     name: spring-boot-api
 server:
-  port: 8888
+  port: ${this.port}
   contextPath: /api
 `;
 

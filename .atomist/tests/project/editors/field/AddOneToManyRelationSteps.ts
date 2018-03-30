@@ -1,6 +1,9 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, When} from "@atomist/rug/test/project/Core";
-import { ApiModule, BasePackage, DatabaseModule, DomainModule, PersistenceModule, Release } from "../../common/Constants";
+import {
+    ApiModule, BasePackage, CoreModule, DatabaseModule, DomainModule, PersistenceModule,
+    Release
+} from "../../common/Constants";
 import {javaFunctions} from "../../../../editors/functions/JavaClassFunctions";
 
 When("the AddOneToManyRelation is run with one (.*) (.*) in output with many (.*) (.*) in output (.*), with (.*) as methods on the one side and (.*) as methods on the many side",
@@ -21,6 +24,7 @@ When("the AddOneToManyRelation is run with one (.*) (.*) in output with many (.*
             methodsManySide: methodsManySide,
             persistenceModule: PersistenceModule,
             apiModule: ApiModule,
+            coreModule: CoreModule,
             domainModule: DomainModule,
             databaseModule: DatabaseModule,
             release: Release,

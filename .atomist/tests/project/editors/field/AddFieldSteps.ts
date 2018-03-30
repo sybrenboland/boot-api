@@ -35,6 +35,7 @@ Then("the converter is extended with the field", (p: Project, w) => {
 });
 
 Then("a DateParam class is added to the (.*) module", (p: Project, w, moduleName: string) => {
+
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
         + fileFunctions.toPath(BasePackage) + "/domain/utility/DateParam.java");
 });

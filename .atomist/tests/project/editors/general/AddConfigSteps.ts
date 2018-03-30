@@ -2,7 +2,9 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../../editors/functions/FileFunctions";
-import {ApiModule, BasePackage, DomainModule, getModule, PersistenceModule} from "../../common/Constants";
+import { ApiModule, BasePackage, CoreModule, DomainModule, getModule, PersistenceModule } from "../../common/Constants";
+
+const port = '8882';
 
 When("the AddConfig is run", (p: Project, w: ProjectScenarioWorld) => {
     const editor = w.editor("AddConfig");
@@ -11,6 +13,8 @@ When("the AddConfig is run", (p: Project, w: ProjectScenarioWorld) => {
         apiModule: ApiModule,
         persistenceModule: PersistenceModule,
         domainModule: DomainModule,
+        coreModule: CoreModule,
+        port: port
     });
 });
 

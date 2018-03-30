@@ -41,7 +41,7 @@ export class AddService implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public module: string = "api";
+    public module: string = "core";
 
     public edit(project: Project) {
         const basePath = this.module + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");

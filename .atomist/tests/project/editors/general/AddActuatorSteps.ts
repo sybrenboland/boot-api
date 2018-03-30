@@ -1,6 +1,6 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, When} from "@atomist/rug/test/project/Core";
-import {ApiModule, BasePackage} from "../../common/Constants";
+import {ApiModule} from "../../common/Constants";
 
 const manageMentPort = "9999";
 

@@ -6,7 +6,7 @@ import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {javaFunctions} from "../../functions/JavaClassFunctions";
-import {addExceptionHandler} from "../../common/AddExceptionHandler";
+import {addExceptionHandler} from "../../general/AddExceptionHandler";
 
 /**
  * AddPOST editor

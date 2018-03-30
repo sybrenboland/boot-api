@@ -1,6 +1,6 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
-import { ApiModule, DatabaseModule, DomainModule, PersistenceModule } from "../common/Constants";
+import { ApiModule, CoreModule, DatabaseModule, DomainModule, PersistenceModule } from "../common/Constants";
 
 const artifactIdInput = "new-api";
 const groupIdInput = "shboland";
@@ -13,6 +13,7 @@ When("the NewMavenProject is run", (p: Project, w: ProjectScenarioWorld) => {
         groupId: groupIdInput,
         version: versionInput,
         apiModuleName: ApiModule,
+        coreModuleName: CoreModule,
         persistenceModuleName: PersistenceModule,
         domainModuleName: DomainModule,
         databaseModuleName: DatabaseModule,

@@ -36,15 +36,14 @@ Then("the name (.*) is added to configuration file (.*) of module (.*)",
         return p.fileContains(getModule(moduleName) + "/src/main/resources/" + fileName + ".yml", name);
     });
 
-Then("the changelog is extended with (.*) of class (.*)", (p: Project, w, name: string, className: string) => {
-    const path = DatabaseModule + "/src/main/db/liquibase/release/" + Release + "/tables/tables-changelog.xml";
+Then("the changelog is extended with (.*)", (p: Project, w, name: string) => {
+    const path = DatabaseModule + "/src/main/resources/db/liquibase/release/" + Release + "/tables/tables-changelog.xml";
 
     return p.fileContains(path, name.toUpperCase());
 });
 
-Then("the combination changelog is extended with (.*) of class (.*) and class (.*)",
-    (p: Project, w, name: string, otherClassName: string, baseClassName: string) => {
-    const path = DatabaseModule + "/src/main/db/liquibase/release/" + Release +
+Then("the combination changelog is extended with (.*)", (p: Project, w, name: string) => {
+    const path = DatabaseModule + "/src/main/resources/db/liquibase/release/" + Release +
         "/constraints/foreign-key/fk-changelog.xml";
 
     return p.fileContains(path, name.toUpperCase());
