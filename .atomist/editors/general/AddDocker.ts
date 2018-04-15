@@ -137,7 +137,7 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
                     </execution>
                 </executions>
                 <configuration>
-                    <imageName>\${docker.image.prefix}/\${project.parent.artifactId}:\${project.version}</imageName>
+                    <imageName>\${docker.image.prefix}/\${project.artifactId}:\${project.version}</imageName>
                     <dockerDirectory>\${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>
@@ -147,6 +147,13 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
                         </resource>
                     </resources>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

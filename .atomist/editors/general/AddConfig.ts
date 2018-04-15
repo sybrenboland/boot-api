@@ -186,6 +186,14 @@ spring:
 server:
   port: ${this.port}
   contextPath: /api
+---
+spring:
+  profiles: production
+  application:
+    name: spring-boot-api
+server:
+  port: ${this.port}
+  contextPath: /api
 `;
 
         if (!project.fileExists(resourceBootstrapYamlPath)) {

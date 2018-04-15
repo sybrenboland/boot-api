@@ -104,6 +104,19 @@ spring:
     password: pgpass
 liquibase:
   change-log: classpath:/db/liquibase/master-changelog.xml
+---
+spring:
+  profiles: production
+  jpa:
+    show_sql: false
+    database: POSTGRESQL
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://postgres:5432/postgres
+    username: pgroot
+    password: pgpass
+liquibase:
+  change-log: classpath:/db/liquibase/master-changelog.xml
 `;
 
         if (!project.fileExists(resourceApplicationYamlPath)) {
