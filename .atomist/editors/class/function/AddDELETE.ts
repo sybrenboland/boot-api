@@ -127,11 +127,11 @@ export class AddDELETE implements EditProject {
 
         const rawJavaMethod = `
     public boolean delete${this.className}(long ${this.className.toLowerCase()}Id) {
-        ${this.className} ${this.className.toLowerCase()} = ${this.className.toLowerCase()}Repository.` +
-            `findOne(${this.className.toLowerCase()}Id);
+        Optional<${this.className}> ${this.className.toLowerCase()} = ${this.className.toLowerCase()}Repository.` +
+            `findById(${this.className.toLowerCase()}Id);
 
-        if (${this.className.toLowerCase()} != null) {
-            ${this.className.toLowerCase()}Repository.delete(${this.className.toLowerCase()});
+        if (${this.className.toLowerCase()}.isPresent()) {
+            ${this.className.toLowerCase()}Repository.delete(${this.className.toLowerCase()}.get());
             return true;
         } else {
             return false;
@@ -143,6 +143,7 @@ export class AddDELETE implements EditProject {
         javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
 
         javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
+        javaFunctions.addImport(file, "java.util.Optional");
     }
 }
 

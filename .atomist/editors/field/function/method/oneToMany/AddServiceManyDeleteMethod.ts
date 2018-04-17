@@ -14,20 +14,24 @@ export class AddServiceManyDeleteMethod extends EditFunction {
         const rawJavaMethod = `
     public boolean remove${this.oneClass}(long ${this.otherClass.toLowerCase()}Id, ` +
             `long ${this.oneClass.toLowerCase()}Id) {
-        ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.` +
-            `findOne(${this.otherClass.toLowerCase()}Id);
-        if (${this.otherClass.toLowerCase()} != null && ${this.otherClass.toLowerCase()}.get${this.oneClass}() != null) {
+        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${this.otherClass.toLowerCase()}Repository.` +
+            `findById(${this.otherClass.toLowerCase()}Id);
+        if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
+            ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Optional.get();
+         
+            if (${this.otherClass.toLowerCase()}.get${this.oneClass}() != null) {
 
-            ${this.oneClass} ${this.oneClass.toLowerCase()} = ` +
-            `${this.oneClass.toLowerCase()}Repository.findOne(${this.oneClass.toLowerCase()}Id);
-            if (${this.oneClass.toLowerCase()} != null && ${this.oneClass.toLowerCase()}.getId().` +
-            `equals(${this.otherClass.toLowerCase()}.get${this.oneClass}().getId())) {
-
-                ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
-                        .${this.oneClass.toLowerCase()}(null)
-                        .build();
-                ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
-                return true;
+                Optional<${this.oneClass}> ${this.oneClass.toLowerCase()}Optional = ` +
+                `${this.oneClass.toLowerCase()}Repository.findById(${this.oneClass.toLowerCase()}Id);
+                if (${this.oneClass.toLowerCase()}Optional.isPresent() && ${this.oneClass.toLowerCase()}Optional.get().getId().` +
+                `equals(${this.otherClass.toLowerCase()}.get${this.oneClass}().getId())) {
+    
+                    ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
+                            .${this.oneClass.toLowerCase()}(null)
+                            .build();
+                    ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
+                    return true;
+                }
             }
         }
 
@@ -39,5 +43,6 @@ export class AddServiceManyDeleteMethod extends EditFunction {
         javaFunctions.addFunction(file, "remove" + this.oneClass, rawJavaMethod);
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.oneClass);
+        javaFunctions.addImport(file, "java.util.Optional");
     }
 }

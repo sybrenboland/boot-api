@@ -14,12 +14,12 @@ export class AddServiceOnePutMethodBi extends EditFunction {
         const rawJavaMethod = `
     public ${this.otherClass} update${this.oneClass}With${this.otherClass}` +
             `(long ${this.oneClass.toLowerCase()}Id, ${this.otherClass} ${this.otherClass.toLowerCase()}) {
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = ` +
-            `${this.oneClass.toLowerCase()}Repository.findOne(${this.oneClass.toLowerCase()}Id);
-        if (${this.oneClass.toLowerCase()} != null) {
+        Optional<${this.oneClass}> ${this.oneClass.toLowerCase()} = ` +
+            `${this.oneClass.toLowerCase()}Repository.findById(${this.oneClass.toLowerCase()}Id);
+        if (${this.oneClass.toLowerCase()}.isPresent()) {
 
             ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
-                    .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()})
+                    .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()}.get())
                     .build();
             
             return ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
@@ -39,5 +39,6 @@ export class AddServiceOnePutMethodBi extends EditFunction {
         javaFunctions.addToConstructor(file, this.oneClass + "Service",
             this.otherClass.toLowerCase() + "Repository");
         javaFunctions.addImport(file, params.basePackage + ".db.repo." + this.otherClass + "Repository");
+        javaFunctions.addImport(file, "java.util.Optional");
     }
 }

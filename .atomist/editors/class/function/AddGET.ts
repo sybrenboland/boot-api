@@ -135,10 +135,7 @@ export function addServiceMethodFetchBean(project: Project, className: string, b
 
     const rawJavaMethod = `
     public Optional<${className}> fetch${className}(long ${className.toLowerCase()}Id) {
-        ${className} ${className.toLowerCase()} = ` +
-        `${className.toLowerCase()}Repository.findOne(${className.toLowerCase()}Id);
-
-        return ${className.toLowerCase()} == null ? Optional.empty() : Optional.of(${className.toLowerCase()});
+        return ${className.toLowerCase()}Repository.findById(${className.toLowerCase()}Id);
     }`;
 
     const path = basePath + "/service/" + className + "Service.java";

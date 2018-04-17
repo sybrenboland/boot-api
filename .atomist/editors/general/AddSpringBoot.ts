@@ -44,7 +44,7 @@ export class AddSpringBoot implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public version: string = "1.5.8.RELEASE";
+    public version: string = "2.0.1.RELEASE";
 
     public edit(project: Project) {
         this.setVersionBootParent(project);

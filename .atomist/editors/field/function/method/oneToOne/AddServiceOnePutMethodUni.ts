@@ -14,11 +14,11 @@ export class AddServiceOnePutMethodUni extends EditFunction {
         const rawJavaMethod = `
     public ${this.otherClass} update${this.oneClass}With${this.otherClass}` +
             `(long ${this.oneClass.toLowerCase()}Id, ${this.otherClass} ${this.otherClass.toLowerCase()}) {
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = ` +
-            `${this.oneClass.toLowerCase()}Repository.findOne(${this.oneClass.toLowerCase()}Id);
-        if (${this.oneClass.toLowerCase()} != null) {
+        Optional<${this.oneClass}> ${this.oneClass.toLowerCase()} = ` +
+            `${this.oneClass.toLowerCase()}Repository.findById(${this.oneClass.toLowerCase()}Id);
+        if (${this.oneClass.toLowerCase()}.isPresent()) {
 
-            ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.toBuilder()
+            ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.get().toBuilder()
                     .${this.otherClass.toLowerCase()}(${this.otherClass.toLowerCase()})
                     .build();
             ${this.oneClass.toLowerCase()}Repository.save(new${this.oneClass});
@@ -36,5 +36,6 @@ export class AddServiceOnePutMethodUni extends EditFunction {
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.oneClass);
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+        javaFunctions.addImport(file, "java.util.Optional");
     }
 }

@@ -155,7 +155,10 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
         const path = this.apiModule + "/pom.xml";
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
-            file.replace(inputHook, rawChangeSetContent);
+
+            if (!file.contains("docker-maven-plugin")) {
+                file.replace(inputHook, rawChangeSetContent);
+            }
         } else {
             console.error("Pom not added yet!");
         }
@@ -178,7 +181,10 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
         const path = "docker-compose.yml";
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
-            file.replace(inputHook, rawChangeSetContent);
+
+            if (!file.contains(`${this.dockerImagePrefix}/${this.apiModule}:${this.release}`)) {
+                file.replace(inputHook, rawChangeSetContent);
+            }
         } else {
             console.error("Compose file not added yet!");
         }

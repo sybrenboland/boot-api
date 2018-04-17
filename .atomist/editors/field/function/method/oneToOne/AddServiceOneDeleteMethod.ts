@@ -13,11 +13,11 @@ export class AddServiceOneDeleteMethod extends EditFunction {
     edit(project: Project, params: Params): void {
         const rawJavaMethod = `
     public boolean remove${this.otherClass}(long ${this.oneClass.toLowerCase()}Id) {
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
-            `findOne(${this.oneClass.toLowerCase()}Id);
-        if (${this.oneClass.toLowerCase()} != null && ${this.oneClass.toLowerCase()}.get${this.otherClass}() != null) {
+        Optional<${this.oneClass}> ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
+            `findById(${this.oneClass.toLowerCase()}Id);
+        if (${this.oneClass.toLowerCase()}.isPresent() && ${this.oneClass.toLowerCase()}.get().get${this.otherClass}() != null) {
 
-            ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.toBuilder()
+            ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.get().toBuilder()
                     .${this.otherClass.toLowerCase()}(null)
                     .build();
             ${this.oneClass.toLowerCase()}Repository.save(new${this.oneClass});
@@ -33,6 +33,7 @@ export class AddServiceOneDeleteMethod extends EditFunction {
 
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
         javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+        javaFunctions.addImport(file, "java.util.Optional");
 
     }
 }

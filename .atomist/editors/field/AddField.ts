@@ -206,12 +206,12 @@ export class AddField implements EditProject {
 
         const inputJsonHook = "// @InputJsonField";
         let rawJsonInput = `.${this.fieldName}(${this.className.toLowerCase()}` +
-            `.get${javaFunctions.capitalize(this.fieldName)}())
+            `.${javaFunctions.methodPrefix(this.type)}${javaFunctions.capitalize(this.fieldName)}())
                 ` + inputJsonHook;
 
         const inputBeanHook = "// @InputBeanField";
         let rawBeanInput = `.${this.fieldName}(json${this.className}` +
-            `.get${javaFunctions.capitalize(this.fieldName)}())
+            `.${javaFunctions.methodPrefix(this.type)}${javaFunctions.capitalize(this.fieldName)}())
                 ` + inputBeanHook;
 
         const path = this.apiModule + basePath + "/convert/" + this.className + "Converter.java";

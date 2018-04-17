@@ -15,13 +15,15 @@ export class AddServiceOtherDeleteMethod extends EditFunction {
         const rawJavaMethod = `
     public boolean remove${this.oneClass}(long ${this.otherClass.toLowerCase()}Id, ` +
             `long ${this.oneClass.toLowerCase()}Id) {
-        ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.` +
-            `findOne(${this.otherClass.toLowerCase()}Id);
-
-        if (${this.otherClass.toLowerCase()} != null) {
-            ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
-            `findOne(${this.oneClass.toLowerCase()}Id);
-            if (${this.oneClass.toLowerCase()} != null) {
+        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${this.otherClass.toLowerCase()}Repository.` +
+            `findById(${this.otherClass.toLowerCase()}Id);
+        if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
+            ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Optional.get();
+        
+            Optional<${this.oneClass}> ${this.oneClass.toLowerCase()}Optional = ${this.oneClass.toLowerCase()}Repository.` +
+            `findById(${this.oneClass.toLowerCase()}Id);
+            if (${this.oneClass.toLowerCase()}Optional.isPresent()) {
+                ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Optional.get();
 
                 ${this.otherClass.toLowerCase()}.get${this.oneClass}Set().remove(${this.oneClass.toLowerCase()});
                 ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass.toLowerCase()});
