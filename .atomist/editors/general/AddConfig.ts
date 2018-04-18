@@ -105,11 +105,15 @@ export class AddConfig implements EditProject {
             + fileFunctions.toPath(this.basePackage) + "/persistence/configuration/PersistenceConfiguration.java";
         const rawJavaFileContent = `package ${this.basePackage}.persistence.configuration;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @ComponentScan(basePackages = { "${this.basePackage}.persistence.db" })
+@EntityScan(basePackages = { "${this.basePackage}.persistence.db.hibernate.bean" })
+@EnableJpaRepositories("${this.basePackage}.persistence.db.repo")
 public class PersistenceConfiguration {
 }
 `;
@@ -141,6 +145,7 @@ public class DomainConfiguration {
             + fileFunctions.toPath(this.basePackage) + "/core/configuration/CoreConfiguration.java";
         const rawJavaFileContent = `package ${this.basePackage}.core.configuration;
 
+import ${this.basePackage}.persistence.configuration.PersistenceConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -161,6 +166,8 @@ public class CoreConfiguration {
             + fileFunctions.toPath(this.basePackage) + "/api/configuration/ApiConfiguration.java";
         const rawJavaFileContent = `package ${this.basePackage}.api.configuration;
 
+import ${this.basePackage}.core.configuration.CoreConfiguration;
+import ${this.basePackage}.domain.configuration.DomainConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 

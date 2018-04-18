@@ -248,7 +248,7 @@ export class AddField implements EditProject {
     
     ` + inputHook;
 
-        const path = this.persistenceModule + basePath + "/domain/entities/" + this.className + "SearchCriteria.java";
+        const path = this.persistenceModule + basePath + "/persistence/criteria/" + this.className + "SearchCriteria.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {

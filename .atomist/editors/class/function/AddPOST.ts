@@ -134,7 +134,7 @@ export class AddPOST implements EditProject {
         javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, this.basePackage + ".domain.persistence.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 
     private addExceptionHandler(project: Project) {

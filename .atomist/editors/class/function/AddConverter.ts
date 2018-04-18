@@ -65,9 +65,9 @@ export class AddConverter implements EditProject {
 
         const rawJavaFileContent = `package ${this.basePackage}.api.convert;
 
-import ${this.basePackage}.db.hibernate.bean.${this.className};
-import ${this.basePackage}.domain.Json${this.className};
-import ${this.basePackage}.resource.${this.className}Controller;
+import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
+import ${this.basePackage}.domain.entities.Json${this.className};
+import ${this.basePackage}.api.resource.${this.className}Controller;
 import org.springframework.stereotype.Service;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;

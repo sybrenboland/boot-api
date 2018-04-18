@@ -65,15 +65,15 @@ export class AddRepository implements EditProject {
 
     private addRepositoryClass(project: Project, basePath: string): void {
 
-        const rawJavaFileContent = `package ${this.basePackage}.${this.module}.db.repo;
+        const rawJavaFileContent = `package ${this.basePackage}.persistence.db.repo;
 
-import ${this.basePackage}.db.hibernate.bean.${this.className};
+import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ${this.className}Repository extends JpaRepository<${this.className}, Long> {
 }`;
 
-        const pathRepository = basePath + "/persistence/db/repo/" + this.className + "Repository.java";
+        const pathRepository = basePath + "/db/repo/" + this.className + "Repository.java";
         if (!project.fileExists(pathRepository)) {
             project.addFile(pathRepository, rawJavaFileContent);
         }

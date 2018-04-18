@@ -237,8 +237,8 @@ public class Json${this.className}SearchCriteria {
     }
 
     private addSearchCriteria(project: Project, basePath: string) {
-        const path = this.persistenceModule + basePath + "/persistence/domain/" + this.className + "SearchCriteria.java";
-        const rawJavaContent = `package ${this.basePackage}.persistence.domain;
+        const path = this.persistenceModule + basePath + "/persistence/criteria/" + this.className + "SearchCriteria.java";
+        const rawJavaContent = `package ${this.basePackage}.persistence.criteria;
 
 import java.util.Optional;
 
@@ -269,7 +269,7 @@ public class ${this.className}SearchCriteria {
         const rawJavaContent = `package ${this.basePackage}.api.convert;
 
 import ${this.basePackage}.domain.entities.Json${this.className}SearchCriteria;
-import ${this.basePackage}.domain.entities.${this.className}SearchCriteria;
+import ${this.basePackage}.persistence.criteria.${this.className}SearchCriteria;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -362,8 +362,8 @@ public class ${this.className}SearchCriteriaConverter {
         javaFunctions.addImport(file, "lombok.extern.slf4j.Slf4j");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className + "SearchCriteria");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.JsonSearchResult");
-        javaFunctions.addImport(file, this.basePackage + ".domain.convert.ConvertException");
-        javaFunctions.addImport(file, this.basePackage + ".domain.entities." + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".api.convert.ConvertException");
+        javaFunctions.addImport(file, this.basePackage + ".persistence.criteria." + this.className + "SearchCriteria");
         javaFunctions.addImport(file, "java.util.ArrayList");
         javaFunctions.addImport(file, "java.util.List");
         javaFunctions.addImport(file, "javax.ws.rs.BeanParam");
@@ -380,7 +380,7 @@ public class ${this.className}SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "findBySearchCriteria", rawJavaMethod);
 
-        javaFunctions.addImport(file, this.basePackage + ".domain.entities." + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".persistence.criteria." + this.className + "SearchCriteria");
     }
 
     private addServiceMethodCount(project: Project, basePath: string) {
@@ -422,7 +422,7 @@ public class ConvertException extends RuntimeException {
         const rawJavaContent = `package ${this.basePackage}.persistence.db.repo;
 
 import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
-import ${this.basePackage}.domain.entities.${this.className}SearchCriteria;
+import ${this.basePackage}.persistence.criteria.${this.className}SearchCriteria;
 
 import java.util.List;
 
@@ -444,7 +444,7 @@ public interface ${this.className}RepositoryCustom {
         const rawJavaContent = `package ${this.basePackage}.persistence.db.repo;
 
 import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
-import ${this.basePackage}.domain.entities.${this.className}SearchCriteria;
+import ${this.basePackage}.persistence.criteria.${this.className}SearchCriteria;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
