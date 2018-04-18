@@ -70,8 +70,11 @@ export class AddDELETE implements EditProject {
 
     public edit(project: Project) {
 
-        const basePathApi = this.apiModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
-        const basePathCore = this.coreModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePathApi = this.apiModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/api";
+
+        const basePathCore = this.coreModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/core";
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
@@ -142,7 +145,7 @@ export class AddDELETE implements EditProject {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "delete" + this.className, rawJavaMethod);
 
-        javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
         javaFunctions.addImport(file, "java.util.Optional");
     }
 }

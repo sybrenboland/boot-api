@@ -44,16 +44,17 @@ export class AddService implements EditProject {
     public module: string = "core";
 
     public edit(project: Project) {
-        const basePath = this.module + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePath = this.module + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/core";
 
         this.addServiceClass(project, basePath);
     }
 
     private addServiceClass(project: Project, basePath: string): void {
 
-        const rawJavaFileContent = `package ${this.basePackage}.service;
+        const rawJavaFileContent = `package ${this.basePackage}.core.service;
 
-import ${this.basePackage}.db.repo.${this.className}Repository;
+import ${this.basePackage}.persistence.db.repo.${this.className}Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

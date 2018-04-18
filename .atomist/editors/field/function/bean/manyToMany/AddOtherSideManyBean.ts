@@ -22,7 +22,7 @@ export class AddOtherSideManyBean extends EditFunction {
     
     ` + inputHook;
 
-        const beanPath = params.persistenceModule + params.basePath + "/db/hibernate/bean/" + this.otherClass + ".java";
+        const beanPath = params.persistenceModule + params.basePath + "/persistence/db/hibernate/bean/" + this.otherClass + ".java";
         const file: File = project.findFile(beanPath);
 
         if (project.fileExists(beanPath)) {

@@ -94,8 +94,8 @@ export class AddSwagger implements EditProject {
     private addSwaggerConfigFile(project: Project, basePath: string): void {
 
         const pathSwaggerConfig = basePath + "/java/" + this.basePackage.replace(/\./gi, "/")
-            + "/configuration/SwaggerConfiguration.java";
-        const rawSwaggerConfigFile = `package ${this.basePackage}.configuration;
+            + "/api/configuration/SwaggerConfiguration.java";
+        const rawSwaggerConfigFile = `package ${this.basePackage}.api.configuration;
 
 import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;

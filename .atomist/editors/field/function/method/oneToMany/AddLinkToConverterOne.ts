@@ -19,13 +19,13 @@ export class AddLinkToConverterOne extends EditFunction {
             `slash(${this.oneClass.toLowerCase()}.getId()).slash("/${this.otherClass.toLowerCase()}s")` +
             `.withRel("${this.otherClass.toLowerCase()}s"));`;
 
-        const path = params.apiModule + params.basePath + "/convert/" + this.oneClass + "Converter.java";
+        const path = params.apiModule + params.basePath + "/api/convert/" + this.oneClass + "Converter.java";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
             file.replace(inputHook, rawJavaCode);
 
-            javaFunctions.addImport(file, params.basePackage + ".resource." + this.oneClass + "Controller");
+            javaFunctions.addImport(file, params.basePackage + ".api.resource." + this.oneClass + "Controller");
             javaFunctions.addImport(file, "static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo");
         } else {
             console.error("Converter not added yet!");

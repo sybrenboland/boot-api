@@ -37,12 +37,12 @@ export class DateFieldFunctions {
     
     ` + inputHook;
 
-        const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.className + ".java";
+        const beanPath = this.persistenceModule + basePath + "/persistence/db/hibernate/bean/" + this.className + ".java";
         const beanFile: File = project.findFile(beanPath);
         rawJavaCode = `@Convert(converter = LocalDateTimeAttributeConverter.class)
     ` + rawJavaCode;
 
-        const importConverter = this.basePackage + ".db.hibernate.converter.LocalDateTimeAttributeConverter";
+        const importConverter = this.basePackage + ".persistence.db.hibernate.converter.LocalDateTimeAttributeConverter";
         javaFunctions.addImport(beanFile, importConverter);
         javaFunctions.addImport(beanFile, "java.time.LocalDateTime");
 
@@ -58,7 +58,7 @@ export class DateFieldFunctions {
 
     private addFieldToDomainClass(project: Project, basePath: string) {
         const inputHook = "// @Input";
-        const path = this.domainModule + basePath + "/domain/Json" + this.className + ".java";
+        const path = this.domainModule + basePath + "/domain/entities/Json" + this.className + ".java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
@@ -74,9 +74,9 @@ export class DateFieldFunctions {
             javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonSerialize");
 
             this.addDateTimeSerializer(project, basePath);
-            javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeSerializer");
+            javaFunctions.addImport(file, this.basePackage + ".domain..entities.utility.CustomDateTimeSerializer");
             this.addDateTimeDeserializer(project, basePath);
-            javaFunctions.addImport(file, this.basePackage + ".domain.utility.CustomDateTimeDeserializer");
+            javaFunctions.addImport(file, this.basePackage + ".domain.entities.utility.CustomDateTimeDeserializer");
             this.addInvalidDateException(project, basePath);
 
             javaFunctions.addImport(file, "com.fasterxml.jackson.annotation.JsonProperty");
@@ -91,7 +91,7 @@ export class DateFieldFunctions {
     }
 
     private addFieldToConverter(project: Project, basePath: string) {
-        const path = this.apiModule + basePath + "/convert/" + this.className + "Converter.java";
+        const path = this.apiModule + basePath + "/api/convert/" + this.className + "Converter.java";
         const file: File = project.findFile(path);
 
         const inputJsonHook = "// @InputJsonField";
@@ -117,30 +117,30 @@ export class DateFieldFunctions {
     }
 
     private addConverter(project: Project, basePath: string, javaType: string, dbType: string) {
-        const rawJavaConverterInput = `package ` + this.basePackage + `.db.hibernate.converter;
+        const rawJavaConverterInput = `package ${this.basePackage}.persistence.db.hibernate.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.sql.` + dbType + `;
-import java.time.` + javaType + `;
+import java.sql.${dbType};
+import java.time.${javaType};
 
 @Converter(autoApply = true)
-public class ` + javaType + `AttributeConverter implements AttributeConverter<` + javaType + `, ` + dbType + `> {
+public class ${javaType}AttributeConverter implements AttributeConverter<${javaType}, ${dbType}> {
 
     @Override
-    public ` + dbType + ` convertToDatabaseColumn(` + javaType + ` locDate) {
-        return locDate == null ? null : ` + dbType + `.valueOf(locDate);
+    public ${dbType} convertToDatabaseColumn(${javaType} locDate) {
+        return locDate == null ? null : ${dbType}.valueOf(locDate);
     }
 
     @Override
-    public ` + javaType + ` convertToEntityAttribute(` + dbType + ` sql` + dbType + `) {
-        return sql` + dbType + ` == null ? null : sql` + dbType + `.to` + javaType + `();
+    public ${javaType} convertToEntityAttribute(${dbType} sql${dbType}) {
+        return sql${dbType} == null ? null : sql${dbType}.to${javaType}();
     }
 }
 `;
 
         const converterPath = this.persistenceModule + basePath +
-            "/db/hibernate/converter/LocalDateTimeAttributeConverter.java";
+            "/persistence/db/hibernate/converter/LocalDateTimeAttributeConverter.java";
 
         if (!project.fileExists(converterPath)) {
             project.addFile(converterPath, rawJavaConverterInput);
@@ -148,7 +148,7 @@ public class ` + javaType + `AttributeConverter implements AttributeConverter<` 
     }
 
     private addDateTimeSerializer(project: Project, basePath: string) {
-        const rawJavaInput = `package ` + this.basePackage + `.domain.utility;
+        const rawJavaInput = `package ` + this.basePackage + `.domain.entities.utility;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -170,7 +170,7 @@ public class CustomDateTimeSerializer extends JsonSerializer<ZonedDateTime> {
 }
 `;
 
-        const path = this.domainModule + basePath + "/domain/utility/CustomDateTimeSerializer.java";
+        const path = this.domainModule + basePath + "/domain/entities/utility/CustomDateTimeSerializer.java";
 
         if (!project.fileExists(path)) {
             project.addFile(path, rawJavaInput);
@@ -178,7 +178,7 @@ public class CustomDateTimeSerializer extends JsonSerializer<ZonedDateTime> {
     }
 
     private addDateTimeDeserializer(project: Project, basePath: string) {
-        const rawJavaInput = `package ` + this.basePackage + `.domain.utility;
+        const rawJavaInput = `package ` + this.basePackage + `.domain.entities.utility;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -210,7 +210,7 @@ public class CustomDateTimeDeserializer extends JsonDeserializer<ZonedDateTime> 
 }
 `;
 
-        const path = this.domainModule + basePath + "/domain/utility/CustomDateTimeDeserializer.java";
+        const path = this.domainModule + basePath + "/domain/entities/utility/CustomDateTimeDeserializer.java";
 
         if (!project.fileExists(path)) {
             project.addFile(path, rawJavaInput);
@@ -218,7 +218,7 @@ public class CustomDateTimeDeserializer extends JsonDeserializer<ZonedDateTime> 
     }
 
     private addInvalidDateException(project: Project, basePath: string) {
-        const rawJavaInput = `package ` + this.basePackage + `.domain.utility;
+        const rawJavaInput = `package ${this.basePackage}.domain.entities.utility;
 
 class InvalidDateException extends RuntimeException {
 
@@ -228,7 +228,7 @@ class InvalidDateException extends RuntimeException {
 }
 `;
 
-        const path = this.domainModule + basePath + "/domain/utility/InvalidDateException.java";
+        const path = this.domainModule + basePath + "/domain/entities/utility/InvalidDateException.java";
 
         if (!project.fileExists(path)) {
             project.addFile(path, rawJavaInput);
@@ -242,12 +242,12 @@ class InvalidDateException extends RuntimeException {
     
     ` + inputHook;
 
-        const path = this.domainModule + basePath + "/domain/Json" + this.className + "SearchCriteria.java";
+        const path = this.domainModule + basePath + "/domain/entities/Json" + this.className + "SearchCriteria.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
             file.replace(inputHook, rawJavaCode);
-            javaFunctions.addImport(file, this.basePackage + ".domain.utility.DateParam");
+            javaFunctions.addImport(file, this.basePackage + ".domain.entities.utility.DateParam");
         } else {
             console.error("JsonSearchCriteria class not added yet!");
         }
@@ -264,12 +264,12 @@ class InvalidDateException extends RuntimeException {
     
     ` + inputHook;
 
-        const path = this.apiModule + basePath + "/convert/" + this.className + "SearchCriteriaConverter.java";
+        const path = this.apiModule + basePath + "/api/convert/" + this.className + "SearchCriteriaConverter.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
             file.replace(inputHook, rawJavaCode);
-            javaFunctions.addImport(file, this.basePackage + ".domain.utility.DateParam");
+            javaFunctions.addImport(file, this.basePackage + ".domain.entities.utility.DateParam");
             javaFunctions.addImport(file, "java.time.LocalDateTime");
             javaFunctions.addImport(file, "java.util.Date");
             javaFunctions.addImport(file, "java.time.ZoneId");
@@ -282,7 +282,7 @@ class InvalidDateException extends RuntimeException {
     }
 
     private addDateParamClass(project: Project, basePath: string) {
-        const rawJavaConverterInput = `package ${this.basePackage}.domain.utility;
+        const rawJavaConverterInput = `package ${this.basePackage}.domain.entities.utility;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -305,7 +305,7 @@ public class DateParam {
 }
 `;
 
-        const path = this.domainModule + basePath + "/domain/utility/DateParam.java";
+        const path = this.domainModule + basePath + "/domain/entities/utility/DateParam.java";
 
         if (!project.fileExists(path)) {
             project.addFile(path, rawJavaConverterInput);

@@ -39,14 +39,14 @@ export class AddServiceMappingPutMethod extends EditFunction {
         return false;
     }`;
 
-        const path = params.coreModule + params.basePath + "/service/" + this.oneClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/api/service/" + this.oneClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "update" + this.oneClass + "With" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
         javaFunctions.addToConstructor(file, this.oneClass + "Service",
             this.otherClass.toLowerCase() + "Repository");
-        javaFunctions.addImport(file, params.basePackage + ".db.repo." + this.otherClass + "Repository");
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
     }
 }

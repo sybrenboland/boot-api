@@ -63,7 +63,7 @@ export class AddConverter implements EditProject {
 
     private addConverterClass(project: Project, basePath: string): void {
 
-        const rawJavaFileContent = `package ${this.basePackage}.convert;
+        const rawJavaFileContent = `package ${this.basePackage}.api.convert;
 
 import ${this.basePackage}.db.hibernate.bean.${this.className};
 import ${this.basePackage}.domain.Json${this.className};
@@ -107,7 +107,7 @@ public class ${this.className}Converter {
     }
 }`;
 
-        const pathConverter = basePath + "/convert/" + this.className + "Converter.java";
+        const pathConverter = basePath + "/api/convert/" + this.className + "Converter.java";
         if (!project.fileExists(pathConverter)) {
             project.addFile(pathConverter, rawJavaFileContent);
         }

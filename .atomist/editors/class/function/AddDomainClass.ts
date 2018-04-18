@@ -63,7 +63,7 @@ export class AddDomainClass implements EditProject {
 
         const basePath = this.module + "/src/main";
         const pathClass = basePath + "/java/" + fileFunctions.toPath(this.basePackage)
-            + "/domain/Json" + this.className + ".java";
+            + "/domain/entities/Json" + this.className + ".java";
 
         this.addDependencies(project);
         this.addDomainClass(project, pathClass);
@@ -100,8 +100,7 @@ export class AddDomainClass implements EditProject {
 
     private addDomainClass(project: Project, pathClass: string): void {
 
-        const domainPackage = "domain";
-        const rawJavaFileContent = `package ${this.basePackage + "." + domainPackage};
+        const rawJavaFileContent = `package ${this.basePackage}.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.hateoas.ResourceSupport;

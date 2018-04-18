@@ -81,7 +81,8 @@ export class AddExceptionHandler implements EditProject {
 
     public edit(project: Project) {
 
-        const basePath = this.apiModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePath = this.apiModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/api";
 
         this.addDependencies(project);
         this.addHandlerClass(project, basePath);
@@ -101,7 +102,7 @@ export class AddExceptionHandler implements EditProject {
             this.responseMessage :
             "There seems to be a problem with application.";
 
-        const rawJavaFileContent = `package ${this.basePackage}.exception;
+        const rawJavaFileContent = `package ${this.basePackage}.api.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

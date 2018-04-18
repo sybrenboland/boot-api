@@ -89,10 +89,15 @@ export class AddBeanClass implements EditProject {
 
     private addBeanClass(project: Project, basePath: string): void {
 
-        const beanPackage = "db.hibernate.bean";
+        const beanPackage = "persistence.db.hibernate.bean";
         const rawJavaFileContent = `package ${this.basePackage + "." + beanPackage};
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "${this.className.toUpperCase()}")
@@ -107,7 +112,7 @@ public class ${this.className} {
     
 }`;
         const path = basePath + "/java/" + fileFunctions.toPath(this.basePackage)
-            + "/db/hibernate/bean/" + this.className + ".java";
+            + "/persistence/db/hibernate/bean/" + this.className + ".java";
         if (!project.fileExists(path)) {
             project.addFile(path, rawJavaFileContent);
         }

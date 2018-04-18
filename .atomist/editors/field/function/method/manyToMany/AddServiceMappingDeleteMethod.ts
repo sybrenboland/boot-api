@@ -36,10 +36,10 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
         return false;
     }`;
 
-        const path = params.coreModule + params.basePath + "/service/" + this.oneClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/core/service/" + this.oneClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "remove" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
     }
 }

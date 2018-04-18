@@ -77,7 +77,7 @@ export class PackageAsWar implements EditProject {
         return application.sources(Application.class);
     }`;
 
-        const path = basePath + "/Application.java";
+        const path = basePath + "/api/Application.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, " configure", rawJavaMethod);
 

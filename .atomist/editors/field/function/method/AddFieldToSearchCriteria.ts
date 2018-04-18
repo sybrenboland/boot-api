@@ -16,7 +16,7 @@ export class AddFieldToSearchCriteria extends EditFunction {
     
     ` + inputHook;
 
-        const path = params.persistenceModule + params.basePath + "/domain/" + this.otherClass + "SearchCriteria.java";
+        const path = params.persistenceModule + params.basePath + "/domain/entities/" + this.otherClass + "SearchCriteria.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {

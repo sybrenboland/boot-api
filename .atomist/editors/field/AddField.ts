@@ -174,7 +174,7 @@ export class AddField implements EditProject {
     
     ` + inputHook;
 
-        const beanPath = this.persistenceModule + basePath + "/db/hibernate/bean/" + this.className + ".java";
+        const beanPath = this.persistenceModule + basePath + "/persistence/db/hibernate/bean/" + this.className + ".java";
         const beanFile: File = project.findFile(beanPath);
 
         if (project.fileExists(beanPath)) {
@@ -191,7 +191,7 @@ export class AddField implements EditProject {
 
     ` + inputHook;
 
-        const path = this.domainModule + basePath + "/domain/Json" + this.className + ".java";
+        const path = this.domainModule + basePath + "/domain/entities/Json" + this.className + ".java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
@@ -214,7 +214,7 @@ export class AddField implements EditProject {
             `.${javaFunctions.methodPrefix(this.type)}${javaFunctions.capitalize(this.fieldName)}())
                 ` + inputBeanHook;
 
-        const path = this.apiModule + basePath + "/convert/" + this.className + "Converter.java";
+        const path = this.apiModule + basePath + "/api/convert/" + this.className + "Converter.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
@@ -232,7 +232,7 @@ export class AddField implements EditProject {
     
     ` + inputHook;
 
-        const path = this.domainModule + basePath + "/domain/Json" + this.className + "SearchCriteria.java";
+        const path = this.domainModule + basePath + "/domain/entities/Json" + this.className + "SearchCriteria.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
@@ -248,7 +248,7 @@ export class AddField implements EditProject {
     
     ` + inputHook;
 
-        const path = this.persistenceModule + basePath + "/domain/" + this.className + "SearchCriteria.java";
+        const path = this.persistenceModule + basePath + "/domain/entities/" + this.className + "SearchCriteria.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
@@ -270,7 +270,7 @@ export class AddField implements EditProject {
     
         ` + inputHook;
 
-        const path = this.apiModule + basePath + "/convert/" + this.className + "SearchCriteriaConverter.java";
+        const path = this.apiModule + basePath + "/api/convert/" + this.className + "SearchCriteriaConverter.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
@@ -292,7 +292,7 @@ export class AddField implements EditProject {
     
         ` + predicateInputHook;
 
-        const path = this.persistenceModule + basePath + "/db/repo/" + this.className + "RepositoryImpl.java";
+        const path = this.persistenceModule + basePath + "/persistence/db/repo/" + this.className + "RepositoryImpl.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {

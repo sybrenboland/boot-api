@@ -161,8 +161,8 @@ export class AddSearchCriteria implements EditProject {
     }
 
     private addJsonSearchResult(project: Project, basePath: string) {
-        const path = this.domainModule + basePath + "/domain/JsonSearchResult.java";
-        const rawJavaContent = `package ${this.basePackage}.domain;
+        const path = this.domainModule + basePath + "/domain/entities/JsonSearchResult.java";
+        const rawJavaContent = `package ${this.basePackage}.domain.entities;
 
 import java.util.List;
 
@@ -201,8 +201,8 @@ public class JsonSearchResult<T> {
     }
 
     private addJsonSearchCriteria(project: Project, basePath: string) {
-        const path = this.domainModule + basePath + "/domain/Json" + this.className + "SearchCriteria.java";
-        const rawJavaContent = `package ${this.basePackage}.domain;
+        const path = this.domainModule + basePath + "/domain/entities/Json" + this.className + "SearchCriteria.java";
+        const rawJavaContent = `package ${this.basePackage}.domain.entities;
 
 import javax.ws.rs.QueryParam;
 
@@ -237,8 +237,8 @@ public class Json${this.className}SearchCriteria {
     }
 
     private addSearchCriteria(project: Project, basePath: string) {
-        const path = this.persistenceModule + basePath + "/domain/" + this.className + "SearchCriteria.java";
-        const rawJavaContent = `package ${this.basePackage}.domain;
+        const path = this.persistenceModule + basePath + "/persistence/domain/" + this.className + "SearchCriteria.java";
+        const rawJavaContent = `package ${this.basePackage}.persistence.domain;
 
 import java.util.Optional;
 
@@ -265,11 +265,11 @@ public class ${this.className}SearchCriteria {
     }
 
     private addSearchCriteriaConverter(project: Project, basePath: string) {
-        const path = this.apiModule + basePath + "/convert/" + this.className + "SearchCriteriaConverter.java";
-        const rawJavaContent = `package ${this.basePackage}.convert;
+        const path = this.apiModule + basePath + "/api/convert/" + this.className + "SearchCriteriaConverter.java";
+        const rawJavaContent = `package ${this.basePackage}.api.convert;
 
-import ${this.basePackage}.domain.Json${this.className}SearchCriteria;
-import ${this.basePackage}.domain.${this.className}SearchCriteria;
+import ${this.basePackage}.domain.entities.Json${this.className}SearchCriteria;
+import ${this.basePackage}.domain.entities.${this.className}SearchCriteria;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -312,12 +312,12 @@ public class ${this.className}SearchCriteriaConverter {
     @RequestMapping(path = "", method = RequestMethod.GET)
     ResponseEntity<JsonSearchResult> list(@BeanParam Json${this.className}SearchCriteria searchCriteria);`;
 
-        const path = this.apiModule + basePath + "/resource/I" + this.className + "Controller.java";
+        const path = this.apiModule + basePath + "/api/resource/I" + this.className + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className + "SearchCriteria");
-        javaFunctions.addImport(file, this.basePackage + ".domain.JsonSearchResult");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.JsonSearchResult");
         javaFunctions.addImport(file, "javax.ws.rs.BeanParam");
     }
 
@@ -350,20 +350,20 @@ public class ${this.className}SearchCriteriaConverter {
         return ResponseEntity.ok(result);
     }`;
 
-        const path = this.apiModule + basePath + "/resource/" + this.className + "Controller.java";
+        const path = this.apiModule + basePath + "/api/resource/" + this.className + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
         javaFunctions.addToConstructor(file, this.className + "Controller",
             this.className.toLowerCase() + "SearchCriteriaConverter");
-        javaFunctions.addImport(file, this.basePackage + ".convert." + this.className + "SearchCriteriaConverter");
+        javaFunctions.addImport(file, this.basePackage + ".api.convert." + this.className + "SearchCriteriaConverter");
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");
         javaFunctions.addImport(file, "lombok.extern.slf4j.Slf4j");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className + "SearchCriteria");
-        javaFunctions.addImport(file, this.basePackage + ".domain.JsonSearchResult");
-        javaFunctions.addImport(file, this.basePackage + ".convert.ConvertException");
-        javaFunctions.addImport(file, this.basePackage + ".domain." + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.JsonSearchResult");
+        javaFunctions.addImport(file, this.basePackage + ".domain.convert.ConvertException");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities." + this.className + "SearchCriteria");
         javaFunctions.addImport(file, "java.util.ArrayList");
         javaFunctions.addImport(file, "java.util.List");
         javaFunctions.addImport(file, "javax.ws.rs.BeanParam");
@@ -376,11 +376,11 @@ public class ${this.className}SearchCriteriaConverter {
         return ${this.className.toLowerCase()}Repository.findBySearchCriteria(sc);
     }`;
 
-        const path = this.coreModule + basePath + "/service/" + this.className + "Service.java";
+        const path = this.coreModule + basePath + "/core/service/" + this.className + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "findBySearchCriteria", rawJavaMethod);
 
-        javaFunctions.addImport(file, this.basePackage + ".domain." + this.className + "SearchCriteria");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities." + this.className + "SearchCriteria");
     }
 
     private addServiceMethodCount(project: Project, basePath: string) {
@@ -390,7 +390,7 @@ public class ${this.className}SearchCriteriaConverter {
     }
     `;
 
-        const path = this.coreModule + basePath + "/service/" + this.className + "Service.java";
+        const path = this.coreModule + basePath + "/core/service/" + this.className + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, `findNumberOf${this.className}`, rawJavaMethod);
 
@@ -398,8 +398,8 @@ public class ${this.className}SearchCriteriaConverter {
     }
 
     private addConversionException(project: Project, basePath: string) {
-        const path = this.apiModule + basePath + "/convert/ConvertException.java";
-        const rawJavaContent = `package ${this.basePackage}.convert;
+        const path = this.apiModule + basePath + "/api/convert/ConvertException.java";
+        const rawJavaContent = `package ${this.basePackage}.api.convert;
 
 public class ConvertException extends RuntimeException {
 
@@ -418,11 +418,11 @@ public class ConvertException extends RuntimeException {
     }
 
     private addCustomRepository(project: Project, basePath: string) {
-        const path = this.persistenceModule + basePath + "/db/repo/" + this.className + "RepositoryCustom.java";
-        const rawJavaContent = `package ${this.basePackage}.db.repo;
+        const path = this.persistenceModule + basePath + "/persistence/db/repo/" + this.className + "RepositoryCustom.java";
+        const rawJavaContent = `package ${this.basePackage}.persistence.db.repo;
 
-import ${this.basePackage}.db.hibernate.bean.${this.className};
-import ${this.basePackage}.domain.${this.className}SearchCriteria;
+import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
+import ${this.basePackage}.domain.entities.${this.className}SearchCriteria;
 
 import java.util.List;
 
@@ -440,11 +440,11 @@ public interface ${this.className}RepositoryCustom {
     }
 
     private addCustomRepositoryImplementation(project: Project, basePath: string) {
-        const path = this.persistenceModule + basePath + "/db/repo/" + this.className + "RepositoryImpl.java";
-        const rawJavaContent = `package ${this.basePackage}.db.repo;
+        const path = this.persistenceModule + basePath + "/persistence/db/repo/" + this.className + "RepositoryImpl.java";
+        const rawJavaContent = `package ${this.basePackage}.persistence.db.repo;
 
-import ${this.basePackage}.db.hibernate.bean.${this.className};
-import ${this.basePackage}.domain.${this.className}SearchCriteria;
+import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
+import ${this.basePackage}.domain.entities.${this.className}SearchCriteria;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -521,8 +521,8 @@ public class ${this.className}RepositoryImpl extends AbstractHibernateRepository
     }
 
     private addAbstractRepository(project: Project, basePath: string) {
-        const path = this.persistenceModule + basePath + "/db/repo/AbstractHibernateRepository.java";
-        const rawJavaContent = `package ${this.basePackage}.db.repo;
+        const path = this.persistenceModule + basePath + "/persistence/db/repo/AbstractHibernateRepository.java";
+        const rawJavaContent = `package ${this.basePackage}.persistence.db.repo;
 
 import org.springframework.stereotype.Repository;
 
@@ -568,7 +568,7 @@ public abstract class AbstractHibernateRepository<T> {
     }
 
     private extendRepository(project: Project, basePath: string) {
-        const path = this.persistenceModule + basePath + "/db/repo/" + this.className + "Repository.java";
+        const path = this.persistenceModule + basePath + "/persistence/db/repo/" + this.className + "Repository.java";
         const file: File = project.findFile(path);
 
         file.replace(">", `>, ${this.className}RepositoryCustom`)

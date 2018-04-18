@@ -48,7 +48,8 @@ export class AddResource implements EditProject {
 
     public edit(project: Project) {
 
-        const basePath = this.module + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePath = this.module + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/api";
 
         this.addDependencies(project);
         this.addResourceInterface(project, basePath);
@@ -65,7 +66,7 @@ export class AddResource implements EditProject {
 
     private addResourceInterface(project: Project, basePath: string): void {
 
-        const rawJavaFileContent = `package ${this.basePackage + ".resource"};
+        const rawJavaFileContent = `package ${this.basePackage}.api.resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -84,10 +85,10 @@ public interface I${this.className}Controller {
 
     private addResourceClass(project: Project, basePath: string): void {
 
-        const rawJavaFileContent = `package ${this.basePackage}.resource;
+        const rawJavaFileContent = `package ${this.basePackage}.api.resource;
 
-import ${this.basePackage}.service.${this.className}Service;
-import ${this.basePackage}.convert.${this.className}Converter;
+import ${this.basePackage}.core.service.${this.className}Service;
+import ${this.basePackage}.api.convert.${this.className}Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 

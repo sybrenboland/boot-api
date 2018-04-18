@@ -48,7 +48,8 @@ export class AddRepository implements EditProject {
 
     public edit(project: Project) {
 
-        const basePath = this.module + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePath = this.module + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/persistence";
 
         this.addDependencies(project);
         this.addRepositoryClass(project, basePath);
@@ -64,7 +65,7 @@ export class AddRepository implements EditProject {
 
     private addRepositoryClass(project: Project, basePath: string): void {
 
-        const rawJavaFileContent = `package ${this.basePackage}.db.repo;
+        const rawJavaFileContent = `package ${this.basePackage}.${this.module}.db.repo;
 
 import ${this.basePackage}.db.hibernate.bean.${this.className};
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -72,7 +73,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ${this.className}Repository extends JpaRepository<${this.className}, Long> {
 }`;
 
-        const pathRepository = basePath + "/db/repo/" + this.className + "Repository.java";
+        const pathRepository = basePath + "/persistence/db/repo/" + this.className + "Repository.java";
         if (!project.fileExists(pathRepository)) {
             project.addFile(pathRepository, rawJavaFileContent);
         }

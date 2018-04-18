@@ -64,7 +64,7 @@ export class AddSpringBoot implements EditProject {
 
     private addApplicationFile(project: Project): void {
         const applicationPath = this.apiModule + "/src/main/java/"
-            + this.basePackage.replace(/\./gi, "/") + "/Application.java";
+            + this.basePackage.replace(/\./gi, "/") + "/api/Application.java";
         const rawJavaFileContent = `package ${this.basePackage};
 
 import org.springframework.boot.SpringApplication;

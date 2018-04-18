@@ -18,13 +18,13 @@ export class AddLinkToConverterMany extends EditFunction {
             `.withRel("${this.oneClass.toLowerCase()}"));
             ` + inputHook;
 
-        const path = params.apiModule + params.basePath + "/convert/" + this.otherClass + "Converter.java";
+        const path = params.apiModule + params.basePath + "/api/convert/" + this.otherClass + "Converter.java";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
             file.replace(inputHook, rawJavaCode);
 
-            javaFunctions.addImport(file, params.basePackage + ".resource." + this.otherClass + "Controller");
+            javaFunctions.addImport(file, params.basePackage + ".api.resource." + this.otherClass + "Controller");
             javaFunctions.addImport(file, "static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo");
         } else {
             console.error("Converter not added yet!");
