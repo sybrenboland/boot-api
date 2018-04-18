@@ -69,7 +69,7 @@ export class ApiForBean implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public persistenceModule: string = "";
+    public persistenceModule: string = "persistence";
 
     @Parameter({
         displayName: "Module name",
@@ -80,7 +80,7 @@ export class ApiForBean implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public apiModule: string = "";
+    public apiModule: string = "api";
 
     @Parameter({
         displayName: "Core apiModule name",
@@ -102,7 +102,7 @@ export class ApiForBean implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public domainModule: string = "";
+    public domainModule: string = "domain";
 
     @Parameter({
         displayName: "Module name",
@@ -113,7 +113,7 @@ export class ApiForBean implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public databaseModule: string = "";
+    public databaseModule: string = "db";
 
     @Parameter({
         displayName: "Release",
@@ -135,7 +135,7 @@ export class ApiForBean implements EditProject {
         maxLength: 4,
         required: false,
     })
-    public port: string = "";
+    public port: string = "0";
 
     @Parameter({
         displayName: "Version",
@@ -256,7 +256,7 @@ export class ApiForBean implements EditProject {
 
     private setSpringBootVersion(project: Project) {
         addSpringBoot.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addSpringBoot.apiModule = this.apiModule;
         }
         if (this.springBootVersion !== "") {
@@ -267,16 +267,16 @@ export class ApiForBean implements EditProject {
     
     private addConfigFiles(project: Project) {
         addConfig.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addConfig.apiModule = this.apiModule;
         }
-        if (this.persistenceModule !== "") {
+        if (this.persistenceModule !== "persistence") {
             addConfig.persistenceModule = this.persistenceModule;
         }
-        if (this.domainModule !== "") {
+        if (this.domainModule !== "domain") {
             addConfig.domainModule = this.domainModule;
         }
-        if (this.port !== "") {
+        if (this.port !== "0") {
             addConfig.port = this.port;
         }
 
@@ -285,7 +285,7 @@ export class ApiForBean implements EditProject {
 
     private addLiquibase(project: Project) {
 
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addLiquibase.apiModule = this.apiModule;
         }
         if (this.liquibaseVersion !== "") {
@@ -302,10 +302,10 @@ export class ApiForBean implements EditProject {
 
         addBeanClass.className = this.className;
         addBeanClass.basePackage = this.basePackage;
-        if (this.persistenceModule !== "") {
+        if (this.persistenceModule !== "persistence") {
             addBeanClass.persistenceModule = this.persistenceModule;
         }
-        if (this.databaseModule !== "") {
+        if (this.databaseModule !== "db") {
             addBeanClass.databaseModule = this.databaseModule;
         }
         if (this.release !== "") {
@@ -318,7 +318,7 @@ export class ApiForBean implements EditProject {
     private addDomainClass(project: Project) {
         addDomainClass.className = this.className;
         addDomainClass.basePackage = this.basePackage;
-        if (this.domainModule !== "") {
+        if (this.domainModule !== "domain") {
             addDomainClass.module = this.domainModule;
         }
         if (this.jacksonVersion !== "") {
@@ -332,12 +332,12 @@ export class ApiForBean implements EditProject {
         if (this.lombokVersion !== "") {
             addLombok.version = this.lombokVersion;
         }
-        addLombok.pathToClass = "domain/src/main/java/" + this.basePackage.replace(/\./gi, "/")
-            + "/domain/Json" + this.className + ".java";
+        addLombok.pathToClass = this.domainModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/")
+            + "/domain/entities/Json" + this.className + ".java";
         addLombok.edit(project);
 
-        addLombok.pathToClass = "persistence/src/main/java/" + this.basePackage.replace(/\./gi, "/")
-            + "/db/hibernate/bean/" + this.className + ".java";
+        addLombok.pathToClass = this.persistenceModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/")
+            + "/persistence/db/hibernate/bean/" + this.className + ".java";
         addLombok.edit(project);
     }
 
@@ -345,7 +345,7 @@ export class ApiForBean implements EditProject {
 
         addRepository.className = this.className;
         addRepository.basePackage = this.basePackage;
-        if (this.persistenceModule !== "") {
+        if (this.persistenceModule !== "persistence") {
             addRepository.module = this.persistenceModule;
         }
 
@@ -356,7 +356,7 @@ export class ApiForBean implements EditProject {
 
         addConverter.className = this.className;
         addConverter.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addConverter.module = this.apiModule;
         }
 
@@ -367,7 +367,7 @@ export class ApiForBean implements EditProject {
 
         addService.className = this.className;
         addService.basePackage = this.basePackage;
-        if (this.coreModule !== "") {
+        if (this.coreModule !== "core") {
             addService.module = this.coreModule;
         }
 
@@ -378,7 +378,7 @@ export class ApiForBean implements EditProject {
 
         addResource.className = this.className;
         addResource.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addResource.module = this.apiModule;
         }
 
@@ -417,10 +417,10 @@ export class ApiForBean implements EditProject {
 
         addGet.className = this.className;
         addGet.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addGet.apiModule = this.apiModule;
         }
-        if (this.coreModule !== "") {
+        if (this.coreModule !== "core") {
             addGet.coreModule = this.coreModule;
         }
 
@@ -431,10 +431,10 @@ export class ApiForBean implements EditProject {
 
         addPost.className = this.className;
         addPost.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addPost.apiModule = this.apiModule;
         }
-        if (this.coreModule !== "") {
+        if (this.coreModule !== "core") {
             addPost.coreModule = this.coreModule;
         }
 
@@ -445,10 +445,10 @@ export class ApiForBean implements EditProject {
 
         addPut.className = this.className;
         addPut.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addPut.apiModule = this.apiModule;
         }
-        if (this.coreModule !== "") {
+        if (this.coreModule !== "core") {
             addPut.coreModule = this.coreModule;
         }
 
@@ -459,10 +459,10 @@ export class ApiForBean implements EditProject {
 
         addDelete.className = this.className;
         addDelete.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addDelete.apiModule = this.apiModule;
         }
-        if (this.coreModule !== "") {
+        if (this.coreModule !== "core") {
             addDelete.coreModule = this.coreModule;
         }
 
@@ -473,13 +473,13 @@ export class ApiForBean implements EditProject {
 
         addSearchCriteria.className = this.className;
         addSearchCriteria.basePackage = this.basePackage;
-        if(this.persistenceModule !== "") {
+        if(this.persistenceModule !== "persistence") {
             addSearchCriteria.persistenceModule = this.persistenceModule;
         }
-        if(this.apiModule !== "") {
+        if(this.apiModule !== "api") {
             addSearchCriteria.apiModule = this.apiModule;
         }
-        if(this.domainModule !== "") {
+        if(this.domainModule !== "domain") {
             addSearchCriteria.domainModule = this.domainModule;
         }
         if(this.restEasyVersion !== "") {
@@ -492,7 +492,7 @@ export class ApiForBean implements EditProject {
     private addSwagger(project: Project) {
 
         addSwagger.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addSwagger.apiModule = this.apiModule;
         }
         if (this.swaggerVersion !== "") {
@@ -504,7 +504,7 @@ export class ApiForBean implements EditProject {
 
     private addDocker(project: Project) {
         addDocker.basePackage = this.basePackage;
-        if (this.apiModule !== "") {
+        if (this.apiModule !== "api") {
             addDocker.apiModule = this.apiModule;
         }
         if (this.dockerImagePrefix !== "") {
@@ -516,7 +516,7 @@ export class ApiForBean implements EditProject {
         if (this.release !== "") {
             addDocker.release = this.release;
         }
-        if (this.port !== "") {
+        if (this.port !== "0") {
             addDocker.port = this.port;
         }
 

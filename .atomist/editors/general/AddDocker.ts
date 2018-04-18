@@ -167,16 +167,16 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
     private extendComposeFile(project: Project) {
         const inputHook = 'postgres-container';
         const rawChangeSetContent = `api-service:
-  image: ${this.dockerImagePrefix}/${this.apiModule}:${this.release}
-  restart: always
-  ports:
-    - ${this.port}:${this.port}
-  environment:
-    - SPRING_PROFILES_ACTIVE=production
-  links:
-    - postgres-container:postgres
-    
-` + inputHook;
+    image: ${this.dockerImagePrefix}/${this.apiModule}:${this.release}
+    restart: always
+    ports:
+      - ${this.port}:${this.port}
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+    links:
+      - postgres-container:postgres
+  
+  ` + inputHook;
 
         const path = "docker-compose.yml";
         if (project.fileExists(path)) {

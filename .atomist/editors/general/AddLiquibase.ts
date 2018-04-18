@@ -45,7 +45,7 @@ export class AddLiquibase implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public postgresVersion: string = "9.1-901.jdbc4";
+    public postgresVersion: string = "9.4-1206-jdbc42";
 
     public edit(project: Project) {
         this.addDependencies(project);
@@ -70,14 +70,14 @@ export class AddLiquibase implements EditProject {
         });
 
         const postgresDependency = `            <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>\${postgres.version}</version>
                 <scope>runtime</scope>
             </dependency>`;
 
         eng.with<Pom>(project, "/Pom()", pom => {
-            pom.addOrReplaceDependencyManagementDependency("postgresql", "postgresql", postgresDependency);
+            pom.addOrReplaceDependencyManagementDependency("org.postgresql", "postgresql", postgresDependency);
             pom.addOrReplaceProperty("postgres.version", this.postgresVersion);
         });
 
@@ -87,7 +87,7 @@ export class AddLiquibase implements EditProject {
 
         eng.with<Pom>(apiModulePomFile, "/Pom()", pom => {
             pom.addOrReplaceDependencyOfScope("org.liquibase", "liquibase-core", "runtime");
-            pom.addOrReplaceDependencyOfScope("postgresql", "postgresql", "runtime");
+            pom.addOrReplaceDependencyOfScope("org.postgresql", "postgresql", "runtime");
         });
     }
 
@@ -127,13 +127,15 @@ spring:
     private addDatabaseDockerComposeYaml(project: Project): void {
 
         const pathDockerComposeYaml = "docker-compose.yml";
-        const rawDockerComposeYaml = `postgres-container:
-  image: postgres:9.6.3
-  ports:
-    - 5482:5432
-  environment:
-    POSTGRES_USER: pgroot
-    POSTGRES_PASSWORD: pgpass
+        const rawDockerComposeYaml = `version: '3'
+services:
+  postgres-container:
+    image: postgres:9.6.3
+    ports:
+      - 5482:5432
+    environment:
+      POSTGRES_USER: pgroot
+      POSTGRES_PASSWORD: pgpass
 `;
 
         if (!project.fileExists(pathDockerComposeYaml)) {
