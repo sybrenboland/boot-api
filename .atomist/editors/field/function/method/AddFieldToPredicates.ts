@@ -23,7 +23,7 @@ export class AddFieldToPredicates extends EditFunction {
     
         ` + predicateInputHook;
 
-        const path = params.persistenceModule + params.basePath + "/db/repo/" + this.otherClass + "RepositoryImpl.java";
+        const path = params.persistenceModule + params.basePath + "/persistence/db/repo/" + this.otherClass + "RepositoryImpl.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {

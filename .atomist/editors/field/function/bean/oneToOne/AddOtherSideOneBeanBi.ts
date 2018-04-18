@@ -17,7 +17,7 @@ export class AddOtherSideOneBeanBi extends EditFunction {
     
     ` + inputHook;
 
-        const beanPath = params.persistenceModule + params.basePath + "/db/hibernate/bean/" + this.otherClass + ".java";
+        const beanPath = params.persistenceModule + params.basePath + "/persistence/db/hibernate/bean/" + this.otherClass + ".java";
         const beanFile: File = project.findFile(beanPath);
 
         if (project.fileExists(beanPath)) {

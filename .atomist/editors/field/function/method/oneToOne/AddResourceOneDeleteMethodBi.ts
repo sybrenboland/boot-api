@@ -22,7 +22,7 @@ export class AddResourceOneDeleteMethodBi extends EditFunction {
                 ResponseEntity.notFound().build();
     }`;
 
-        const path = params.apiModule + params.basePath + "/resource/" + this.oneClass + "Controller.java";
+        const path = params.apiModule + params.basePath + "/core/resource/" + this.oneClass + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "delete" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 

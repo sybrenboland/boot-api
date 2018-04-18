@@ -15,16 +15,16 @@ export class AddServiceManyPutMethod extends EditFunction {
         const rawJavaMethod = `
     public boolean update${this.otherClass}With${this.oneClass}(long ${this.otherClass.toLowerCase()}Id, ` +
             `long ${this.oneClass.toLowerCase()}Id) {
-        ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.` +
-            `findOne(${this.otherClass.toLowerCase()}Id);
-        if (${this.otherClass.toLowerCase()} != null) {
+        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${this.otherClass.toLowerCase()}Repository.` +
+            `findById(${this.otherClass.toLowerCase()}Id);
+        if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
 
-            ${this.oneClass} ${this.oneClass.toLowerCase()} = ` +
-            `${this.oneClass.toLowerCase()}Repository.findOne(${this.oneClass.toLowerCase()}Id);
-            if (${this.oneClass.toLowerCase()} != null) {
+            Optional<${this.oneClass}> ${this.oneClass.toLowerCase()}Optional = ` +
+            `${this.oneClass.toLowerCase()}Repository.findById(${this.oneClass.toLowerCase()}Id);
+            if (${this.oneClass.toLowerCase()}Optional.isPresent()) {
 
-                ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
-                        .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()})
+                ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}Optional.get().toBuilder()
+                        .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()}Optional.get())
                         .build();
                 ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
                 return true;
@@ -34,14 +34,15 @@ export class AddServiceManyPutMethod extends EditFunction {
         return false;
     }`;
 
-        const path = params.coreModule + params.basePath + "/service/" + this.otherClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/core/service/" + this.otherClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "update" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.oneClass);
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
 
         javaFunctions.addToConstructor(file, this.otherClass + "Service",
             this.oneClass.toLowerCase() + "Repository");
-        javaFunctions.addImport(file, params.basePackage + ".db.repo." + this.oneClass + "Repository");
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.oneClass + "Repository");
+        javaFunctions.addImport(file, "java.util.Optional");
     }
 }

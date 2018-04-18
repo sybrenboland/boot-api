@@ -17,7 +17,7 @@ export class AddResourceInterfaceOneDeleteMethod extends EditFunction {
     ResponseEntity delete${this.otherClass}With${this.oneClass}` +
             `(@PathVariable("${this.oneClass.toLowerCase()}Id") long ${this.oneClass.toLowerCase()}Id);`;
 
-        const path = params.apiModule + params.basePath + "/resource/I" + this.oneClass + "Controller.java";
+        const path = params.apiModule + params.basePath + "/api/resource/I" + this.oneClass + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "delete" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 

@@ -18,7 +18,7 @@ export class AddResourceInterfaceOnePutMethod extends EditFunction {
             `(@PathVariable("${this.oneClass.toLowerCase()}Id") long ${this.oneClass.toLowerCase()}Id, ` +
             `@RequestBody Json${this.otherClass} ${this.otherClass.toLowerCase()});`;
 
-        const path = params.apiModule + params.basePath + "/resource/I" + this.oneClass + "Controller.java";
+        const path = params.apiModule + params.basePath + "/api/resource/I" + this.oneClass + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
@@ -26,6 +26,6 @@ export class AddResourceInterfaceOnePutMethod extends EditFunction {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, params.basePackage + ".domain.Json" + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.otherClass);
     }
 }

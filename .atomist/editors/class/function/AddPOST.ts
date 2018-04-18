@@ -72,8 +72,11 @@ export class AddPOST implements EditProject {
 
     public edit(project: Project) {
 
-        const basePathApi = this.apiModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
-        const basePathCore = this.coreModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePathApi = this.apiModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/" + this.apiModule;
+
+        const basePathCore = this.coreModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/" + this.coreModule;
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
@@ -106,7 +109,7 @@ export class AddPOST implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, "java.net.URISyntaxException");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 
     private addResourceClassMethod(project: Project, basePath: string): void {
@@ -131,7 +134,7 @@ export class AddPOST implements EditProject {
         javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 
     private addExceptionHandler(project: Project) {
@@ -157,7 +160,7 @@ export function addServiceMethodSaveBean(project: Project, className: string, ba
     const file: File = project.findFile(path);
     javaFunctions.addFunction(file, "save", rawJavaMethod);
 
-    javaFunctions.addImport(file, basePackage + ".db.hibernate.bean." + className);
+    javaFunctions.addImport(file, basePackage + ".persistence.db.hibernate.bean." + className);
 }
 
 export const addPost = new AddPOST();

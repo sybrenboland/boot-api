@@ -44,7 +44,7 @@ export class AddSpringBoot implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public version: string = "1.5.8.RELEASE";
+    public version: string = "2.0.1.RELEASE";
 
     public edit(project: Project) {
         this.setVersionBootParent(project);
@@ -64,8 +64,8 @@ export class AddSpringBoot implements EditProject {
 
     private addApplicationFile(project: Project): void {
         const applicationPath = this.apiModule + "/src/main/java/"
-            + this.basePackage.replace(/\./gi, "/") + "/Application.java";
-        const rawJavaFileContent = `package ${this.basePackage};
+            + this.basePackage.replace(/\./gi, "/") + "/api/Application.java";
+        const rawJavaFileContent = `package ${this.basePackage}.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

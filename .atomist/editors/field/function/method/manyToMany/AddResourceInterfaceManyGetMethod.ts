@@ -17,7 +17,7 @@ export class AddResourceInterfaceGetMethodMany extends EditFunction {
             `method = RequestMethod.GET)
     ResponseEntity get${this.oneClass}(@PathVariable long ${this.otherClass.toLowerCase()}Id);`;
 
-        const path = params.apiModule + params.basePath + "/resource/I" + this.otherClass + "Controller.java";
+        const path = params.apiModule + params.basePath + "/api/resource/I" + this.otherClass + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "get" + this.oneClass, rawJavaMethod);
 

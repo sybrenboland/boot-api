@@ -70,8 +70,11 @@ export class AddGET implements EditProject {
 
     public edit(project: Project) {
 
-        const basePathApi = this.apiModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
-        const basePathCore = this.coreModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePathApi = this.apiModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/api";
+
+        const basePathCore = this.coreModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/core";
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
@@ -101,7 +104,7 @@ export class AddGET implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 
     private addResourceClassMethod(project: Project, basePath: string): void {
@@ -126,8 +129,8 @@ export class AddGET implements EditProject {
         javaFunctions.addImport(file, "java.util.Optional");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
-        javaFunctions.addImport(file, this.basePackage + ".db.hibernate.bean." + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
     }
 }
 
@@ -135,10 +138,7 @@ export function addServiceMethodFetchBean(project: Project, className: string, b
 
     const rawJavaMethod = `
     public Optional<${className}> fetch${className}(long ${className.toLowerCase()}Id) {
-        ${className} ${className.toLowerCase()} = ` +
-        `${className.toLowerCase()}Repository.findOne(${className.toLowerCase()}Id);
-
-        return ${className.toLowerCase()} == null ? Optional.empty() : Optional.of(${className.toLowerCase()});
+        return ${className.toLowerCase()}Repository.findById(${className.toLowerCase()}Id);
     }`;
 
     const path = basePath + "/service/" + className + "Service.java";
@@ -146,7 +146,7 @@ export function addServiceMethodFetchBean(project: Project, className: string, b
     javaFunctions.addFunction(file, "fetch" + className, rawJavaMethod);
 
     javaFunctions.addImport(file, "java.util.Optional");
-    javaFunctions.addImport(file, basePackage + ".db.hibernate.bean." + className);
+    javaFunctions.addImport(file, basePackage + ".persistence.db.hibernate.bean." + className);
 }
 
 export const addGet = new AddGET();

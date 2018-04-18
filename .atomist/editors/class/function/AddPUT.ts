@@ -72,8 +72,11 @@ export class AddPUT implements EditProject {
 
     public edit(project: Project) {
 
-        const basePathApi = this.apiModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
-        const basePathCore = this.coreModule + "/src/main/java/" + this.basePackage.replace(/\./gi, "/");
+        const basePathApi = this.apiModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/" + this.apiModule;
+
+        const basePathCore = this.coreModule + "/src/main/java/" +
+            this.basePackage.replace(/\./gi, "/") + "/" + this.coreModule;
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
@@ -107,7 +110,7 @@ export class AddPUT implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 
     private addResourceClassMethod(project: Project, basePath: string): void {
@@ -141,7 +144,7 @@ export class AddPUT implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, this.basePackage + ".domain.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 }
 

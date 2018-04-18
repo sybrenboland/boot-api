@@ -24,11 +24,11 @@ export class AddServiceOneGetMethod extends EditFunction {
             `findBySearchCriteria(${this.otherClass.toLowerCase()}SearchCriteria);
     }`;
 
-        const path = params.coreModule + params.basePath + "/service/" + this.otherClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/core/service/" + this.otherClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "fetch" + this.otherClass + "sFor" + this.oneClass, rawJavaMethod);
 
         javaFunctions.addImport(file, "java.util.List");
-        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
     }
 }

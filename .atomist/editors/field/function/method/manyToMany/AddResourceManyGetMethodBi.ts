@@ -22,22 +22,22 @@ export class AddResourceGetMethodManyBi extends EditFunction {
                     ResponseEntity.notFound().build();
     }`;
 
-        const path = params.apiModule + params.basePath + "/resource/" + this.otherClass + "Controller.java";
+        const path = params.apiModule + params.basePath + "/api/resource/" + this.otherClass + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "get" + this.oneClass + "s", rawJavaMethod);
 
         javaFunctions.addImport(file, "java.util.List");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.oneClass);
-        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
         javaFunctions.addToConstructor(file, this.otherClass + "Controller",
             this.oneClass.toLowerCase() + "Service");
-        javaFunctions.addImport(file, params.basePackage + ".service." + this.oneClass + "Service");
+        javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
 
         javaFunctions.addToConstructor(file, this.otherClass + "Controller",
             this.oneClass.toLowerCase() + "Converter");
-        javaFunctions.addImport(file, params.basePackage + ".convert." + this.oneClass + "Converter");
+        javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.oneClass + "Converter");
     }
 }

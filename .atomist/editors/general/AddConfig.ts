@@ -102,14 +102,18 @@ export class AddConfig implements EditProject {
 
     private addPersistenceConfig(project: Project) {
         const configPath = this.persistenceModule + "/src/main/java/"
-            + fileFunctions.toPath(this.basePackage) + "/configuration/PersistenceConfiguration.java";
-        const rawJavaFileContent = `package ${this.basePackage}.configuration;
+            + fileFunctions.toPath(this.basePackage) + "/persistence/configuration/PersistenceConfiguration.java";
+        const rawJavaFileContent = `package ${this.basePackage}.persistence.configuration;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@ComponentScan(basePackages = { "${this.basePackage}.db" })
+@ComponentScan(basePackages = { "${this.basePackage}.persistence.db" })
+@EntityScan(basePackages = { "${this.basePackage}.persistence.db.hibernate.bean" })
+@EnableJpaRepositories("${this.basePackage}.persistence.db.repo")
 public class PersistenceConfiguration {
 }
 `;
@@ -120,14 +124,14 @@ public class PersistenceConfiguration {
 
     private addDomainConfig(project: Project) {
         const configPath = this.domainModule + "/src/main/java/"
-            + fileFunctions.toPath(this.basePackage) + "/configuration/DomainConfiguration.java";
-        const rawJavaFileContent = `package ${this.basePackage}.configuration;
+            + fileFunctions.toPath(this.basePackage) + "/domain/configuration/DomainConfiguration.java";
+        const rawJavaFileContent = `package ${this.basePackage}.domain.configuration;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages = { "${this.basePackage}.domain" })
+@ComponentScan(basePackages = { "${this.basePackage}.domain.entities" })
 public class DomainConfiguration {
 }
 `;
@@ -138,16 +142,17 @@ public class DomainConfiguration {
 
     private addCoreConfig(project: Project) {
         const configPath = this.coreModule + "/src/main/java/"
-            + fileFunctions.toPath(this.basePackage) + "/configuration/CoreConfiguration.java";
-        const rawJavaFileContent = `package ${this.basePackage}.configuration;
+            + fileFunctions.toPath(this.basePackage) + "/core/configuration/CoreConfiguration.java";
+        const rawJavaFileContent = `package ${this.basePackage}.core.configuration;
 
+import ${this.basePackage}.persistence.configuration.PersistenceConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({PersistenceConfiguration.class})
-@ComponentScan(basePackages = { "${this.basePackage}.service" })
+@ComponentScan(basePackages = { "${this.basePackage}.core.service" })
 public class CoreConfiguration {
 }
 `;
@@ -158,9 +163,11 @@ public class CoreConfiguration {
 
     private addApiConfig(project: Project) {
         const configPath = this.apiModule + "/src/main/java/"
-            + fileFunctions.toPath(this.basePackage) + "/configuration/ApiConfiguration.java";
-        const rawJavaFileContent = `package ${this.basePackage}.configuration;
+            + fileFunctions.toPath(this.basePackage) + "/api/configuration/ApiConfiguration.java";
+        const rawJavaFileContent = `package ${this.basePackage}.api.configuration;
 
+import ${this.basePackage}.core.configuration.CoreConfiguration;
+import ${this.basePackage}.domain.configuration.DomainConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -185,7 +192,17 @@ spring:
     name: spring-boot-api
 server:
   port: ${this.port}
-  contextPath: /api
+  servlet:
+    contextPath: /api
+---
+spring:
+  profiles: production
+  application:
+    name: spring-boot-api
+server:
+  port: ${this.port}
+  servlet:
+    contextPath: /api
 `;
 
         if (!project.fileExists(resourceBootstrapYamlPath)) {

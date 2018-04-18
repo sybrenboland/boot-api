@@ -15,9 +15,10 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
         const rawJavaMethod = `
     public boolean remove${this.otherClass}(long ${this.oneClass.toLowerCase()}Id, ` +
             `long ${this.otherClass.toLowerCase()}Id) {
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.` +
-            `findOne(${this.oneClass.toLowerCase()}Id);
-        if (${this.oneClass.toLowerCase()} != null) {
+        Optional<${this.oneClass}> ${this.oneClass.toLowerCase()}Optional = ${this.oneClass.toLowerCase()}Repository.` +
+            `findById(${this.oneClass.toLowerCase()}Id);
+        if (${this.oneClass.toLowerCase()}Optional.isPresent()) {
+            ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Optional.get();
 
             Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${this.oneClass.toLowerCase()}.` +
             `get${this.otherClass}Set().stream()
@@ -35,10 +36,10 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
         return false;
     }`;
 
-        const path = params.coreModule + params.basePath + "/service/" + this.oneClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/core/service/" + this.oneClass + "Service.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "remove" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, params.basePackage + ".db.hibernate.bean." + this.otherClass);
+        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
     }
 }

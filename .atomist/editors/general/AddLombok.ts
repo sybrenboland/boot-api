@@ -83,7 +83,7 @@ export class AddLombok implements EditProject {
 
     private addAnnotations(file: File): void {
         javaFunctions.addAnnotationToClass(file, "@Getter");
-        javaFunctions.addAnnotationToClass(file, "@Builder");
+        javaFunctions.addAnnotationToClass(file, "@Builder(toBuilder = true)");
         javaFunctions.addAnnotationToClass(file, "@NoArgsConstructor");
         javaFunctions.addAnnotationToClass(file, "@AllArgsConstructor(access = AccessLevel.PRIVATE)");
     }

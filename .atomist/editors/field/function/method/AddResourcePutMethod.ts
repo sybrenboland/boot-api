@@ -23,7 +23,7 @@ export class AddResourcePutMethod extends EditFunction {
                 ResponseEntity.notFound().build();
     }`;
 
-        const path = params.apiModule + params.basePath + "/resource/" + this.oneClass + "Controller.java";
+        const path = params.apiModule + params.basePath + "/api/resource/" + this.oneClass + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
