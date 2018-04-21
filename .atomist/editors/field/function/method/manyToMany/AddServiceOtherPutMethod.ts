@@ -39,8 +39,7 @@ export class AddServiceOtherPutMethod extends EditFunction {
 
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
 
-        javaFunctions.addToConstructor(file, this.otherClass + "Service",
-            this.oneClass.toLowerCase() + "Repository");
+        javaFunctions.addToConstructor(file, this.otherClass + "Service", this.oneClass + "Repository");
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.oneClass + "Repository");
     }
 }

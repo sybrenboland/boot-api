@@ -33,9 +33,9 @@ export class JavaClassFunctions {
     }
 
     public addToConstructor(file: File, className: string, argument: string) {
-        if (!file.contains(this.capitalize(argument))) {
-            this.addMemberToClass(file, "private final " + this.capitalize(argument) + " " + argument);
-            this.addConstructorArgument(file, className, this.capitalize(argument) + " " + argument);
+        if (!file.contains(this.lowercaseFirst(argument) + ";")) {
+            this.addMemberToClass(file, "private final " + argument + " " + this.lowercaseFirst(argument));
+            this.addConstructorArgument(file, className, argument + " " + this.lowercaseFirst(argument));
             this.addConstructorAssignment(file, argument);
         }
     }
@@ -72,6 +72,10 @@ export class JavaClassFunctions {
 
     public capitalize(word: string) {
         return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    public lowercaseFirst(word: string) {
+        return word.charAt(0).toLowerCase() + word.slice(1);
     }
 
     public methodPrefix(type: string) {

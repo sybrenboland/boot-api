@@ -37,7 +37,7 @@ export class AddResourceOnePutMethod extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
         javaFunctions.addToConstructor(file, this.oneClass + "Controller",
-            this.otherClass.toLowerCase() + "Converter");
+            this.otherClass + "Converter");
         javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.otherClass + "Converter");
     }
 }

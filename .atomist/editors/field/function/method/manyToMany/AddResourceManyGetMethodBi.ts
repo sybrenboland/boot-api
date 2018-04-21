@@ -32,12 +32,10 @@ export class AddResourceGetMethodManyBi extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
-        javaFunctions.addToConstructor(file, this.otherClass + "Controller",
-            this.oneClass.toLowerCase() + "Service");
+        javaFunctions.addToConstructor(file, this.otherClass + "Controller", this.oneClass + "Service");
         javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
 
-        javaFunctions.addToConstructor(file, this.otherClass + "Controller",
-            this.oneClass.toLowerCase() + "Converter");
+        javaFunctions.addToConstructor(file, this.otherClass + "Controller", this.oneClass + "Converter");
         javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.oneClass + "Converter");
     }
 }
