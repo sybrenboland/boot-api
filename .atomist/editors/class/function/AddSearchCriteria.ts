@@ -122,6 +122,8 @@ export class AddSearchCriteria implements EditProject {
         this.addCustomRepositoryImplementation(project, basePath);
         this.addAbstractRepository(project, basePath);
         this.extendRepository(project, basePath);
+
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -354,8 +356,7 @@ public class ${this.className}SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-        javaFunctions.addToConstructor(file, this.className + "Controller",
-            this.className.toLowerCase() + "SearchCriteriaConverter");
+        javaFunctions.addToConstructor(file, this.className + "Controller", this.className + "SearchCriteriaConverter");
         javaFunctions.addImport(file, this.basePackage + ".api.convert." + this.className + "SearchCriteriaConverter");
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");
@@ -572,6 +573,32 @@ public abstract class AbstractHibernateRepository<T> {
         const file: File = project.findFile(path);
 
         file.replace(">", `>, ${this.className}RepositoryCustom`)
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testList_without${this.className}s() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testList_with${this.className}s() throws Exception {
+
+        givenA${this.className}();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testList_without" + this.className + "s", rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
     }
 }
 
