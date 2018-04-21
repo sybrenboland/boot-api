@@ -18,7 +18,8 @@ import {addService} from "./function/AddService";
 import {addSpringBoot} from "../general/AddSpringBoot";
 import {addSwagger} from "../general/AddSwagger";
 import {addSearchCriteria} from "./function/AddSearchCriteria";
-import { addDocker } from "../general/AddDocker";
+import {addDocker} from "../general/AddDocker";
+import {addIntegrationTestSetup} from "./function/AddIntegrationTestSetup";
 
 /**
  * ApiForBean editor
@@ -236,6 +237,28 @@ export class ApiForBean implements EditProject {
     })
     public dockerPluginVersion: string = "";
 
+    @Parameter({
+        displayName: "Version",
+        description: "Version of h2 database",
+        pattern: Pattern.any,
+        validInput: "Release number",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public h2Version: string = "";
+
+    @Parameter({
+        displayName: "Version",
+        description: "Version of jackson mapper",
+        pattern: Pattern.any,
+        validInput: "Release number",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public jacksonMapperVersion: string = "";
+
 
     public edit(project: Project) {
 
@@ -243,6 +266,7 @@ export class ApiForBean implements EditProject {
         this.addConfigFiles(project);
         this.addLiquibase(project);
         this.addBeanClass(project);
+        this.addIntegrationTestSetup(project);
         this.addDomainClass(project);
         this.addLombok(project);
         this.addRepository(project);
@@ -313,6 +337,24 @@ export class ApiForBean implements EditProject {
         }
 
         addBeanClass.edit(project);
+    }
+
+    private addIntegrationTestSetup(project: Project) {
+
+        addIntegrationTestSetup.className = this.className;
+        addIntegrationTestSetup.basePackage = this.basePackage;
+
+        if (this.apiModule !== "api") {
+            addIntegrationTestSetup.apiModule = this.apiModule;
+        }
+        if (this.h2Version !== "") {
+            addIntegrationTestSetup.h2Version = this.h2Version;
+        }
+        if (this.jacksonMapperVersion !== "") {
+            addIntegrationTestSetup.jacksonMapperVersion = this.jacksonMapperVersion;
+        }
+
+        addIntegrationTestSetup.edit(project);
     }
 
     private addDomainClass(project: Project) {
