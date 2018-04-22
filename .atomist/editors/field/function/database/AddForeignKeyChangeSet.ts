@@ -32,7 +32,7 @@ export class AddForeignKeyChangeSet extends EditFunction {
             const file: File = project.findFile(path);
             file.replace(inputHook, rawChangeSet);
         } else {
-            console.error("Changset not added yet!");
+            console.error("Changset foreign keys not added yet!");
         }
     }
 }
