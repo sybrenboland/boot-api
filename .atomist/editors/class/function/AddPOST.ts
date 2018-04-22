@@ -83,6 +83,7 @@ export class AddPOST implements EditProject {
         this.addResourceClassMethod(project, basePathApi);
         addServiceMethodSaveBean(project, this.className, this.basePackage, basePathCore);
         this.addExceptionHandler(project);
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -146,6 +147,34 @@ export class AddPOST implements EditProject {
         addExceptionHandler.basePackage = this.basePackage;
 
         addExceptionHandler.edit(project);
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testPost${this.className}_invalidObject() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/${this.className.toLowerCase()}s"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testPost${this.className}_newObject() throws Exception {
+
+        Json${this.className} json${this.className} = Json${this.className}.builder().build();
+
+        mockMvc.perform(IntegrationTestUtils.doPost("/${this.className.toLowerCase()}s", json${this.className}))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testPost" + this.className + "_invalidObject", rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 }
 

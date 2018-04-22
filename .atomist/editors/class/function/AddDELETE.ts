@@ -80,6 +80,7 @@ export class AddDELETE implements EditProject {
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
         this.addServiceMethod(project, basePathCore);
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -147,6 +148,34 @@ export class AddDELETE implements EditProject {
 
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
         javaFunctions.addImport(file, "java.util.Optional");
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testDelete${this.className}_unknownObject() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/1"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void testDelete${this.className}_deleteObject() throws Exception {
+
+        ${this.className} saved${this.className} = givenA${this.className}();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testDelete" + this.className + "_unknownObject", rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
+        javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
     }
 }
 

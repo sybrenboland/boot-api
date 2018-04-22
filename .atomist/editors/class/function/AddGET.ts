@@ -80,6 +80,8 @@ export class AddGET implements EditProject {
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
         addServiceMethodFetchBean(project, this.className, this.basePackage, basePathCore);
+
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -131,6 +133,33 @@ export class AddGET implements EditProject {
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testGet${this.className}_with${this.className}() throws Exception {
+
+        ${this.className} saved${this.className} = givenA${this.className}();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testGet${this.className}_without${this.className}() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/100"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testGet" + this.className + "_with" + this.className, rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
     }
 }
 

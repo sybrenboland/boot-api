@@ -83,6 +83,7 @@ export class AddPUT implements EditProject {
         this.addResourceClassMethod(project, basePathApi);
         addServiceMethodFetchBean(project, this.className, this.basePackage, basePathCore);
         addServiceMethodSaveBean(project, this.className, this.basePackage, basePathCore);
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -145,6 +146,46 @@ export class AddPUT implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testPut${this.className}_invalidObject() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/${this.className.toLowerCase()}s/1", new Object()))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testPut${this.className}_newObject() throws Exception {
+
+        Json${this.className} json${this.className} = Json${this.className}.builder().build();
+
+        mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/1", json${this.className}))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testPut${this.className}_updateObject() throws Exception {
+
+        ${this.className} saved${this.className} = givenA${this.className}();
+
+        Json${this.className} json${this.className} = Json${this.className}.builder().build();
+
+        mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/" + saved${this.className}.getId(), json${this.className}))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testPut" + this.className + "_invalidObject", rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
+        javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
     }
 }
 
