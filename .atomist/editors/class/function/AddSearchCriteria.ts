@@ -356,13 +356,7 @@ public class ${this.className}SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-<<<<<<< HEAD
-        javaFunctions.addToConstructor(file, this.className + "Controller",
-            this.className + "SearchCriteriaConverter",
-            this.className.toLowerCase() + "SearchCriteriaConverter");
-=======
         javaFunctions.addToConstructor(file, this.className + "Controller", this.className + "SearchCriteriaConverter");
->>>>>>> e607361be03e877399aa279e611815ec37ebd38d
         javaFunctions.addImport(file, this.basePackage + ".api.convert." + this.className + "SearchCriteriaConverter");
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");

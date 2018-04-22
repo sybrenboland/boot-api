@@ -40,13 +40,7 @@ export class AddServiceManyPutMethod extends EditFunction {
 
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
 
-<<<<<<< HEAD
-        javaFunctions.addToConstructor(file, this.otherClass + "Service",
-            this.oneClass + "Repository",
-            this.oneClass.toLowerCase() + "Repository");
-=======
         javaFunctions.addToConstructor(file, this.otherClass + "Service", this.oneClass + "Repository");
->>>>>>> e607361be03e877399aa279e611815ec37ebd38d
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.oneClass + "Repository");
         javaFunctions.addImport(file, "java.util.Optional");
     }

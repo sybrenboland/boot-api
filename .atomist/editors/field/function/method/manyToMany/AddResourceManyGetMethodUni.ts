@@ -32,13 +32,7 @@ export class AddResourceGetMethodManyUni extends EditFunction {
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.oneClass);
 
-<<<<<<< HEAD
-        javaFunctions.addToConstructor(file, this.otherClass + "Controller",
-            this.oneClass + "Service",
-            this.oneClass.toLowerCase() + "Service");
-=======
         javaFunctions.addToConstructor(file, this.otherClass + "Controller", this.oneClass + "Service");
->>>>>>> e607361be03e877399aa279e611815ec37ebd38d
         javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
     }
 }
