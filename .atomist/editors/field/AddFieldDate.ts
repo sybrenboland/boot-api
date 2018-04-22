@@ -45,6 +45,7 @@ export class DateFieldFunctions {
         const importConverter = this.basePackage + ".persistence.db.hibernate.converter.LocalDateTimeAttributeConverter";
         javaFunctions.addImport(beanFile, importConverter);
         javaFunctions.addImport(beanFile, "java.time.LocalDateTime");
+        javaFunctions.addImport(beanFile, "javax.persistence.Convert");
 
         this.addConverter(project, basePath, this.type, "Timestamp");
 
@@ -74,7 +75,7 @@ export class DateFieldFunctions {
             javaFunctions.addImport(file, "com.fasterxml.jackson.databind.annotation.JsonSerialize");
 
             this.addDateTimeSerializer(project, basePath);
-            javaFunctions.addImport(file, this.basePackage + ".domain..entities.utility.CustomDateTimeSerializer");
+            javaFunctions.addImport(file, this.basePackage + ".domain.entities.utility.CustomDateTimeSerializer");
             this.addDateTimeDeserializer(project, basePath);
             javaFunctions.addImport(file, this.basePackage + ".domain.entities.utility.CustomDateTimeDeserializer");
             this.addInvalidDateException(project, basePath);

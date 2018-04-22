@@ -33,6 +33,7 @@ export class AddResourceGetMethodManyUni extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.oneClass);
 
         javaFunctions.addToConstructor(file, this.otherClass + "Controller",
+            this.oneClass + "Service",
             this.oneClass.toLowerCase() + "Service");
         javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
     }

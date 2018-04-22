@@ -26,7 +26,7 @@ export class AddResourceOnePutMethod extends EditFunction {
                 ResponseEntity.notFound().build();
     }`;
 
-        const path = params.apiModule + params.basePath + "/core/resource/" + this.oneClass + "Controller.java";
+        const path = params.apiModule + params.basePath + "/api/resource/" + this.oneClass + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
@@ -37,6 +37,7 @@ export class AddResourceOnePutMethod extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
         javaFunctions.addToConstructor(file, this.oneClass + "Controller",
+            this.otherClass + "Converter",
             this.otherClass.toLowerCase() + "Converter");
         javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.otherClass + "Converter");
     }

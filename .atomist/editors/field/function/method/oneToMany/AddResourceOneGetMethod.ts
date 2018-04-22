@@ -38,10 +38,12 @@ export class AddResourceOneGetMethod extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
         javaFunctions.addToConstructor(file, this.oneClass + "Controller",
+            this.otherClass + "Service",
             this.otherClass.toLowerCase() + "Service");
         javaFunctions.addImport(file, params.basePackage + ".core.service." + this.otherClass + "Service");
 
         javaFunctions.addToConstructor(file, this.oneClass + "Controller",
+            this.otherClass + "Converter",
             this.otherClass.toLowerCase() + "Converter");
         javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.otherClass + "Converter");
     }
