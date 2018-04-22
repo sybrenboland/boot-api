@@ -37,6 +37,7 @@ export class AddResourceOneGetMethod extends EditFunction {
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
+<<<<<<< HEAD
         javaFunctions.addToConstructor(file, this.oneClass + "Controller",
             this.otherClass + "Service",
             this.otherClass.toLowerCase() + "Service");
@@ -45,6 +46,12 @@ export class AddResourceOneGetMethod extends EditFunction {
         javaFunctions.addToConstructor(file, this.oneClass + "Controller",
             this.otherClass + "Converter",
             this.otherClass.toLowerCase() + "Converter");
+=======
+        javaFunctions.addToConstructor(file, this.oneClass + "Controller", this.otherClass + "Service");
+        javaFunctions.addImport(file, params.basePackage + ".core.service." + this.otherClass + "Service");
+
+        javaFunctions.addToConstructor(file, this.oneClass + "Controller", this.otherClass + "Converter");
+>>>>>>> e607361be03e877399aa279e611815ec37ebd38d
         javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.otherClass + "Converter");
     }
 }

@@ -36,9 +36,13 @@ export class AddServiceOnePutMethodBi extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
+<<<<<<< HEAD
         javaFunctions.addToConstructor(file, this.oneClass + "Service",
             this.otherClass + "Repository",
             this.otherClass.toLowerCase() + "Repository");
+=======
+        javaFunctions.addToConstructor(file, this.oneClass + "Service", this.otherClass + "Repository");
+>>>>>>> e607361be03e877399aa279e611815ec37ebd38d
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
         javaFunctions.addImport(file, "java.util.Optional");
     }
