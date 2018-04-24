@@ -153,7 +153,7 @@ export class AddPUT implements EditProject {
     @Test
     public void testPut${this.className}_invalidObject() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/${this.className.toLowerCase()}s/1", new Object()))
+        mockMvc.perform(MockMvcRequestBuilders.put("/${this.className.toLowerCase()}s/100", new Object()))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -162,7 +162,7 @@ export class AddPUT implements EditProject {
 
         Json${this.className} json${this.className} = Json${this.className}.builder().build();
 
-        mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/1", json${this.className}))
+        mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/100", json${this.className}))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 

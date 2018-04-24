@@ -330,7 +330,7 @@ public class ${this.className}SearchCriteriaConverter {
 
         ${this.className}SearchCriteria sc;
         try {
-            sc = ${this.className.toLowerCase()}SearchCriteriaConverter.createSearchCriteria(searchCriteria);
+            sc = ${javaFunctions.lowercaseFirst(this.className)}SearchCriteriaConverter.createSearchCriteria(searchCriteria);
         } catch (ConvertException e) {
             log.warn("Conversion failed!", e);
             return ResponseEntity.badRequest().build();

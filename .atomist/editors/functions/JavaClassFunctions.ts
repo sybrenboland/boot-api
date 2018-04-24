@@ -33,10 +33,10 @@ export class JavaClassFunctions {
     }
 
     public addToConstructor(file: File, className: string, argument: string) {
-        if (!file.contains(this.lowercaseFirst(argument) + ";")) {
-            this.addMemberToClass(file, "private final " + argument + " " + this.lowercaseFirst(argument));
-            this.addConstructorArgument(file, className, argument + " " + this.lowercaseFirst(argument));
-            this.addConstructorAssignment(file, argument);
+        if (!file.contains(argument.toLowerCase() + ";")) {
+            this.addMemberToClass(file, "private final " + argument + " " + argument.toLowerCase());
+            this.addConstructorArgument(file, className, argument + " " + argument.toLowerCase());
+            this.addConstructorAssignment(file, argument.toLowerCase());
         }
     }
 
