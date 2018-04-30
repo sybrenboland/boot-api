@@ -17,7 +17,7 @@ export class AddResourceGetMethodManyUni extends EditFunction {
     public ResponseEntity get${this.oneClass}(@PathVariable long ${this.otherClass.toLowerCase()}Id) {
         // Use only with @MapsId mapping
         Optional<${this.oneClass}> ${this.oneClass.toLowerCase()}Optional = ` +
-            `${this.oneClass.toLowerCase()}Service.fetch${this.oneClass}(${this.otherClass.toLowerCase()}Id);
+            `${javaFunctions.lowercaseFirst(this.oneClass)}Service.fetch${this.oneClass}(${this.otherClass.toLowerCase()}Id);
 
         return ${this.oneClass.toLowerCase()}Optional.isPresent() ? ResponseEntity` +
             `.ok(${this.oneClass.toLowerCase()}Optional.get()) : ResponseEntity.notFound().build();
@@ -32,7 +32,11 @@ export class AddResourceGetMethodManyUni extends EditFunction {
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.oneClass);
 
-        javaFunctions.addToConstructor(file, this.otherClass + "Controller", this.oneClass + "Service");
+        javaFunctions.addToConstructor(
+            file,
+            this.otherClass + "Controller",
+            this.oneClass + "Service",
+            javaFunctions.lowercaseFirst(this.oneClass) + "Service");
         javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
     }
 }

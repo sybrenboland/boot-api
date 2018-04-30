@@ -14,11 +14,11 @@ export class AddResourceGetMethodManyBi extends EditFunction {
         const rawJavaMethod = `
     @Override
     public ResponseEntity get${this.oneClass}(@PathVariable long ${this.otherClass.toLowerCase()}Id) {
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Service` +
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = ${javaFunctions.lowercaseFirst(this.oneClass)}Service` +
             `.fetch${this.oneClass}For${this.otherClass}(${this.otherClass.toLowerCase()}Id);
 
         return ${this.oneClass.toLowerCase()} != null ? 
-                    ResponseEntity.ok(${this.oneClass.toLowerCase()}Converter.toJson(${this.oneClass.toLowerCase()})) : 
+                    ResponseEntity.ok(${javaFunctions.lowercaseFirst(this.oneClass)}Converter.toJson(${this.oneClass.toLowerCase()})) : 
                     ResponseEntity.notFound().build();
     }`;
 
@@ -32,10 +32,18 @@ export class AddResourceGetMethodManyBi extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
-        javaFunctions.addToConstructor(file, this.otherClass + "Controller", this.oneClass + "Service");
+        javaFunctions.addToConstructor(
+            file,
+            this.otherClass + "Controller",
+            this.oneClass + "Service",
+            javaFunctions.lowercaseFirst(this.oneClass) +  "Service");
         javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
 
-        javaFunctions.addToConstructor(file, this.otherClass + "Controller", this.oneClass + "Converter");
+        javaFunctions.addToConstructor(
+            file,
+            this.otherClass + "Controller",
+            this.oneClass + "Converter",
+            javaFunctions.lowercaseFirst(this.oneClass) + "Converter");
         javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.oneClass + "Converter");
     }
 }

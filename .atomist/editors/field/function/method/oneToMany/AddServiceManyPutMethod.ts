@@ -15,18 +15,18 @@ export class AddServiceManyPutMethod extends EditFunction {
         const rawJavaMethod = `
     public boolean update${this.otherClass}With${this.oneClass}(long ${this.otherClass.toLowerCase()}Id, ` +
             `long ${this.oneClass.toLowerCase()}Id) {
-        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${this.otherClass.toLowerCase()}Repository.` +
+        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.` +
             `findById(${this.otherClass.toLowerCase()}Id);
         if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
 
             Optional<${this.oneClass}> ${this.oneClass.toLowerCase()}Optional = ` +
-            `${this.oneClass.toLowerCase()}Repository.findById(${this.oneClass.toLowerCase()}Id);
+            `${javaFunctions.lowercaseFirst(this.oneClass)}Repository.findById(${this.oneClass.toLowerCase()}Id);
             if (${this.oneClass.toLowerCase()}Optional.isPresent()) {
 
                 ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}Optional.get().toBuilder()
                         .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()}Optional.get())
                         .build();
-                ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
+                ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(new${this.otherClass});
                 return true;
             }
         }
@@ -40,7 +40,11 @@ export class AddServiceManyPutMethod extends EditFunction {
 
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
 
-        javaFunctions.addToConstructor(file, this.otherClass + "Service", this.oneClass + "Repository");
+        javaFunctions.addToConstructor(
+            file,
+            this.otherClass + "Service",
+            this.oneClass + "Repository",
+            javaFunctions.lowercaseFirst(this.oneClass) + "Repository");
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.oneClass + "Repository");
         javaFunctions.addImport(file, "java.util.Optional");
     }

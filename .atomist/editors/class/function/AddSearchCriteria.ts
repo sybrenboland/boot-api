@@ -276,7 +276,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service("${this.className.toLowerCase()}SearchCriteriaConverter")
+@Service("${javaFunctions.lowercaseFirst(this.className)}SearchCriteriaConverter")
 public class ${this.className}SearchCriteriaConverter {
 
     public ${this.className}SearchCriteria createSearchCriteria` +
@@ -356,7 +356,11 @@ public class ${this.className}SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-        javaFunctions.addToConstructor(file, this.className + "Controller", this.className + "SearchCriteriaConverter");
+        javaFunctions.addToConstructor(
+            file,
+            this.className + "Controller",
+            this.className + "SearchCriteriaConverter",
+            javaFunctions.lowercaseFirst(this.className) + "SearchCriteriaConverter");
         javaFunctions.addImport(file, this.basePackage + ".api.convert." + this.className + "SearchCriteriaConverter");
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");

@@ -15,14 +15,14 @@ export class AddServiceOnePutMethodBi extends EditFunction {
     public ${this.otherClass} update${this.oneClass}With${this.otherClass}` +
             `(long ${this.oneClass.toLowerCase()}Id, ${this.otherClass} ${this.otherClass.toLowerCase()}) {
         Optional<${this.oneClass}> ${this.oneClass.toLowerCase()} = ` +
-            `${this.oneClass.toLowerCase()}Repository.findById(${this.oneClass.toLowerCase()}Id);
+            `${javaFunctions.lowercaseFirst(this.oneClass)}Repository.findById(${this.oneClass.toLowerCase()}Id);
         if (${this.oneClass.toLowerCase()}.isPresent()) {
 
             ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
                     .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()}.get())
                     .build();
             
-            return ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
+            return ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(new${this.otherClass});
         }
 
         return null;
@@ -36,7 +36,11 @@ export class AddServiceOnePutMethodBi extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
-        javaFunctions.addToConstructor(file, this.oneClass + "Service", this.otherClass + "Repository");
+        javaFunctions.addToConstructor(
+            file,
+            this.oneClass + "Service",
+            this.otherClass + "Repository",
+            javaFunctions.lowercaseFirst(this.otherClass) + "Repository");
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
         javaFunctions.addImport(file, "java.util.Optional");
     }

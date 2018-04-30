@@ -14,7 +14,7 @@ export class AddServiceGetMethodMany extends EditFunction {
         const rawJavaMethod = `
     public ${this.oneClass} fetch${this.oneClass}For${this.otherClass}` +
             `(long ${this.otherClass.toLowerCase()}Id) {
-        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${this.otherClass.toLowerCase()}Repository.findById` +
+        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.findById` +
             `(${this.otherClass.toLowerCase()}Id);
         return ${this.otherClass.toLowerCase()}Optional.isPresent() && ${this.otherClass.toLowerCase()}Optional.get().` +
             `get${this.oneClass}() != null ? ${this.otherClass.toLowerCase()}Optional.get().get${this.oneClass}() : null;
@@ -26,7 +26,11 @@ export class AddServiceGetMethodMany extends EditFunction {
 
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
-        javaFunctions.addToConstructor(file, this.oneClass + "Service", this.otherClass + "Repository");
+        javaFunctions.addToConstructor(
+            file,
+            this.oneClass + "Service",
+            this.otherClass + "Repository",
+            javaFunctions.lowercaseFirst(this.otherClass) + "Repository");
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
         javaFunctions.addImport(file, "java.util.Optional");
     }

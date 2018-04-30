@@ -19,10 +19,10 @@ export class AddResourceOnePutMethod extends EditFunction {
 
         ${this.otherClass} new${this.otherClass} = ${this.oneClass.toLowerCase()}Service.` +
             `update${this.oneClass}With${this.otherClass}(${this.oneClass.toLowerCase()}Id, ` +
-            `${this.otherClass.toLowerCase()}Converter.fromJson(json${this.otherClass}));
+            `${javaFunctions.lowercaseFirst(this.otherClass)}Converter.fromJson(json${this.otherClass}));
 
         return  new${this.otherClass} != null ?
-                ResponseEntity.ok(${this.otherClass.toLowerCase()}Converter.toJson(new${this.otherClass})) :
+                ResponseEntity.ok(${javaFunctions.lowercaseFirst(this.otherClass)}Converter.toJson(new${this.otherClass})) :
                 ResponseEntity.notFound().build();
     }`;
 
@@ -36,8 +36,11 @@ export class AddResourceOnePutMethod extends EditFunction {
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
         javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
-        javaFunctions.addToConstructor(file, this.oneClass + "Controller",
-            this.otherClass + "Converter");
+        javaFunctions.addToConstructor(
+            file,
+            this.oneClass + "Controller",
+            this.otherClass + "Converter",
+            javaFunctions.lowercaseFirst(this.otherClass) + "Converter");
         javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.otherClass + "Converter");
     }
 }
