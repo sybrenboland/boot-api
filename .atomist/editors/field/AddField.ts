@@ -244,7 +244,8 @@ export class AddField implements EditProject {
 
     private addFieldToSearchCriteria(project: Project, basePath: string) {
         const inputHook = "// @Input";
-        const rawJavaCode = `private Optional<${javaFunctions.box(this.type)}> ${this.fieldName} = Optional.empty();
+        const rawJavaCode = `@Builder.Default
+    private Optional<${javaFunctions.box(this.type)}> ${this.fieldName} = Optional.empty();
     
     ` + inputHook;
 

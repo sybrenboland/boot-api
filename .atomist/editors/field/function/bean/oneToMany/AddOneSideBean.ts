@@ -12,7 +12,7 @@ export class AddOneSideBean extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const inputHook = "// @Input";
-        const rawJavaCode = `@OneToMany(mappedBy = "${this.oneClass.toLowerCase()}")
+        const rawJavaCode = `@OneToMany(cascade = CascadeType.ALL, mappedBy = "${this.oneClass.toLowerCase()}")
     private List<${this.otherClass}> ${this.otherClass.toLowerCase()}List;
     
     ` + inputHook;
@@ -24,6 +24,7 @@ export class AddOneSideBean extends EditFunction {
 
             javaFunctions.addImport(file, "java.util.List");
             javaFunctions.addImport(file, "javax.persistence.OneToMany");
+            javaFunctions.addImport(file, "javax.persistence.CascadeType");
         } else {
             console.error("Bean class one side not added yet!");
         }

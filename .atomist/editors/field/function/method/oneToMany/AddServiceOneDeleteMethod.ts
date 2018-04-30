@@ -27,13 +27,10 @@ export class AddServiceOneDeleteMethod extends EditFunction {
                 if (${this.otherClass.toLowerCase()}.get${this.oneClass}() != null && ` +
                 `${this.oneClass.toLowerCase()}.getId().equals(${this.otherClass.toLowerCase()}.get${this.oneClass}().getId())) {
     
-                    List<${this.otherClass}> new${this.otherClass}List = ${this.oneClass.toLowerCase()}.get${this.otherClass}List();
-                    new${this.otherClass}List.remove(${this.otherClass.toLowerCase()});
-                    
-                    ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.toBuilder()
-                            .${this.otherClass.toLowerCase()}List(new${this.otherClass}List)
+                    ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
+                            .${this.oneClass.toLowerCase()}(null)
                             .build();
-                    ${javaFunctions.lowercaseFirst(this.oneClass)}Repository.save(new${this.oneClass});
+                    ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(new${this.otherClass});
                     return true;
                 }
             }

@@ -149,7 +149,7 @@ export class AddGET implements EditProject {
     @Test
     public void testGet${this.className}_without${this.className}() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/100"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/-1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }`;
 

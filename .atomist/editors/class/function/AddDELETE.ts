@@ -155,7 +155,7 @@ export class AddDELETE implements EditProject {
     @Test
     public void testDelete${this.className}_unknownObject() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/100"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/-1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 

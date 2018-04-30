@@ -145,13 +145,15 @@ import java.util.Set;
 @ActiveProfiles("test")
 public class ${this.className}ResourceIT {
 
-    @Autowired
-    private ${this.className}Repository ${this.className.toLowerCase()}Repository;
-
+    private MockMvc mockMvc;
+    
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private MockMvc mockMvc;
+    @Autowired
+    private ${this.className}Repository ${this.className.toLowerCase()}Repository;
+
+    // @InjectInput
 
     private Set<${this.className}> cleanUpList = new HashSet<>();
 
@@ -163,6 +165,7 @@ public class ${this.className}ResourceIT {
     @After
     public void tearDown() {
         cleanUpList.stream().forEach(${this.className.toLowerCase()}Repository::delete);
+        // @TearDownInput
     }
 
     // @Input
@@ -175,6 +178,8 @@ public class ${this.className}ResourceIT {
 
         return ${this.className.toLowerCase()};
     }
+    
+    // @PrivateMethodInput
 }
 `;
 

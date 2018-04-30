@@ -24,13 +24,10 @@ export class AddServiceOnePutMethod extends EditFunction {
             `${javaFunctions.lowercaseFirst(this.otherClass)}Repository.findById(${this.otherClass.toLowerCase()}Id);
             if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
 
-                List<${this.otherClass}> new${this.otherClass}List = ${this.oneClass.toLowerCase()}.get${this.otherClass}List();
-                new${this.otherClass}List.add(${this.otherClass.toLowerCase()}Optional.get());
-                
-                ${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}.toBuilder()
-                        .${this.otherClass.toLowerCase()}List(new${this.otherClass}List)
+                ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}Optional.get().toBuilder()
+                        .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()})
                         .build();
-                ${javaFunctions.lowercaseFirst(this.oneClass)}Repository.save(new${this.oneClass});
+                ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(new${this.otherClass});
                 return true;
             }
         }

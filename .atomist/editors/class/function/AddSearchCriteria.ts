@@ -251,10 +251,13 @@ import lombok.Builder;
 @Builder
 public class ${this.className}SearchCriteria {
 
+    @Builder.Default
     private int maxResults = 10;
 
+    @Builder.Default
     private int start = 0;
 
+    @Builder.Default
     private Optional<Long> id = Optional.empty();
     
     // @Input
