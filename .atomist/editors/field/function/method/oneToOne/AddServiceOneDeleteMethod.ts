@@ -28,12 +28,17 @@ export class AddServiceOneDeleteMethod extends EditFunction {
     }`;
 
         const path = params.coreModule + params.basePath + "/core/service/" + this.oneClass + "Service.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "remove" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
-        javaFunctions.addImport(file, "java.util.Optional");
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "remove" + this.otherClass, rawJavaMethod);
+
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+            javaFunctions.addImport(file, "java.util.Optional");
+        } else {
+            console.error("Service class not added yet!");
+        }
 
     }
 }

@@ -45,12 +45,17 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
     }`;
 
         const path = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, `testDelete${this.otherClass}_with${this.oneClass}With${this.otherClass}s`, rawJavaMethod);
 
-        javaFunctions.addImport(file, "org.junit.Test");
-        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
-        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, `testDelete${this.otherClass}_with${this.oneClass}With${this.otherClass}s`, rawJavaMethod);
+
+            javaFunctions.addImport(file, "org.junit.Test");
+            javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+            javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
+        } else {
+            console.error("Integration test class not added yet!");
+        }
     }
 }

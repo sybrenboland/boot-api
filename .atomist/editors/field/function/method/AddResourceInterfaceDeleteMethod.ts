@@ -20,12 +20,17 @@ export class AddResourceInterfaceDeleteMethod extends EditFunction {
             `@PathVariable("${this.otherClass.toLowerCase()}Id") long ${this.otherClass.toLowerCase()}Id);`;
 
         const path = params.apiModule + params.basePath + "/api/resource/I" + this.oneClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "delete" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "delete" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
+
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        } else {
+            console.error("Resource interface not added yet!");
+        }
     }
 }

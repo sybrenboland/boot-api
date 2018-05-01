@@ -40,16 +40,21 @@ export class AddServiceMappingPutMethod extends EditFunction {
     }`;
 
         const path = params.coreModule + params.basePath + "/api/service/" + this.oneClass + "Service.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "update" + this.oneClass + "With" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "update" + this.oneClass + "With" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addToConstructor(
-            file,
-            this.oneClass + "Service",
-            this.otherClass + "Repository",
-            javaFunctions.lowercaseFirst(this.otherClass) + "Repository");
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+
+            javaFunctions.addToConstructor(
+                file,
+                this.oneClass + "Service",
+                this.otherClass + "Repository",
+                javaFunctions.lowercaseFirst(this.otherClass) + "Repository");
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
+        } else {
+            console.error("Service class not added yet!");
+        }
     }
 }

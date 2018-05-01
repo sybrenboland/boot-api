@@ -18,12 +18,17 @@ export class AddResourceInterfaceOneGetMethod extends EditFunction {
     ResponseEntity get${this.otherClass}s(@PathVariable long ${this.oneClass.toLowerCase()}Id);`;
 
         const path = params.apiModule + params.basePath + "/api/resource/I" + this.oneClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "get" + this.otherClass + "s", rawJavaMethod);
 
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "get" + this.otherClass + "s", rawJavaMethod);
+
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        } else {
+            console.error("Resource interface not added yet!");
+        }
     }
 }

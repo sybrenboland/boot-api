@@ -1,5 +1,5 @@
-import {EditFunction} from "../../EditFunction";
-import {Params} from "../../Params";
+import {EditFunction} from "../EditFunction";
+import {Params} from "../Params";
 import {File} from "@atomist/rug/model/File";
 import {Project} from "@atomist/rug/model/Project";
 

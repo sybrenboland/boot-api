@@ -23,27 +23,32 @@ export class AddResourceGetMethodManyBi extends EditFunction {
     }`;
 
         const path = params.apiModule + params.basePath + "/api/resource/" + this.otherClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "get" + this.oneClass + "s", rawJavaMethod);
 
-        javaFunctions.addImport(file, "java.util.List");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "get" + this.oneClass + "s", rawJavaMethod);
 
-        javaFunctions.addToConstructor(
-            file,
-            this.otherClass + "Controller",
-            this.oneClass + "Service",
-            javaFunctions.lowercaseFirst(this.oneClass) +  "Service");
-        javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
+            javaFunctions.addImport(file, "java.util.List");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
 
-        javaFunctions.addToConstructor(
-            file,
-            this.otherClass + "Controller",
-            this.oneClass + "Converter",
-            javaFunctions.lowercaseFirst(this.oneClass) + "Converter");
-        javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.oneClass + "Converter");
+            javaFunctions.addToConstructor(
+                file,
+                this.otherClass + "Controller",
+                this.oneClass + "Service",
+                javaFunctions.lowercaseFirst(this.oneClass) + "Service");
+            javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
+
+            javaFunctions.addToConstructor(
+                file,
+                this.otherClass + "Controller",
+                this.oneClass + "Converter",
+                javaFunctions.lowercaseFirst(this.oneClass) + "Converter");
+            javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.oneClass + "Converter");
+        } else {
+            console.error("Resource class not added yet!");
+        }
     }
 }

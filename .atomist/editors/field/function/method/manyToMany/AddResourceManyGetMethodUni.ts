@@ -24,19 +24,24 @@ export class AddResourceGetMethodManyUni extends EditFunction {
     }`;
 
         const path = params.apiModule + params.basePath + "/api/resource/" + this.otherClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "get" + this.oneClass + "s", rawJavaMethod);
 
-        javaFunctions.addImport(file, "java.util.Optional");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.oneClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "get" + this.oneClass + "s", rawJavaMethod);
 
-        javaFunctions.addToConstructor(
-            file,
-            this.otherClass + "Controller",
-            this.oneClass + "Service",
-            javaFunctions.lowercaseFirst(this.oneClass) + "Service");
-        javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
+            javaFunctions.addImport(file, "java.util.Optional");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+            javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.oneClass);
+
+            javaFunctions.addToConstructor(
+                file,
+                this.otherClass + "Controller",
+                this.oneClass + "Service",
+                javaFunctions.lowercaseFirst(this.oneClass) + "Service");
+            javaFunctions.addImport(file, params.basePackage + ".core.service." + this.oneClass + "Service");
+        } else {
+            console.error("Resource class not added yet!");
+        }
     }
 }
