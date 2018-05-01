@@ -73,10 +73,10 @@ export class AddPUT implements EditProject {
     public edit(project: Project) {
 
         const basePathApi = this.apiModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/" + this.apiModule;
+            this.basePackage.replace(/\./gi, "/") + "/api";
 
         const basePathCore = this.coreModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/" + this.coreModule;
+            this.basePackage.replace(/\./gi, "/") + "/core";
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);

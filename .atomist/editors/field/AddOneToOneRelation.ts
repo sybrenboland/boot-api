@@ -9,7 +9,7 @@ import {AddReferenceColumn} from "./function/database/AddReferenceColumn";
 import {AddForeignKeyChangeSet} from "./function/database/AddForeignKeyChangeSet";
 import {AddOtherSideOneBeanBi} from "./function/bean/oneToOne/AddOtherSideOneBeanBi";
 import {AddMappingSideOneBean} from "./function/bean/oneToOne/AddMappingSideOneBean";
-import {ResetPrimaryKeyToForeignKey} from "./function/bean/oneToOne/ResetPrimaryKeyToForeignKey";
+import {ResetPrimaryKeyToForeignKey} from "./function/database/ResetPrimaryKeyToForeignKey";
 import {AddOtherSideOneBeanUni} from "./function/bean/oneToOne/AddOtherSideOneBeanUni";
 import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConverterMany";
 import {AddResourceInterfaceGetMethodMany} from "./function/method/manyToMany/AddResourceInterfaceManyGetMethod";

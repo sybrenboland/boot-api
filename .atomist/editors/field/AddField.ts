@@ -31,7 +31,7 @@ export class AddField implements EditProject {
         displayName: "Type",
         description: "Type of the field we want to add",
         pattern: Pattern.any,
-        validInput: "Java type that is supported: String, int, long, boolean, LocalDateTime",
+        validInput: "Java type that is supported: String, Integer, Long, Boolean, LocalDateTime",
         minLength: 1,
         maxLength: 100,
         required: true,
@@ -117,7 +117,7 @@ export class AddField implements EditProject {
 
     public edit(project: Project) {
 
-        const supportedTypes = ['String', 'int', 'long', 'boolean', 'LocalDateTime'];
+        const supportedTypes = ['String', 'Integer', 'Long', 'Boolean', 'LocalDateTime'];
         if (supportedTypes.some(type => type === this.type)) {
 
             const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
@@ -205,13 +205,11 @@ export class AddField implements EditProject {
     private addFieldToConverter(project: Project, basePath: string) {
 
         const inputJsonHook = "// @InputJsonField";
-        let rawJsonInput = `.${this.fieldName}(${this.className.toLowerCase()}` +
-            `.${javaFunctions.methodPrefix(this.type)}${javaFunctions.capitalize(this.fieldName)}())
+        let rawJsonInput = `.${this.fieldName}(${this.className.toLowerCase()}.get${javaFunctions.capitalize(this.fieldName)}())
                 ` + inputJsonHook;
 
         const inputBeanHook = "// @InputBeanField";
-        let rawBeanInput = `.${this.fieldName}(json${this.className}` +
-            `.${javaFunctions.methodPrefix(this.type)}${javaFunctions.capitalize(this.fieldName)}())
+        let rawBeanInput = `.${this.fieldName}(json${this.className}.get${javaFunctions.capitalize(this.fieldName)}())
                 ` + inputBeanHook;
 
         const path = this.apiModule + basePath + "/api/convert/" + this.className + "Converter.java";
@@ -310,11 +308,11 @@ export class AddField implements EditProject {
             case "String":
                 dbType = "varchar(255)";
                 break;
-            case "int":
-            case "long":
+            case "Integer":
+            case "Long":
                 dbType = "BIGINT";
                 break;
-            case "boolean":
+            case "Boolean":
                 dbType = "BOOLEAN";
                 break;
             case "LocalDateTime":

@@ -3,6 +3,11 @@ import {File} from "@atomist/rug/model/File";
 export class JavaClassFunctions {
 
     public addFunction(file: File, newFunctionName: string, newFunction: string): void {
+
+        if (!file) {
+            console.error("File not added yet for functions")
+        }
+
         if (!file.contains(newFunctionName + "(")) {
             const functionInput = "// @Input";
 
@@ -11,6 +16,11 @@ export class JavaClassFunctions {
     }
 
     public addAnnotationToClass(file: File, newAnnotation: string): void {
+
+        if (!file) {
+            console.error("File not added yet for annotation")
+        }
+
         if (!file.contains(newAnnotation)) {
             const classInput = "public class";
             const annotationReplacement = newAnnotation + "\n" + classInput;
@@ -20,6 +30,11 @@ export class JavaClassFunctions {
     }
 
     public addImport(file: File, newImport: string): void {
+
+        if (!file) {
+            console.error("File not added yet for import")
+        }
+
         if (!file.contains(newImport + ";")) {
             const newImportInput = ["import " + newImport + ";"];
 

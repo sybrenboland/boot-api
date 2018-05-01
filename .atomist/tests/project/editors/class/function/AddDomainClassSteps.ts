@@ -20,5 +20,5 @@ When("the AddDomainClass is run with className (.*)", (p: Project, w: ProjectSce
 
 Then("a domain class is added to the (.*) module", (p: Project, w, moduleName: string) => {
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/domain/Json" + classNameDomainClass + ".java");
+        + fileFunctions.toPath(BasePackage) + "/" + moduleName.toLowerCase() + "/entities/Json" + classNameDomainClass + ".java");
 });

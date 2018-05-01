@@ -18,5 +18,5 @@ When("the AddService is run with className (.*)", (p: Project, w: ProjectScenari
 
 Then("a service class is added to the (.*) module", (p: Project, w, moduleName: string) => {
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/service/" + classNameService + "Service.java");
+        + fileFunctions.toPath(BasePackage) + "/" +  moduleName.toLowerCase() + "/service/" + classNameService + "Service.java");
 });

@@ -18,10 +18,10 @@ When("the AddResource is run with className (.*)", (p: Project, w: ProjectScenar
 
 Then("a resource class is added to the (.*) module", (p: Project, w, moduleName: string) => {
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/resource/" + classNameResource + "Controller.java");
+        + fileFunctions.toPath(BasePackage) + "/" +  moduleName.toLowerCase() + "/resource/" + classNameResource + "Controller.java");
 });
 
 Then("a resource interface is added to the (.*) module", (p: Project, w, moduleName: string) => {
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/resource/I" + classNameResource + "Controller.java");
+        + fileFunctions.toPath(BasePackage) + "/" +  moduleName.toLowerCase() + "/resource/I" + classNameResource + "Controller.java");
 });

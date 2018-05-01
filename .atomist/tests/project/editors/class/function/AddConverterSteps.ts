@@ -9,7 +9,7 @@ let converterPath: string;
 When("the AddConverter is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameConverter = classNameInput;
     converterPath = ApiModule + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/convert/" + classNameConverter + "Converter.java";
+        + fileFunctions.toPath(BasePackage) + "/api/convert/" + classNameConverter + "Converter.java";
 
     const editor = w.editor("AddConverter");
     w.editWith(editor, {

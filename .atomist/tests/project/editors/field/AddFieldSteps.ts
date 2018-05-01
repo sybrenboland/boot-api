@@ -29,7 +29,7 @@ When("the AddField is run for class (.*) with field (.*) with type (.*)",
 });
 
 Then("the converter is extended with the field", (p: Project, w) => {
-    const path = ApiModule + "/src/main/java/org/shboland/convert/" + classNameField + "Converter.java";
+    const path = ApiModule + "/src/main/java/org/shboland/api/convert/" + classNameField + "Converter.java";
 
     return p.fileContains(path, fieldNameField.charAt(0).toUpperCase() + fieldNameField.slice(1));
 });
@@ -37,5 +37,5 @@ Then("the converter is extended with the field", (p: Project, w) => {
 Then("a DateParam class is added to the (.*) module", (p: Project, w, moduleName: string) => {
 
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/domain/utility/DateParam.java");
+        + fileFunctions.toPath(BasePackage) + "/" +  moduleName.toLowerCase() + "/entities/utility/DateParam.java");
 });

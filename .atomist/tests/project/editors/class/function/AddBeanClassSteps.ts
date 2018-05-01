@@ -4,7 +4,7 @@ import { BasePackage, DatabaseModule, PersistenceModule, Release } from "../../.
 
 let classNameBean: string;
 const mavenBasePath = "/src/main";
-const beanPath = PersistenceModule + mavenBasePath + "/java/org/shboland/db/hibernate/bean/Adres.java";
+const beanPath = PersistenceModule + mavenBasePath + "/java/org/shboland/persistence/db/hibernate/bean/Adres.java";
 const changelogPath = DatabaseModule + mavenBasePath + "/resources/db/liquibase/release/" + Release + "/tables/tables-changelog.xml";
 
 When("the AddBeanClass is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
