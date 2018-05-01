@@ -155,7 +155,7 @@ public class ${this.className}ResourceIT {
 
     // @InjectInput
 
-    private Set<${this.className}> cleanUpList = new HashSet<>();
+    private Set<${this.className}> cleanUpList${this.className} = new HashSet<>();
 
     @Before
     public void setupMockMvc() {
@@ -164,8 +164,9 @@ public class ${this.className}ResourceIT {
 
     @After
     public void tearDown() {
-        cleanUpList.stream().forEach(${this.className.toLowerCase()}Repository::delete);
-        // @TearDownInput
+        // @TearDownInputTop
+        cleanUpList${this.className}.stream().forEach(${this.className.toLowerCase()}Repository::delete);
+        // @TearDownInputBottom
     }
 
     // @Input
@@ -174,7 +175,7 @@ public class ${this.className}ResourceIT {
         ${this.className} ${this.className.toLowerCase()} = ${this.className.toLowerCase()}Repository.save(${this.className}.builder()
                 // @FieldInput
                 .build());
-        cleanUpList.add(${this.className.toLowerCase()});
+        cleanUpList${this.className}.add(${this.className.toLowerCase()});
 
         return ${this.className.toLowerCase()};
     }
@@ -226,7 +227,7 @@ public class IntegrationTestUtils {
         return mapper.writeValueAsBytes(object);
     }
 }
-`
+`;
         if (!project.fileExists(path)) {
             project.addFile(path, rawContent);
         }

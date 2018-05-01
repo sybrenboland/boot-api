@@ -12,7 +12,8 @@ export class AddFieldToSearchCriteria extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const inputHook = "// @Input";
-        const rawJavaCode = `private Optional<Long> ${this.oneClass.toLowerCase()}Id = Optional.empty();
+        const rawJavaCode = `@Builder.Default
+    private Optional<Long> ${this.oneClass.toLowerCase()}Id = Optional.empty();
     
     ` + inputHook;
 
