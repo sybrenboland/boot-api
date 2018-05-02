@@ -39,7 +39,7 @@ export class AddServiceMappingPutMethod extends EditFunction {
         return false;
     }`;
 
-        const path = params.coreModule + params.basePath + "/api/service/" + this.oneClass + "Service.java";
+        const path = params.coreModule + params.basePath + "/core/service/" + this.oneClass + "Service.java";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);

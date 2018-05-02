@@ -4,6 +4,7 @@ Feature: Add Many-Many relation should add a relation between two beans
   Scenario: Add Many-Many relation should add a relation with no output of either class
     When the NewMavenProject is run
     When the AddBeanClass is run with className Person
+    When the AddIntegrationTestSetup is run for class Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person
     When the AddResource is run with className Person
@@ -12,6 +13,7 @@ Feature: Add Many-Many relation should add a relation between two beans
     When the AddSearchCriteria is run with className Person
 
     When the AddBeanClass is run with className Car
+    When the AddIntegrationTestSetup is run for class Car
     When the AddDomainClass is run with className Car
     When the AddConverter is run with className Car
     When the AddResource is run with className Car
@@ -47,6 +49,7 @@ Feature: Add Many-Many relation should add a relation between two beans
   Scenario: Add Many-Many relation should add a relation with output of both classes
     When the NewMavenProject is run
     When the AddBeanClass is run with className Person
+    When the AddIntegrationTestSetup is run for class Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person
     When the AddResource is run with className Person
@@ -55,6 +58,7 @@ Feature: Add Many-Many relation should add a relation between two beans
     When the AddSearchCriteria is run with className Person
 
     When the AddBeanClass is run with className Car
+    When the AddIntegrationTestSetup is run for class Car
     When the AddDomainClass is run with className Car
     When the AddConverter is run with className Car
     When the AddResource is run with className Car
@@ -90,6 +94,7 @@ Feature: Add Many-Many relation should add a relation between two beans
   Scenario: Add Many-Many relation should add a relation with output of only the one side class
     When the NewMavenProject is run
     When the AddBeanClass is run with className Person
+    When the AddIntegrationTestSetup is run for class Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person
     When the AddResource is run with className Person
@@ -98,6 +103,7 @@ Feature: Add Many-Many relation should add a relation between two beans
     When the AddSearchCriteria is run with className Person
 
     When the AddBeanClass is run with className Car
+    When the AddIntegrationTestSetup is run for class Car
     When the AddDomainClass is run with className Car
     When the AddConverter is run with className Car
     When the AddResource is run with className Car
@@ -133,6 +139,7 @@ Feature: Add Many-Many relation should add a relation between two beans
   Scenario: Add Many-Many relation should add a relation with output of only the many side class
     When the NewMavenProject is run
     When the AddBeanClass is run with className Person
+    When the AddIntegrationTestSetup is run for class Person
     When the AddDomainClass is run with className Person
     When the AddConverter is run with className Person
     When the AddResource is run with className Person
@@ -141,6 +148,7 @@ Feature: Add Many-Many relation should add a relation between two beans
     When the AddSearchCriteria is run with className Person
 
     When the AddBeanClass is run with className Car
+    When the AddIntegrationTestSetup is run for class Car
     When the AddDomainClass is run with className Car
     When the AddConverter is run with className Car
     When the AddResource is run with className Car

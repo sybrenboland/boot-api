@@ -32,18 +32,22 @@ Feature: Add One-Many relation should add a relation between two beans
     Then the name putPersonWithCar is added to class ICarController in package resource of the Api module
     Then the name putPersonWithCar is added to class CarController in package resource of the Api module
     Then the name updateCarWithPerson is added to class CarService in package service of the Core module
+    Then the test testPutCar_withPersonWithCar is added to the integration tests of class Person
 
     Then the name putCarWithPerson is added to class IPersonController in package resource of the Api module
     Then the name putCarWithPerson is added to class PersonController in package resource of the Api module
     Then the name updatePersonWithCar is added to class PersonService in package service of the Core module
+    Then the test testPutPerson_withCarNoPerson is added to the integration tests of class Car
 
     Then the name deletePersonWithCar is added to class ICarController in package resource of the Api module
     Then the name deletePersonWithCar is added to class CarController in package resource of the Api module
     Then the name removePerson is added to class CarService in package service of the Core module
+    Then the test testDeleteCar_withPerson is added to the integration tests of class Person
 
     Then the name deleteCarWithPerson is added to class IPersonController in package resource of the Api module
     Then the name deleteCarWithPerson is added to class PersonController in package resource of the Api module
     Then the name removeCar is added to class PersonService in package service of the Core module
+    Then the test testDeletePerson_withCarNoPerson is added to the integration tests of class Car
 
   Scenario: Add One-Many relation should add a relation with output of both classes
     When the NewMavenProject is run
@@ -76,18 +80,23 @@ Feature: Add One-Many relation should add a relation between two beans
     Then the name putPersonWithCar is added to class ICarController in package resource of the Api module
     Then the name putPersonWithCar is added to class CarController in package resource of the Api module
     Then the name updateCarWithPerson is added to class CarService in package service of the Core module
+    Then the test testPutPerson_withCarNoPerson is added to the integration tests of class Car
 
     Then the name putCarWithPerson is not added to class IPersonController in package resource of the Api module
     Then the name putCarWithPerson is not added to class PersonController in package resource of the Api module
     Then the name updatePersonWithCar is not added to class PersonService in package service of the Core module
+    Then the test testPutCar_withPersonWithCar is not added to the integration tests of class Person
 
     Then the name deletePersonWithCar is added to class ICarController in package resource of the Api module
     Then the name deletePersonWithCar is added to class CarController in package resource of the Api module
     Then the name removePerson is added to class CarService in package service of the Core module
+    Then the test testDeletePerson_withCarNoPerson is added to the integration tests of class Car
 
     Then the name deleteCarWithPerson is not added to class IPersonController in package resource of the Api module
     Then the name deleteCarWithPerson is not added to class PersonController in package resource of the Api module
     Then the name removeCar is not added to class PersonService in package service of the Core module
+    Then the test testDeleteCar_withPerson is not added to the integration tests of class Person
+
 
   Scenario: Add One-Many relation should add a relation with output of only the one side class
     When the NewMavenProject is run
@@ -120,18 +129,23 @@ Feature: Add One-Many relation should add a relation between two beans
     Then the name putPersonWithCar is not added to class ICarController in package resource of the Api module
     Then the name putPersonWithCar is not added to class CarController in package resource of the Api module
     Then the name updateCarWithPerson is not added to class CarService in package service of the Core module
+    Then the test testPutPerson_withCarNoPerson is not added to the integration tests of class Car
 
     Then the name putCarWithPerson is added to class IPersonController in package resource of the Api module
     Then the name putCarWithPerson is added to class PersonController in package resource of the Api module
     Then the name updatePersonWithCar is added to class PersonService in package service of the Core module
+    Then the test testPutCar_withPersonWithCar is added to the integration tests of class Person
 
     Then the name deletePersonWithCar is not added to class ICarController in package resource of the Api module
     Then the name deletePersonWithCar is not added to class CarController in package resource of the Api module
     Then the name removePerson is not added to class CarService in package service of the Core module
+    Then the test testDeletePerson_withCarNoPerson is not added to the integration tests of class Car
 
     Then the name deleteCarWithPerson is not added to class IPersonController in package resource of the Api module
     Then the name deleteCarWithPerson is not added to class PersonController in package resource of the Api module
     Then the name removeCar is not added to class PersonService in package service of the Core module
+    Then the test testDeleteCar_withPerson is not added to the integration tests of class Person
+
 
   Scenario: Add One-Many relation should add a relation with output of only the many side class
     When the NewMavenProject is run
@@ -164,15 +178,19 @@ Feature: Add One-Many relation should add a relation between two beans
     Then the name putPersonWithCar is not added to class ICarController in package resource of the Api module
     Then the name putPersonWithCar is not added to class CarController in package resource of the Api module
     Then the name updateCarWithPerson is not added to class CarService in package service of the Core module
+    Then the test testPutPerson_withCarNoPerson is not added to the integration tests of class Car
 
     Then the name putCarWithPerson is not added to class IPersonController in package resource of the Api module
     Then the name putCarWithPerson is not added to class PersonController in package resource of the Api module
     Then the name updatePersonWithCar is not added to class PersonService in package service of the Core module
+    Then the test testPutCar_withPersonWithCar is not added to the integration tests of class Person
 
     Then the name deletePersonWithCar is added to class ICarController in package resource of the Api module
     Then the name deletePersonWithCar is added to class CarController in package resource of the Api module
     Then the name removePerson is added to class CarService in package service of the Core module
+    Then the test testDeletePerson_withCarNoPerson is added to the integration tests of class Car
 
     Then the name deleteCarWithPerson is not added to class IPersonController in package resource of the Api module
     Then the name deleteCarWithPerson is not added to class PersonController in package resource of the Api module
     Then the name removeCar is not added to class PersonService in package service of the Core module
+    Then the test testDeleteCar_withPerson is not added to the integration tests of class Person

@@ -154,18 +154,28 @@ export class AddDELETE implements EditProject {
         const rawJavaMethod = `
     @Test
     public void testDelete${this.className}_unknownObject() throws Exception {
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/-1"))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/-1"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
     }
 
     @Test
     public void testDelete${this.className}_deleteObject() throws Exception {
-
+    
         ${this.className} saved${this.className} = givenA${this.className}();
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+        assertFalse("Entity not deleted", ${this.className.toLowerCase()}Repository.findById(saved${this.className}.getId()).isPresent());
+        cleanUpList${this.className}.remove(saved${this.className}.getId());
     }`;
 
         const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
@@ -173,8 +183,12 @@ export class AddDELETE implements EditProject {
         javaFunctions.addFunction(file, "testDelete" + this.className + "_unknownObject", rawJavaMethod);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertFalse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
         javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
-        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
     }
 }

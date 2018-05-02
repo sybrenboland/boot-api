@@ -155,7 +155,7 @@ public class ${this.className}ResourceIT {
 
     // @InjectInput
 
-    private Set<${this.className}> cleanUpList${this.className} = new HashSet<>();
+    private Set<Long> cleanUpList${this.className} = new HashSet<>();
 
     @Before
     public void setupMockMvc() {
@@ -165,19 +165,35 @@ public class ${this.className}ResourceIT {
     @After
     public void tearDown() {
         // @TearDownInputTop
-        cleanUpList${this.className}.stream().forEach(${this.className.toLowerCase()}Repository::delete);
+        cleanUpList${this.className}.stream().forEach(${this.className.toLowerCase()}Repository::deleteById);
         // @TearDownInputBottom
     }
 
     // @Input
 
     private ${this.className} givenA${this.className}() {
-        ${this.className} ${this.className.toLowerCase()} = ${this.className.toLowerCase()}Repository.save(${this.className}.builder()
+        return givenA${this.className}(${this.className}.builder()
                 // @FieldInput
                 .build());
-        cleanUpList${this.className}.add(${this.className.toLowerCase()});
+    }
+    
+    private ${this.className} givenA${this.className}(${this.className} ${this.className.toLowerCase()}) {
+         ${this.className} saved${this.className} = ${this.className.toLowerCase()}Repository.save(${this.className.toLowerCase()});
+        cleanUpList${this.className}.add(${this.className.toLowerCase()}.getId());
 
-        return ${this.className.toLowerCase()};
+        return saved${this.className};
+    }
+    
+    private Json${this.className} givenAJson${this.className}() {
+        return Json${this.className}.builder()
+                // @FieldInputJson
+                .build();
+    }
+    
+    private void cleanUpNew${this.className}(String response) {
+        String startAtId = response.substring(response.lastIndexOf("/${this.className.toLowerCase()}s/") + "${this.className}".length() + 3);
+        String idString = startAtId.substring(0, startAtId.indexOf("\\""));
+        cleanUpList${this.className}.add(new Long(idString));
     }
     
     // @PrivateMethodInput

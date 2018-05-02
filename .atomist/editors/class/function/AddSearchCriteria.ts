@@ -586,17 +586,31 @@ public abstract class AbstractHibernateRepository<T> {
         const rawJavaMethod = `
     @Test
     public void testList_without${this.className}s() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong grand total returned.", response.getContentAsString().contains("\\"grandTotal\\":0"));
+        assertTrue("Wrong number of results returned.", response.getContentAsString().contains("\\"numberOfResults\\":0"));
+        assertTrue("Wrong entities returned.", response.getContentAsString().contains("\\"results\\":[]"));
     }
 
     @Test
     public void testList_with${this.className}s() throws Exception {
-
+    
+        ${this.className} saved${this.className} = givenA${this.className}();
         givenA${this.className}();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong grand total returned.", response.getContentAsString().contains("\\"grandTotal\\":2"));
+        assertTrue("Wrong number of results returned.", response.getContentAsString().contains("\\"numberOfResults\\":2"));
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("${this.className.toLowerCase()}s/" + saved${this.className}.getId()));
     }`;
 
         const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
@@ -604,8 +618,11 @@ public abstract class AbstractHibernateRepository<T> {
         javaFunctions.addFunction(file, "testList_without" + this.className + "s", rawJavaMethod);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
         javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
-        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
     }
 }
 

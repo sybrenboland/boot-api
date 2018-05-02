@@ -142,15 +142,24 @@ export class AddGET implements EditProject {
 
         ${this.className} saved${this.className} = givenA${this.className}();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
+                        .andReturn().getResponse();
+                        
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()));
+        // @FieldInputAssert
     }
 
     @Test
     public void testGet${this.className}_without${this.className}() throws Exception {
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/-1"))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/-1"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
     }`;
 
         const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
@@ -158,8 +167,11 @@ export class AddGET implements EditProject {
         javaFunctions.addFunction(file, "testGet" + this.className + "_with" + this.className, rawJavaMethod);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
         javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
-        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
     }
 }
 

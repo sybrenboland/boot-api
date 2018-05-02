@@ -152,29 +152,44 @@ export class AddPUT implements EditProject {
         const rawJavaMethod = `
     @Test
     public void testPut${this.className}_invalidObject() throws Exception {
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.put("/${this.className.toLowerCase()}s/-1", new Object()))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/${this.className.toLowerCase()}s/-1", new Object()))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        assertEquals("Wrong status code returned.", HttpStatus.BAD_REQUEST.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
     }
 
     @Test
     public void testPut${this.className}_newObject() throws Exception {
+    
+        Json${this.className} json${this.className} = givenAJson${this.className}();
 
-        Json${this.className} json${this.className} = Json${this.className}.builder().build();
+        MockHttpServletResponse response =
+                mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/-1", json${this.className}))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/-1", json${this.className}))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/"));
+        cleanUpNew${this.className}(response.getContentAsString());
+        // @FieldInputAssert
     }
 
     @Test
     public void testPut${this.className}_updateObject() throws Exception {
-
+    
         ${this.className} saved${this.className} = givenA${this.className}();
 
-        Json${this.className} json${this.className} = Json${this.className}.builder().build();
+        Json${this.className} json${this.className} = givenAJson${this.className}();
 
-        mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/" + saved${this.className}.getId(), json${this.className}))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        MockHttpServletResponse response =
+                mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/" + saved${this.className}.getId(), json${this.className}))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/"));
+        // @FieldInputAssert
     }`;
 
         const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
@@ -182,8 +197,11 @@ export class AddPUT implements EditProject {
         javaFunctions.addFunction(file, "testPut" + this.className + "_invalidObject", rawJavaMethod);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
         javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
-        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
     }

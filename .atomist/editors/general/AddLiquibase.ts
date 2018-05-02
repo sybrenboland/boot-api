@@ -108,7 +108,7 @@ spring:
 spring:
   profiles: test
   datasource:
-    url: jdbc:h2:file:~/target/db/testDB
+    url: jdbc:h2:mem:testDB
     username: sa
     password: sa
     driver-class-name: org.h2.Driver

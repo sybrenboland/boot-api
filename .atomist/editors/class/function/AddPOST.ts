@@ -123,15 +123,14 @@ export class AddPOST implements EditProject {
         ${this.className} new${this.className} = ${this.className.toLowerCase()}Service` +
             `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}));
 
-        return ResponseEntity.created(new URI(${this.className.toLowerCase()}Converter` +
-            `.toJson(new${this.className}).getLink("self").getHref())).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(${this.className.toLowerCase()}Converter.toJson(new${this.className}));
     }`;
 
         const path = basePath + "/resource/" + this.className + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "post" + this.className, rawJavaMethod);
 
-        javaFunctions.addImport(file, "java.net.URI");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
         javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
@@ -153,18 +152,28 @@ export class AddPOST implements EditProject {
         const rawJavaMethod = `
     @Test
     public void testPost${this.className}_invalidObject() throws Exception {
+    
+         MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.post("/${this.className.toLowerCase()}s"))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/${this.className.toLowerCase()}s"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        assertEquals("Wrong status code returned.", HttpStatus.BAD_REQUEST.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
     }
 
     @Test
     public void testPost${this.className}_newObject() throws Exception {
+    
+        Json${this.className} json${this.className} = givenAJson${this.className}();
 
-        Json${this.className} json${this.className} = Json${this.className}.builder().build();
+        MockHttpServletResponse response =
+                mockMvc.perform(IntegrationTestUtils.doPost("/${this.className.toLowerCase()}s", json${this.className}))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(IntegrationTestUtils.doPost("/${this.className.toLowerCase()}s", json${this.className}))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        assertEquals("Wrong status code returned.", HttpStatus.CREATED.value(), response.getStatus());
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/"));
+        cleanUpNew${this.className}(response.getContentAsString());
+        // @FieldInputAssert
     }`;
 
         const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
@@ -172,8 +181,11 @@ export class AddPOST implements EditProject {
         javaFunctions.addFunction(file, "testPost" + this.className + "_invalidObject", rawJavaMethod);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
         javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
-        javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 }
