@@ -164,10 +164,10 @@ export class AddPOST implements EditProject {
     @Test
     public void testPost${this.className}_newObject() throws Exception {
     
-        Json${this.className} json${this.className} = givenAJson${this.className}();
+        Json${this.className} ${this.className.toLowerCase()} = givenAJson${this.className}();
 
         MockHttpServletResponse response =
-                mockMvc.perform(IntegrationTestUtils.doPost("/${this.className.toLowerCase()}s", json${this.className}))
+                mockMvc.perform(IntegrationTestUtils.doPost("/${this.className.toLowerCase()}s", ${this.className.toLowerCase()}))
                         .andReturn().getResponse();
 
         assertEquals("Wrong status code returned.", HttpStatus.CREATED.value(), response.getStatus());

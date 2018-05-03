@@ -140,14 +140,14 @@ export class AddGET implements EditProject {
     @Test
     public void testGet${this.className}_with${this.className}() throws Exception {
 
-        ${this.className} saved${this.className} = givenA${this.className}();
+        ${this.className} ${this.className.toLowerCase()} = givenA${this.className}();
 
         MockHttpServletResponse response =
-                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/" + ${this.className.toLowerCase()}.getId()))
                         .andReturn().getResponse();
                         
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
-        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()));
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/" + ${this.className.toLowerCase()}.getId()));
         // @FieldInputAssert
     }
 

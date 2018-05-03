@@ -125,6 +125,7 @@ export class AddField implements EditProject {
             this.addChangelog(project);
             this.addFieldToPredicates(project, basePath);
             this.addFieldToSearchCriteria(project, basePath);
+            this.addIntegrationTestChecks(project);
 
             if (this.type === "LocalDateTime") {
                 dateFieldFunctions.addDateField(
@@ -302,6 +303,37 @@ export class AddField implements EditProject {
         }
     }
 
+    private addIntegrationTestChecks(project: Project) {
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            const assertInputHook = "// @FieldInputAssert";
+            const rawAssert = `assertTrue("Wrong field returned.", response.getContentAsString()` +
+                `.contains("\\"${this.fieldName}\\":" + ${this.getQuotedField(this.type, this.className, this.fieldName)}));
+        ` + assertInputHook;
+            file.replace(assertInputHook, rawAssert);
+
+            const fieldInputHook = "// @FieldInputBean";
+            const rawFieldInput = ` .${this.fieldName}(${this.getTestValue(this.type)})
+                ` + fieldInputHook;
+            file.replace(fieldInputHook, rawFieldInput);
+
+            const jsonFieldInputHook = "// @FieldInputJson";
+            const rawJsonFieldInput = ` .${this.fieldName}(${this.getDifferentTestValue(this.type)}.atZone(ZoneId.of("Europe/Berlin")))
+                ` + jsonFieldInputHook;
+            file.replace(jsonFieldInputHook, rawJsonFieldInput);
+
+            if (this.type === "LocalDateTime") {
+                javaFunctions.addImport(file, "java.time.LocalDateTime");
+                javaFunctions.addImport(file, "java.time.ZoneId");
+            }
+        } else {
+            console.error("Integration test class not added yet!");
+        }
+    }
+
     private convertToDbType(javaType: string) {
         let dbType: string;
         switch (javaType) {
@@ -321,6 +353,65 @@ export class AddField implements EditProject {
         }
 
         return dbType;
+    }
+
+    private getTestValue(javaType: string) {
+        let testValue;
+        switch (javaType) {
+            case "String":
+                testValue = "\"string\"";
+                break;
+            case "Integer":
+                testValue = "3";
+                break;
+            case "Long":
+                testValue = "3147483647L";
+                break;
+            case "Boolean":
+                testValue = "true";
+                break;
+            case "LocalDateTime":
+                testValue = "LocalDateTime.now()";
+                break;
+        }
+
+        return testValue;
+    }
+
+    private getDifferentTestValue(javaType: string) {
+        let testValue;
+        switch (javaType) {
+            case "String":
+                testValue = "\"different string\"";
+                break;
+            case "Integer":
+                testValue = "4";
+                break;
+            case "Long":
+                testValue = "4447483647L";
+                break;
+            case "Boolean":
+                testValue = "false";
+                break;
+            case "LocalDateTime":
+                testValue = "LocalDateTime.now().minusDays(4)";
+                break;
+        }
+
+        return testValue;
+    }
+
+    private getQuotedField(javaType: string, className: string, fieldName: string) {
+        let value;
+        if (javaType === "String") {
+            value = `"\\""` + " + " + className.toLowerCase() + ".get" + javaFunctions.capitalize(fieldName) + "()" + " + " + `"\\""`;
+        } else if (javaType === "LocalDateTime") {
+            value = `"\\""` + " + " + className.toLowerCase() + ".get" + javaFunctions.capitalize(fieldName) + "().toString().substring(0, 16)";
+        } else {
+            value = className.toLowerCase() + ".get" + javaFunctions.capitalize(fieldName) + "()";
+        }
+
+        return value;
     }
 }
 

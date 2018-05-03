@@ -164,10 +164,10 @@ export class AddPUT implements EditProject {
     @Test
     public void testPut${this.className}_newObject() throws Exception {
     
-        Json${this.className} json${this.className} = givenAJson${this.className}();
+        Json${this.className} ${this.className.toLowerCase()} = givenAJson${this.className}();
 
         MockHttpServletResponse response =
-                mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/-1", json${this.className}))
+                mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/-1", ${this.className.toLowerCase()}))
                         .andReturn().getResponse();
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
@@ -181,10 +181,10 @@ export class AddPUT implements EditProject {
     
         ${this.className} saved${this.className} = givenA${this.className}();
 
-        Json${this.className} json${this.className} = givenAJson${this.className}();
+        Json${this.className} ${this.className.toLowerCase()} = givenAJson${this.className}();
 
         MockHttpServletResponse response =
-                mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/" + saved${this.className}.getId(), json${this.className}))
+                mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/" + saved${this.className}.getId(), ${this.className.toLowerCase()}))
                         .andReturn().getResponse();
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());

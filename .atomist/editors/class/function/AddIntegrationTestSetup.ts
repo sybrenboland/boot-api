@@ -173,7 +173,7 @@ public class ${this.className}ResourceIT {
 
     private ${this.className} givenA${this.className}() {
         return givenA${this.className}(${this.className}.builder()
-                // @FieldInput
+                // @FieldInputBean
                 .build());
     }
     
