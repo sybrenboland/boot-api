@@ -321,13 +321,13 @@ export class AddField implements EditProject {
             file.replace(fieldInputHook, rawFieldInput);
 
             const jsonFieldInputHook = "// @FieldInputJson";
-            const rawJsonFieldInput = ` .${this.fieldName}(${this.getDifferentTestValue(this.type)}.atZone(ZoneId.of("Europe/Berlin")))
+            const rawJsonFieldInput = ` .${this.fieldName}(${this.getDifferentTestValue(this.type)})
                 ` + jsonFieldInputHook;
             file.replace(jsonFieldInputHook, rawJsonFieldInput);
 
             if (this.type === "LocalDateTime") {
                 javaFunctions.addImport(file, "java.time.LocalDateTime");
-                javaFunctions.addImport(file, "java.time.ZoneId");
+                javaFunctions.addImport(file, "java.time.ZonedDateTime");
             }
         } else {
             console.error("Integration test class not added yet!");
@@ -394,7 +394,7 @@ export class AddField implements EditProject {
                 testValue = "false";
                 break;
             case "LocalDateTime":
-                testValue = "LocalDateTime.now().minusDays(4)";
+                testValue = "ZonedDateTime.now().minusDays(4)";
                 break;
         }
 
