@@ -56,9 +56,9 @@ export class AddField implements EditProject {
         validInput: "Java package name",
         minLength: 0,
         maxLength: 100,
-        required: true,
+        required: false,
     })
-    public basePackage: string;
+    public basePackage: string = "org.shboland";
 
     @Parameter({
         displayName: "Module name",
