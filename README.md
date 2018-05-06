@@ -55,15 +55,13 @@ Now we can generate our first object, the Customer object.
 ```
 > cd customer-api
 > rug edit shboland:boot-api:ApiForBean \
-               className=Customer       \
-               basePackage=org.shboland
+               className=Customer
 ```
 
 And lets say our customer has a name.
 ```
 > rug edit shboland:boot-api:AddField   \
                className=Customer       \
-               basePackage=org.shboland \
                fieldName=name           \
                type=String
 ```
