@@ -45,9 +45,9 @@ export class ApiForBean implements EditProject {
         validInput: "Java package name",
         minLength: 0,
         maxLength: 100,
-        required: true,
+        required: false,
     })
-    public basePackage: string;
+    public basePackage: string = "org.shboland";
 
     @Parameter({
         displayName: "Methods",
@@ -255,7 +255,9 @@ export class ApiForBean implements EditProject {
     }
 
     private setSpringBootVersion(project: Project) {
-        addSpringBoot.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addSpringBoot.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addSpringBoot.apiModule = this.apiModule;
         }
@@ -266,7 +268,9 @@ export class ApiForBean implements EditProject {
     }
     
     private addConfigFiles(project: Project) {
-        addConfig.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addConfig.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addConfig.apiModule = this.apiModule;
         }
@@ -301,7 +305,9 @@ export class ApiForBean implements EditProject {
     private addBeanClass(project: Project) {
 
         addBeanClass.className = this.className;
-        addBeanClass.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addBeanClass.basePackage = this.basePackage;
+        }
         if (this.persistenceModule !== "persistence") {
             addBeanClass.persistenceModule = this.persistenceModule;
         }
@@ -317,7 +323,9 @@ export class ApiForBean implements EditProject {
 
     private addDomainClass(project: Project) {
         addDomainClass.className = this.className;
-        addDomainClass.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addDomainClass.basePackage = this.basePackage;
+        }
         if (this.domainModule !== "domain") {
             addDomainClass.module = this.domainModule;
         }
@@ -344,7 +352,9 @@ export class ApiForBean implements EditProject {
     private addRepository(project: Project) {
 
         addRepository.className = this.className;
-        addRepository.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addRepository.basePackage = this.basePackage;
+        }
         if (this.persistenceModule !== "persistence") {
             addRepository.module = this.persistenceModule;
         }
@@ -355,7 +365,9 @@ export class ApiForBean implements EditProject {
     private addConverter(project: Project) {
 
         addConverter.className = this.className;
-        addConverter.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addConverter.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addConverter.module = this.apiModule;
         }
@@ -366,7 +378,9 @@ export class ApiForBean implements EditProject {
     private addService(project: Project) {
 
         addService.className = this.className;
-        addService.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addService.basePackage = this.basePackage;
+        }
         if (this.coreModule !== "core") {
             addService.module = this.coreModule;
         }
@@ -377,7 +391,9 @@ export class ApiForBean implements EditProject {
     private addResource(project: Project) {
 
         addResource.className = this.className;
-        addResource.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addResource.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addResource.module = this.apiModule;
         }
@@ -416,7 +432,9 @@ export class ApiForBean implements EditProject {
     private addGet(project: Project) {
 
         addGet.className = this.className;
-        addGet.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addGet.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addGet.apiModule = this.apiModule;
         }
@@ -430,7 +448,9 @@ export class ApiForBean implements EditProject {
     private addPost(project: Project) {
 
         addPost.className = this.className;
-        addPost.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addPost.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addPost.apiModule = this.apiModule;
         }
@@ -444,7 +464,9 @@ export class ApiForBean implements EditProject {
     private addPut(project: Project) {
 
         addPut.className = this.className;
-        addPut.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addPut.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addPut.apiModule = this.apiModule;
         }
@@ -458,7 +480,9 @@ export class ApiForBean implements EditProject {
     private addDelete(project: Project) {
 
         addDelete.className = this.className;
-        addDelete.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addDelete.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addDelete.apiModule = this.apiModule;
         }
@@ -472,7 +496,9 @@ export class ApiForBean implements EditProject {
     private addSearchCriteria(project: Project) {
 
         addSearchCriteria.className = this.className;
-        addSearchCriteria.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addSearchCriteria.basePackage = this.basePackage;
+        }
         if(this.persistenceModule !== "persistence") {
             addSearchCriteria.persistenceModule = this.persistenceModule;
         }
@@ -491,7 +517,9 @@ export class ApiForBean implements EditProject {
 
     private addSwagger(project: Project) {
 
-        addSwagger.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addSwagger.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addSwagger.apiModule = this.apiModule;
         }
@@ -503,7 +531,9 @@ export class ApiForBean implements EditProject {
     }
 
     private addDocker(project: Project) {
-        addDocker.basePackage = this.basePackage;
+        if (this.basePackage !== "org.shboland") {
+            addDocker.basePackage = this.basePackage;
+        }
         if (this.apiModule !== "api") {
             addDocker.apiModule = this.apiModule;
         }
