@@ -7,7 +7,7 @@ import { Project } from "@atomist/rug/model/Project";
 
 export class AddIntegrationTestManySetup extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean) {
+    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean, private biDirectional: boolean) {
         super();
     }
 
@@ -20,6 +20,7 @@ export class AddIntegrationTestManySetup extends EditFunction {
             this.addRepositoryOtherSide(file);
             this.addCleanUpList(file);
             this.deleteCleanUpListInTearDown(file);
+            this.addFactoryMethodOtherSideBean(file);
 
             if (this.oneSide) {
                 this.addFactoryMethodOneSide(file);
@@ -50,7 +51,7 @@ export class AddIntegrationTestManySetup extends EditFunction {
 
     private addCleanUpList(file: File): void {
         const rawJavaMethod = `
-    private Set<${this.otherClass}> cleanUpList${this.otherClass} = new HashSet<>();`;
+    private Set<Long> cleanUpList${this.otherClass} = new HashSet<>();`;
 
         if (!file.contains(`cleanUpList${this.otherClass}`)) {
             const functionInput = "// @InjectInput";
@@ -61,9 +62,9 @@ export class AddIntegrationTestManySetup extends EditFunction {
 
     private deleteCleanUpListInTearDown(file: File): void {
         const rawJavaMethod = `
-    cleanUpList${this.otherClass}.stream().forEach(${this.otherClass.toLowerCase()}Repository::delete);`;
+        cleanUpList${this.otherClass}.stream().forEach(${this.otherClass.toLowerCase()}Repository::deleteById);`;
 
-        if (!file.contains(`${this.otherClass.toLowerCase()}Repository::delete`)) {
+        if (!file.contains(`${this.otherClass.toLowerCase()}Repository::deleteById`)) {
 
             if (this.oneSide) {
                 const functionInput = "// @TearDownInputTop";
@@ -76,20 +77,23 @@ export class AddIntegrationTestManySetup extends EditFunction {
     }
 
     private addFactoryMethodOneSide(file: File): void {
+        const fieldSetManySide = this.biDirectional ? `.${this.otherClass.toLowerCase()}List(new ArrayList<>())` : ``;
+        const fieldAddManySide = this.biDirectional ? `${this.oneClass.toLowerCase()}.get${this.otherClass}List().add(${this.otherClass.toLowerCase()});` : ``;
+
         const rawJavaMethod = `
    private ${this.oneClass} givenA${this.oneClass}With${this.otherClass}() {
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass}.builder()
-            .${this.otherClass.toLowerCase()}List(new ArrayList<>())
+            ${fieldSetManySide}
             .build());
-        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()});
+        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass}.builder()
                 .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()})
                 // @FieldInput
                 .build());
-        cleanUpListCar.add(${this.otherClass.toLowerCase()});
+        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
-        ${this.oneClass.toLowerCase()}.get${this.otherClass}List().add(${this.otherClass.toLowerCase()});
+        ${fieldAddManySide}
         return ${this.oneClass.toLowerCase()};
     }`;
 
@@ -101,24 +105,43 @@ export class AddIntegrationTestManySetup extends EditFunction {
     }
 
     private addFactoryMethodManySide(file: File): void {
+        const fieldSetManySide = this.biDirectional ? `.${this.oneClass.toLowerCase()}List(new ArrayList<>())` : ``;
+        const fieldAddManySide = this.biDirectional ? `${this.otherClass.toLowerCase()}.get${this.oneClass}List().add(${this.oneClass.toLowerCase()});` : ``;
+
         const rawJavaMethod = `
    private ${this.oneClass} givenA${this.oneClass}With${this.otherClass}() {
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass}.builder()
-            .${this.oneClass.toLowerCase()}List(new ArrayList<>())
+            ${fieldSetManySide}
             .build());
-        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()});
+        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass}.builder()
                 .${this.otherClass.toLowerCase()}(${this.otherClass.toLowerCase()})
                 // @FieldInput
                 .build());
-        cleanUpListCar.add(${this.oneClass.toLowerCase()});
+        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
         
-        ${this.otherClass.toLowerCase()}.get${this.oneClass}List().add(${this.oneClass.toLowerCase()});
+        ${fieldAddManySide}
         return ${this.oneClass.toLowerCase()};
     }`;
 
         if (!file.contains(`givenA${this.oneClass}With${this.otherClass}s(`)) {
+            const functionInput = "// @PrivateMethodInput";
+
+            file.replace(functionInput, functionInput + "\n" + rawJavaMethod);
+        }
+    }
+
+    private addFactoryMethodOtherSideBean(file: File) {
+        const rawJavaMethod = `
+   private ${this.otherClass} givenA${this.otherClass}() {
+        ${this.otherClass} saved${this.otherClass} = ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass}.builder().build());
+        cleanUpList${this.otherClass}.add(saved${this.otherClass}.getId());
+
+        return saved${this.otherClass};
+   }`;
+
+        if (!file.contains(`givenA${this.otherClass}() {`)) {
             const functionInput = "// @PrivateMethodInput";
 
             file.replace(functionInput, functionInput + "\n" + rawJavaMethod);

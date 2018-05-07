@@ -192,7 +192,7 @@ public class ${this.className}ResourceIT {
     
     private void cleanUpNew${this.className}(String response) {
         String startAtId = response.substring(response.lastIndexOf("/${this.className.toLowerCase()}s/") + "${this.className}".length() + 3);
-        String idString = startAtId.substring(0, startAtId.indexOf("\\""));
+        String idString = startAtId.substring(0, startAtId.indexOf("/"));
         cleanUpList${this.className}.add(new Long(idString));
     }
     

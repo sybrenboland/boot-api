@@ -26,7 +26,6 @@ import {AddResourceInterfaceGetMethodMany} from "./function/method/manyToMany/Ad
 import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConverterMany";
 import {AddServiceGetMethodMany} from "./function/method/oneToMany/AddServiceManyGetMethod";
 import {AddResourceGetMethodManyBi} from "./function/method/manyToMany/AddResourceManyGetMethodBi";
-import {AddResourceGetMethodManyUni} from "./function/method/manyToMany/AddResourceManyGetMethodUni";
 import {Params} from "./function/Params";
 import { AddIntegrationTestOneGetMethod } from "./function/method/oneToMany/AddIntegrationTestOneGetMethod";
 import { AddIntegrationTestManySetup } from "./function/method/oneToMany/AddIntegrationTestManySetup";
@@ -253,21 +252,16 @@ export class AddOneToManyRelation implements EditProject {
                 .and(new AddLinkToConverterOne(this.classNameOne, this.classNameMany))
                 .and(new AddFieldToSearchCriteria(this.classNameOne, this.classNameMany))
                 .and(new AddFieldToPredicates(this.classNameOne, this.classNameMany))
-                .and(new AddIntegrationTestManySetup(this.classNameOne, this.classNameMany, true))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameOne, this.classNameMany));
+                .and(new AddIntegrationTestManySetup(this.classNameOne, this.classNameMany, true, javaFunctions.trueOfFalse(this.biDirectional)))
+                .and(new AddIntegrationTestOneGetMethod(this.classNameOne, this.classNameMany, true));
         }
         if (javaFunctions.trueOfFalse(this.showInOutputMany)) {
             builder.and(new AddLinkToConverterMany(this.classNameOne, this.classNameMany, true))
                 .and(new AddResourceInterfaceGetMethodMany(this.classNameOne, this.classNameMany, true))
-                .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameMany, this.classNameOne));
-
-            if(javaFunctions.trueOfFalse(this.biDirectional)) {
-                builder.and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
-                    .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
-            } else {
-                builder.and(new AddResourceGetMethodManyUni(this.classNameOne, this.classNameMany));
-            }
+                .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false, javaFunctions.trueOfFalse(this.biDirectional)))
+                .and(new AddIntegrationTestOneGetMethod(this.classNameMany, this.classNameOne, false))
+                .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
+                .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
         }
 
         const params: Params = new Params(

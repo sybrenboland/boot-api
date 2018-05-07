@@ -13,32 +13,52 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const getManySideClass = this.oneSide ?
-            `saved${this.oneClass}.get${this.otherClass}List().get(0)` :
-            `saved${this.oneClass}.get${this.otherClass}()`;
+            `${this.oneClass.toLowerCase()}.get${this.otherClass}List().get(0)` :
+            `${this.oneClass.toLowerCase()}.get${this.otherClass}()`;
 
         const rawJavaMethod = `
     @Test
     public void testDelete${this.otherClass}_with${this.oneClass}With${this.otherClass}s() throws Exception {
+    
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = givenA${this.oneClass}With${this.otherClass}();
+        ${this.otherClass} ${this.otherClass.toLowerCase()} = ${getManySideClass};
 
-        ${this.oneClass} saved${this.oneClass} = givenA${this.oneClass}With${this.otherClass}();
-        ${this.otherClass} saved${this.otherClass} = ${getManySideClass};
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + ` +
+            `${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + ` +
-            `saved${this.oneClass}.getId() + "/${this.otherClass.toLowerCase()}s/" + saved${this.otherClass}.getId()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+        assertFalse("Wrong entity link returned.",
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
+                        .andReturn().getResponse().getContentAsString()
+                        .contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));
     }
 
     @Test
     public void testDelete${this.otherClass}_with${this.oneClass}No${this.otherClass}s() throws Exception {
+    
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = givenA${this.oneClass}();
 
-        ${this.oneClass} saved${this.oneClass} = givenA${this.oneClass}();
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s/-1"))
+                        .andReturn().getResponse();
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + saved${this.oneClass}.getId() + "/${this.otherClass.toLowerCase()}s/-1"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
     }
 
     @Test
     public void testDelete${this.otherClass}_without${this.oneClass}() throws Exception {
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.delete("${this.oneClass.toLowerCase()}s/-1/${this.otherClass.toLowerCase()}s/-1"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+        
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/-1/${this.otherClass.toLowerCase()}s/-1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
