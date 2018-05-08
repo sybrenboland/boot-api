@@ -6,6 +6,7 @@ import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {fileFunctions} from "../../functions/FileFunctions";
+import { javaFunctions } from "../../functions/JavaClassFunctions";
 
 /**
  * AddIntegrationTestSetup editor
@@ -77,6 +78,7 @@ export class AddIntegrationTestSetup implements EditProject {
         this.addDependencies(project);
         this.addIntegrationTestFile(project);
         this.addIntegrationTestUtilsFile(project);
+        this.addOrExtendIntegrationTestFactory(project);
 
     }
 
@@ -170,29 +172,12 @@ public class ${this.className}ResourceIT {
     }
 
     // @Input
-
-    private ${this.className} givenA${this.className}() {
-        return givenA${this.className}(${this.className}.builder()
-                // @FieldInputBean
-                .build());
-    }
-    
-    private ${this.className} givenA${this.className}(${this.className} ${this.className.toLowerCase()}) {
-         ${this.className} saved${this.className} = ${this.className.toLowerCase()}Repository.save(${this.className.toLowerCase()});
-        cleanUpList${this.className}.add(${this.className.toLowerCase()}.getId());
-
-        return saved${this.className};
-    }
-    
-    private Json${this.className} givenAJson${this.className}() {
-        return Json${this.className}.builder()
-                // @FieldInputJson
-                .build();
-    }
     
     private void cleanUpNew${this.className}(String response) {
         String startAtId = response.substring(response.lastIndexOf("/${this.className.toLowerCase()}s/") + "${this.className}".length() + 3);
-        String idString = startAtId.substring(0, startAtId.indexOf("/"));
+        String idString = startAtId.contains("/") ?
+                startAtId.substring(0, startAtId.indexOf("/")) :
+                startAtId.substring(0, startAtId.indexOf("\\""));
         cleanUpList${this.className}.add(new Long(idString));
     }
     
@@ -246,6 +231,52 @@ public class IntegrationTestUtils {
 `;
         if (!project.fileExists(path)) {
             project.addFile(path, rawContent);
+        }
+    }
+
+    private addOrExtendIntegrationTestFactory(project: Project) {
+        const path = this.apiModule + "/src/test/java/integration/IntegrationTestFactory.java";
+        const rawContent = `package integration;
+         
+
+public class IntegrationTestFactory {
+
+    // @Input
+}
+`;
+        if (!project.fileExists(path)) {
+            project.addFile(path, rawContent);
+        }
+
+        const rawMethods = `
+    public static ${this.className} givenA${this.className}(${this.className}Repository ${this.className.toLowerCase()}Repository) {
+        return givenA${this.className}(${this.className}.builder()
+                // @FieldInput${this.className}Bean
+                .build(),
+                ${this.className.toLowerCase()}Repository);
+    }
+    
+    public static ${this.className} givenA${this.className}(${this.className} ${this.className.toLowerCase()}, ` +
+            `${this.className}Repository ${this.className.toLowerCase()}Repository) {
+        return ${this.className.toLowerCase()}Repository.save(${this.className.toLowerCase()});
+    }
+    
+    public static Json${this.className} givenAJson${this.className}() {
+        return Json${this.className}.builder()
+                // @FieldInputJson${this.className}
+                .build();
+    }
+        `;
+
+        const file: File = project.findFile(path);
+
+        if (!file.contains(`givenA${this.className}(`)) {
+            const functionInput = "// @Input";
+
+            file.replace(functionInput, functionInput + "\n" + rawMethods);
+            javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
+            javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
+            javaFunctions.addImport(file, this.basePackage + ".persistence.db.repo." + this.className + "Repository");
         }
     }
 }

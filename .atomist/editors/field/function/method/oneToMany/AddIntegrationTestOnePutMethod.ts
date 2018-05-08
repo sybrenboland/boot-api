@@ -20,8 +20,10 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
     @Test
     public void testPut${this.otherClass}_with${this.oneClass}() throws Exception {
 
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = givenA${this.oneClass}();
-        ${this.otherClass} ${this.otherClass.toLowerCase()} = givenA${this.otherClass}();
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}(${this.oneClass.toLowerCase()}Repository);
+        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+        ${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}(${this.otherClass.toLowerCase()}Repository);
+        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.put("/${this.oneClass.toLowerCase()}s/" + ` +
@@ -39,8 +41,11 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
     @Test
     public void testPut${this.otherClass}_with${this.oneClass}With${this.otherClass}() throws Exception {
     
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = givenA${this.oneClass}With${this.otherClass}();
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
+            `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
+        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${getManySideClass};
+        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.put("/${this.oneClass.toLowerCase()}s/" + ` +
@@ -58,7 +63,8 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
     @Test
     public void testPut${this.otherClass}_with${this.oneClass}No${this.otherClass}() throws Exception {
     
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = givenA${this.oneClass}();
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}(${this.oneClass.toLowerCase()}Repository);
+        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.put("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s/-1"))

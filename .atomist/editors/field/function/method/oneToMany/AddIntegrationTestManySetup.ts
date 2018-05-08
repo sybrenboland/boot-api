@@ -13,27 +13,45 @@ export class AddIntegrationTestManySetup extends EditFunction {
 
     edit(project: Project, params: Params): void {
 
-        const path = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";
-        if (project.fileExists(path)) {
-            const file: File = project.findFile(path);
+        const pathIntegrationTests = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";
+        if (project.fileExists(pathIntegrationTests)) {
+            const file: File = project.findFile(pathIntegrationTests);
 
             this.addRepositoryOtherSide(file);
             this.addCleanUpList(file);
             this.deleteCleanUpListInTearDown(file);
-            this.addFactoryMethodOtherSideBean(file);
 
-            if (this.oneSide) {
-                this.addFactoryMethodOneSide(file);
-            } else {
-                this.addFactoryMethodManySide(file);
-            }
-
-            javaFunctions.addImport(file, "java.util.ArrayList");
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
         } else {
             console.error("Integration test class not added yet!");
+        }
+
+        const pathFactory = params.apiModule + "/src/test/java/integration/IntegrationTestFactory.java";
+        if (project.fileExists(pathFactory)) {
+            const file: File = project.findFile(pathFactory);
+
+            if (this.oneSide) {
+                if (this.biDirectional) {
+                    this.addFactoryMethodOneSide(file);
+                }
+            } else {
+                if (this.biDirectional) {
+                    this.addFactoryMethodManySideBi(file);
+                } else {
+                    this.addFactoryMethodManySideUni(file);
+                }
+            }
+
+            if (this.biDirectional) {
+                javaFunctions.addImport(file, "java.util.ArrayList");
+            }
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
+        } else {
+            console.error("Integration test factory class not added yet!");
         }
     }
 
@@ -53,7 +71,7 @@ export class AddIntegrationTestManySetup extends EditFunction {
         const rawJavaMethod = `
     private Set<Long> cleanUpList${this.otherClass} = new HashSet<>();`;
 
-        if (!file.contains(`cleanUpList${this.otherClass}`)) {
+        if (!file.contains(`cleanUpList${this.otherClass} = new HashSet<>();`)) {
             const functionInput = "// @InjectInput";
 
             file.replace(functionInput, functionInput + "\n" + rawJavaMethod);
@@ -77,72 +95,70 @@ export class AddIntegrationTestManySetup extends EditFunction {
     }
 
     private addFactoryMethodOneSide(file: File): void {
-        const fieldSetManySide = this.biDirectional ? `.${this.otherClass.toLowerCase()}List(new ArrayList<>())` : ``;
-        const fieldAddManySide = this.biDirectional ? `${this.oneClass.toLowerCase()}.get${this.otherClass}List().add(${this.otherClass.toLowerCase()});` : ``;
 
         const rawJavaMethod = `
-   private ${this.oneClass} givenA${this.oneClass}With${this.otherClass}() {
+   public static ${this.oneClass} givenA${this.oneClass}With${this.otherClass}(${this.oneClass}Repository ` +
+            `${this.oneClass.toLowerCase()}Repository, ${this.otherClass}Repository ${this.otherClass.toLowerCase()}Repository) {
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass}.builder()
-            ${fieldSetManySide}
+            .${this.otherClass.toLowerCase()}List(new ArrayList<>())
             .build());
-        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass}.builder()
                 .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()})
                 // @FieldInput
                 .build());
-        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
-        ${fieldAddManySide}
+        ${this.oneClass.toLowerCase()}.get${this.otherClass}List().add(${this.otherClass.toLowerCase()});
         return ${this.oneClass.toLowerCase()};
     }`;
 
         if (!file.contains(`givenA${this.oneClass}With${this.otherClass}s(`)) {
-            const functionInput = "// @PrivateMethodInput";
+            const functionInput = "// @Input";
 
             file.replace(functionInput, functionInput + "\n" + rawJavaMethod);
         }
     }
 
-    private addFactoryMethodManySide(file: File): void {
-        const fieldSetManySide = this.biDirectional ? `.${this.oneClass.toLowerCase()}List(new ArrayList<>())` : ``;
-        const fieldAddManySide = this.biDirectional ? `${this.otherClass.toLowerCase()}.get${this.oneClass}List().add(${this.oneClass.toLowerCase()});` : ``;
+    private addFactoryMethodManySideBi(file: File): void {
 
         const rawJavaMethod = `
-   private ${this.oneClass} givenA${this.oneClass}With${this.otherClass}() {
+   public static ${this.oneClass} givenA${this.oneClass}With${this.otherClass}(${this.oneClass}Repository ` +
+            `${this.oneClass.toLowerCase()}Repository, ${this.otherClass}Repository ${this.otherClass.toLowerCase()}Repository) {
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass}.builder()
-            ${fieldSetManySide}
+            .${this.oneClass.toLowerCase()}List(new ArrayList<>())
             .build());
-        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
         ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass}.builder()
                 .${this.otherClass.toLowerCase()}(${this.otherClass.toLowerCase()})
                 // @FieldInput
                 .build());
-        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
         
-        ${fieldAddManySide}
+        ${this.otherClass.toLowerCase()}.get${this.oneClass}List().add(${this.oneClass.toLowerCase()});
         return ${this.oneClass.toLowerCase()};
     }`;
 
         if (!file.contains(`givenA${this.oneClass}With${this.otherClass}s(`)) {
-            const functionInput = "// @PrivateMethodInput";
+            const functionInput = "// @Input";
 
             file.replace(functionInput, functionInput + "\n" + rawJavaMethod);
         }
     }
 
-    private addFactoryMethodOtherSideBean(file: File) {
+    private addFactoryMethodManySideUni(file: File): void {
+
         const rawJavaMethod = `
-   private ${this.otherClass} givenA${this.otherClass}() {
-        ${this.otherClass} saved${this.otherClass} = ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass}.builder().build());
-        cleanUpList${this.otherClass}.add(saved${this.otherClass}.getId());
+   public static ${this.oneClass} givenA${this.oneClass}With${this.otherClass}(${this.oneClass}Repository ` +
+            `${this.oneClass.toLowerCase()}Repository, ${this.otherClass}Repository ${this.otherClass.toLowerCase()}Repository) {
+        ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Repository.save(${this.otherClass}.builder().build());
 
-        return saved${this.otherClass};
-   }`;
+        return ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass}.builder()
+                .${this.otherClass.toLowerCase()}(${this.otherClass.toLowerCase()})
+                // @FieldInput
+                .build());
+    }`;
 
-        if (!file.contains(`givenA${this.otherClass}() {`)) {
-            const functionInput = "// @PrivateMethodInput";
+        if (!file.contains(`givenA${this.oneClass}With${this.otherClass}s(`)) {
+            const functionInput = "// @Input";
 
             file.replace(functionInput, functionInput + "\n" + rawJavaMethod);
         }

@@ -164,7 +164,7 @@ export class AddPUT implements EditProject {
     @Test
     public void testPut${this.className}_newObject() throws Exception {
     
-        Json${this.className} ${this.className.toLowerCase()} = givenAJson${this.className}();
+        Json${this.className} ${this.className.toLowerCase()} = IntegrationTestFactory.givenAJson${this.className}();
 
         MockHttpServletResponse response =
                 mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/-1", ${this.className.toLowerCase()}))
@@ -179,9 +179,10 @@ export class AddPUT implements EditProject {
     @Test
     public void testPut${this.className}_updateObject() throws Exception {
     
-        ${this.className} saved${this.className} = givenA${this.className}();
+        ${this.className} saved${this.className} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
+        cleanUpList${this.className}.add(saved${this.className}.getId());
 
-        Json${this.className} ${this.className.toLowerCase()} = givenAJson${this.className}();
+        Json${this.className} ${this.className.toLowerCase()} = IntegrationTestFactory.givenAJson${this.className}();
 
         MockHttpServletResponse response =
                 mockMvc.perform(IntegrationTestUtils.doPut("/${this.className.toLowerCase()}s/" + saved${this.className}.getId(), ${this.className.toLowerCase()}))

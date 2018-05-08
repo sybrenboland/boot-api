@@ -164,7 +164,7 @@ export class AddPOST implements EditProject {
     @Test
     public void testPost${this.className}_newObject() throws Exception {
     
-        Json${this.className} ${this.className.toLowerCase()} = givenAJson${this.className}();
+        Json${this.className} ${this.className.toLowerCase()} = IntegrationTestFactory.givenAJson${this.className}();
 
         MockHttpServletResponse response =
                 mockMvc.perform(IntegrationTestUtils.doPost("/${this.className.toLowerCase()}s", ${this.className.toLowerCase()}))

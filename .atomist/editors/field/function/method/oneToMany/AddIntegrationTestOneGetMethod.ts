@@ -1,27 +1,47 @@
-import {Params} from "../../Params";
-import {EditFunction} from "../../EditFunction";
-import {File} from "@atomist/rug/model/File";
-import {javaFunctions} from "../../../../functions/JavaClassFunctions";
-import {Project} from "@atomist/rug/model/Project";
+import { Params } from "../../Params";
+import { EditFunction } from "../../EditFunction";
+import { File } from "@atomist/rug/model/File";
+import { javaFunctions } from "../../../../functions/JavaClassFunctions";
+import { Project } from "@atomist/rug/model/Project";
 
 
 export class AddIntegrationTestOneGetMethod extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean) {
+    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean, private biDirectional: boolean) {
         super();
     }
 
     edit(project: Project, params: Params): void {
-        const getManySideClass = this.oneSide ?
-            `${this.oneClass.toLowerCase()}.get${this.otherClass}List().get(0)` :
-            `${this.oneClass.toLowerCase()}.get${this.otherClass}()`;
+
+        let getObjects;
+
+        if (this.oneSide) {
+            if (this.biDirectional) {
+                getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
+                    `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
+                    cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+                    ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}List().get(0);
+                    cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
+            } else {
+                getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
+                    `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
+                    cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
+                    ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();
+                    cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());`
+            }
+        } else {
+            getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
+                `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
+                cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+                ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}();
+                cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
+        }
 
         const rawJavaMethod = `
     @Test
     public void testGet${this.otherClass}s_with${this.oneClass}With${this.otherClass}s() throws Exception {
     
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = givenA${this.oneClass}With${this.otherClass}();
-        ${this.otherClass} ${this.otherClass.toLowerCase()} = ${getManySideClass};
+        ${getObjects}
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
@@ -34,7 +54,8 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
     @Test
     public void testGet${this.otherClass}s_with${this.oneClass}No${this.otherClass}s() throws Exception {
     
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = givenA${this.oneClass}();
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}(${this.oneClass.toLowerCase()}Repository);
+        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))

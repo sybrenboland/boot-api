@@ -140,7 +140,8 @@ export class AddGET implements EditProject {
     @Test
     public void testGet${this.className}_with${this.className}() throws Exception {
 
-        ${this.className} ${this.className.toLowerCase()} = givenA${this.className}();
+        ${this.className} ${this.className.toLowerCase()} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
+        cleanUpList${this.className}.add(${this.className.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/" + ${this.className.toLowerCase()}.getId()))

@@ -125,6 +125,7 @@ export class AddField implements EditProject {
             this.addChangelog(project);
             this.addFieldToPredicates(project, basePath);
             this.addFieldToSearchCriteria(project, basePath);
+            this.addIntegrationTestInput(project);
             this.addIntegrationTestChecks(project);
 
             if (this.type === "LocalDateTime") {
@@ -303,6 +304,31 @@ export class AddField implements EditProject {
         }
     }
 
+    private addIntegrationTestInput(project: Project) {
+
+        const path = this.apiModule + "/src/test/java/integration/IntegrationTestFactory.java";
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            const fieldInputHook = `// @FieldInput${this.className}Bean`;
+            const rawFieldInput = ` .${this.fieldName}(${this.getTestValue(this.type)})
+                ` + fieldInputHook;
+            file.replace(fieldInputHook, rawFieldInput);
+
+            const jsonFieldInputHook = `// @FieldInputJson${this.className}`;
+            const rawJsonFieldInput = ` .${this.fieldName}(${this.getDifferentTestValue(this.type)})
+                ` + jsonFieldInputHook;
+            file.replace(jsonFieldInputHook, rawJsonFieldInput);
+
+            if (this.type === "LocalDateTime") {
+                javaFunctions.addImport(file, "java.time.LocalDateTime");
+                javaFunctions.addImport(file, "java.time.ZonedDateTime");
+            }
+        } else {
+            console.error("Integration test factory class not added yet!");
+        }
+    }
+
     private addIntegrationTestChecks(project: Project) {
 
         const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
@@ -314,16 +340,6 @@ export class AddField implements EditProject {
                 `.contains("\\"${this.fieldName}\\":" + ${this.getQuotedField(this.type, this.className, this.fieldName)}));
         ` + assertInputHook;
             file.replace(assertInputHook, rawAssert);
-
-            const fieldInputHook = "// @FieldInputBean";
-            const rawFieldInput = ` .${this.fieldName}(${this.getTestValue(this.type)})
-                ` + fieldInputHook;
-            file.replace(fieldInputHook, rawFieldInput);
-
-            const jsonFieldInputHook = "// @FieldInputJson";
-            const rawJsonFieldInput = ` .${this.fieldName}(${this.getDifferentTestValue(this.type)})
-                ` + jsonFieldInputHook;
-            file.replace(jsonFieldInputHook, rawJsonFieldInput);
 
             if (this.type === "LocalDateTime") {
                 javaFunctions.addImport(file, "java.time.LocalDateTime");

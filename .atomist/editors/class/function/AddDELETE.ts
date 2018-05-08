@@ -166,7 +166,8 @@ export class AddDELETE implements EditProject {
     @Test
     public void testDelete${this.className}_deleteObject() throws Exception {
     
-        ${this.className} saved${this.className} = givenA${this.className}();
+        ${this.className} saved${this.className} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
+        cleanUpList${this.className}.add(saved${this.className}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
