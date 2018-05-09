@@ -211,7 +211,7 @@ export class AddManyToManyRelation implements EditProject {
                 .and(new AddFieldToSearchCriteria(this.classNameOther, this.classNameMappedBy))
                 .and(new AddFieldToPredicates(this.classNameOther, this.classNameMappedBy))
                 .and(new AddIntegrationTestManySetup(this.classNameOther, this.classNameMappedBy, true))
-                .and(new AddIntegrationTestFactoryMethodsMany(this.classNameOther, this.classNameOther, javaFunctions.trueOfFalse(this.biDirectional), true));
+                .and(new AddIntegrationTestFactoryMethodsMany(this.classNameOther, this.classNameMappedBy, javaFunctions.trueOfFalse(this.biDirectional), true));
         }
 
         this.methodsMappingSide.split(",").forEach(method => {
