@@ -167,7 +167,7 @@ export class AddDELETE implements EditProject {
     public void testDelete${this.className}_deleteObject() throws Exception {
     
         ${this.className} saved${this.className} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
-        cleanUpList${this.className}.add(saved${this.className}.getId());
+        cleanUpSet${this.className}.add(saved${this.className}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
@@ -176,7 +176,7 @@ export class AddDELETE implements EditProject {
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
         assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
         assertFalse("Entity not deleted", ${this.className.toLowerCase()}Repository.findById(saved${this.className}.getId()).isPresent());
-        cleanUpList${this.className}.remove(saved${this.className}.getId());
+        cleanUpSet${this.className}.remove(saved${this.className}.getId());
     }`;
 
         const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";

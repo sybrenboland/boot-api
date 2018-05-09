@@ -157,7 +157,7 @@ public class ${this.className}ResourceIT {
 
     // @InjectInput
 
-    private Set<Long> cleanUpList${this.className} = new HashSet<>();
+    private Set<Long> cleanUpSet${this.className} = new HashSet<>();
 
     @Before
     public void setupMockMvc() {
@@ -167,7 +167,7 @@ public class ${this.className}ResourceIT {
     @After
     public void tearDown() {
         // @TearDownInputTop
-        cleanUpList${this.className}.stream().forEach(${this.className.toLowerCase()}Repository::deleteById);
+        cleanUpSet${this.className}.stream().forEach(${this.className.toLowerCase()}Repository::deleteById);
         // @TearDownInputBottom
     }
 
@@ -178,7 +178,7 @@ public class ${this.className}ResourceIT {
         String idString = startAtId.contains("/") ?
                 startAtId.substring(0, startAtId.indexOf("/")) :
                 startAtId.substring(0, startAtId.indexOf("\\""));
-        cleanUpList${this.className}.add(new Long(idString));
+        cleanUpSet${this.className}.add(new Long(idString));
     }
     
     // @PrivateMethodInput

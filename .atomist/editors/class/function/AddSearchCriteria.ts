@@ -601,8 +601,8 @@ public abstract class AbstractHibernateRepository<T> {
     public void testList_with${this.className}s() throws Exception {
     
         ${this.className} saved${this.className} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
-        cleanUpList${this.className}.add(saved${this.className}.getId());
-        cleanUpList${this.className}.add(IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository).getId());
+        cleanUpSet${this.className}.add(saved${this.className}.getId());
+        cleanUpSet${this.className}.add(IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository).getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))

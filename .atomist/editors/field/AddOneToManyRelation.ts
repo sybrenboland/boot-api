@@ -27,10 +27,12 @@ import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConv
 import {AddServiceGetMethodMany} from "./function/method/oneToMany/AddServiceManyGetMethod";
 import {AddResourceGetMethodManyBi} from "./function/method/manyToMany/AddResourceManyGetMethodBi";
 import {Params} from "./function/Params";
-import { AddIntegrationTestOneGetMethod } from "./function/method/oneToMany/AddIntegrationTestOneGetMethod";
-import { AddIntegrationTestManySetup } from "./function/method/oneToMany/AddIntegrationTestManySetup";
-import { AddIntegrationTestOneDeleteMethod } from "./function/method/oneToMany/AddIntegrationTestOneDeleteMethod";
-import { AddIntegrationTestOnePutMethod } from "./function/method/oneToMany/AddIntegrationTestOnePutMethod";
+import { AddIntegrationTestOneGetMethod } from "./function/method/integrationTest/AddIntegrationTestOneGetMethod";
+import { AddIntegrationTestManySetup } from "./function/method/integrationTest/AddIntegrationTestManySetup";
+import { AddIntegrationTestOneDeleteMethod } from "./function/method/integrationTest/AddIntegrationTestOneDeleteMethod";
+import { AddIntegrationTestOnePutMethod } from "./function/method/integrationTest/AddIntegrationTestOnePutMethod";
+import { AddIntegrationTestFactoryMethodsOne } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsOne";
+import { AddIntegrationTestFactoryMethodsMany } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsMany";
 
 /**
  * AddOneToManyRelation editor
@@ -252,14 +254,16 @@ export class AddOneToManyRelation implements EditProject {
                 .and(new AddLinkToConverterOne(this.classNameOne, this.classNameMany))
                 .and(new AddFieldToSearchCriteria(this.classNameOne, this.classNameMany))
                 .and(new AddFieldToPredicates(this.classNameOne, this.classNameMany))
-                .and(new AddIntegrationTestManySetup(this.classNameOne, this.classNameMany, true, javaFunctions.trueOfFalse(this.biDirectional)))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameOne, this.classNameMany, true));
+                .and(new AddIntegrationTestManySetup(this.classNameOne, this.classNameMany, true))
+                .and(new AddIntegrationTestFactoryMethodsOne(this.classNameOne, this.classNameMany, javaFunctions.trueOfFalse(this.biDirectional), false))
+                .and(new AddIntegrationTestOneGetMethod(this.classNameOne, this.classNameMany, true, javaFunctions.trueOfFalse(this.biDirectional)));
         }
         if (javaFunctions.trueOfFalse(this.showInOutputMany)) {
             builder.and(new AddLinkToConverterMany(this.classNameOne, this.classNameMany, true))
                 .and(new AddResourceInterfaceGetMethodMany(this.classNameOne, this.classNameMany, true))
-                .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false, javaFunctions.trueOfFalse(this.biDirectional)))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameMany, this.classNameOne, false))
+                .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false))
+                .and(new AddIntegrationTestFactoryMethodsMany(this.classNameMany, this.classNameOne, javaFunctions.trueOfFalse(this.biDirectional), false))
+                .and(new AddIntegrationTestOneGetMethod(this.classNameMany, this.classNameOne, false, javaFunctions.trueOfFalse(this.biDirectional)))
                 .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
                 .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
         }

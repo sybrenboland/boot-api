@@ -12,6 +12,15 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
+        const innerPartMethod = javaFunctions.trueOfFalse(params.biDirectional) ?
+            `${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Optional.get();
+            
+            ${this.otherClass.toLowerCase()}.get${this.oneClass}Set().remove(${this.oneClass.toLowerCase()});
+                ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(${this.otherClass.toLowerCase()});` :
+            `
+            ${this.oneClass.toLowerCase()}.get${this.otherClass}Set().remove(${this.otherClass.toLowerCase()}Optional.get());
+                ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass.toLowerCase()});`;
+
         const rawJavaMethod = `
     public boolean remove${this.otherClass}(long ${this.oneClass.toLowerCase()}Id, ` +
             `long ${this.otherClass.toLowerCase()}Id) {
@@ -26,9 +35,7 @@ export class AddServiceMappingDeleteMethod extends EditFunction {
             `${this.otherClass.toLowerCase()}Id).findFirst();
 
             if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
-            
-                ${this.oneClass.toLowerCase()}.get${this.otherClass}Set().remove(${this.otherClass.toLowerCase()}Optional.get());
-                ${this.oneClass.toLowerCase()}Repository.save(${this.oneClass.toLowerCase()});
+                ${innerPartMethod}
                 return true;
             }
         }

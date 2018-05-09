@@ -23,6 +23,11 @@ import {AddServiceMappingDeleteMethod} from "./function/method/manyToMany/AddSer
 import {AddServiceMappingPutMethod} from "./function/method/manyToMany/AddServiceMappingPutMethod";
 import {AddServiceOtherPutMethod} from "./function/method/manyToMany/AddServiceOtherPutMethod";
 import {AddServiceOtherDeleteMethod} from "./function/method/manyToMany/AddServiceOtherDeleteMethod";
+import { AddIntegrationTestOnePutMethod } from "./function/method/integrationTest/AddIntegrationTestOnePutMethod";
+import { AddIntegrationTestOneDeleteMethod } from "./function/method/integrationTest/AddIntegrationTestOneDeleteMethod";
+import { AddIntegrationTestManySetup } from "./function/method/integrationTest/AddIntegrationTestManySetup";
+import { AddIntegrationTestFactoryMethodsOne } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsOne";
+import { AddIntegrationTestFactoryMethodsMany } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsMany";
 
 /**
  * AddManyToManyRelation editor
@@ -194,7 +199,9 @@ export class AddManyToManyRelation implements EditProject {
                 .and(new AddServiceOneGetMethod(this.classNameMappedBy, this.classNameOther))
                 .and(new AddLinkToConverterOne(this.classNameMappedBy, this.classNameOther))
                 .and(new AddFieldToSearchCriteria(this.classNameMappedBy, this.classNameOther))
-                .and(new AddFieldToPredicates(this.classNameMappedBy, this.classNameOther));
+                .and(new AddFieldToPredicates(this.classNameMappedBy, this.classNameOther))
+                .and(new AddIntegrationTestManySetup(this.classNameMappedBy, this.classNameOther, true))
+                .and(new AddIntegrationTestFactoryMethodsOne(this.classNameMappedBy, this.classNameOther, javaFunctions.trueOfFalse(this.biDirectional), true));
         }
         if (javaFunctions.trueOfFalse(this.showInOutputOther)) {
             builder.and(new AddResourceInterfaceOneGetMethod(this.classNameOther, this.classNameMappedBy))
@@ -202,7 +209,9 @@ export class AddManyToManyRelation implements EditProject {
                 .and(new AddServiceOneGetMethod(this.classNameOther, this.classNameMappedBy))
                 .and(new AddLinkToConverterOne(this.classNameOther, this.classNameMappedBy))
                 .and(new AddFieldToSearchCriteria(this.classNameOther, this.classNameMappedBy))
-                .and(new AddFieldToPredicates(this.classNameOther, this.classNameMappedBy));
+                .and(new AddFieldToPredicates(this.classNameOther, this.classNameMappedBy))
+                .and(new AddIntegrationTestManySetup(this.classNameOther, this.classNameMappedBy, true))
+                .and(new AddIntegrationTestFactoryMethodsMany(this.classNameOther, this.classNameOther, javaFunctions.trueOfFalse(this.biDirectional), true));
         }
 
         this.methodsMappingSide.split(",").forEach(method => {
@@ -210,14 +219,16 @@ export class AddManyToManyRelation implements EditProject {
                 case "PUT": {
                     builder.and(new AddResourceInterfacePutMethod(this.classNameMappedBy, this.classNameOther))
                         .and(new AddResourcePutMethod(this.classNameMappedBy, this.classNameOther))
-                        .and(new AddServiceMappingPutMethod(this.classNameMappedBy, this.classNameOther));
+                        .and(new AddServiceMappingPutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddIntegrationTestOnePutMethod(this.classNameMappedBy, this.classNameOther, true));
                     break;
                 }
                 case "DELETE": {
                     if (javaFunctions.trueOfFalse(this.biDirectional)) {
                         builder.and(new AddResourceInterfaceDeleteMethod(this.classNameMappedBy, this.classNameOther))
                             .and(new AddResourceDeleteMethod(this.classNameMappedBy, this.classNameOther))
-                            .and(new AddServiceMappingDeleteMethod(this.classNameMappedBy, this.classNameOther));
+                            .and(new AddServiceMappingDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddIntegrationTestOneDeleteMethod(this.classNameMappedBy, this.classNameOther, true));
                     }
                     break;
                 }
@@ -229,13 +240,15 @@ export class AddManyToManyRelation implements EditProject {
                 case "PUT": {
                     builder.and(new AddResourceInterfacePutMethod(this.classNameOther, this.classNameMappedBy))
                         .and(new AddResourcePutMethod(this.classNameOther, this.classNameMappedBy))
-                        .and(new AddServiceOtherPutMethod(this.classNameMappedBy, this.classNameOther));
+                        .and(new AddServiceOtherPutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddIntegrationTestOnePutMethod(this.classNameOther, this.classNameMappedBy, true));
                     break;
                 }
                 case "DELETE": {
                     builder.and(new AddResourceInterfaceDeleteMethod(this.classNameOther, this.classNameMappedBy))
                         .and(new AddResourceDeleteMethod(this.classNameOther, this.classNameMappedBy))
-                        .and(new AddServiceOtherDeleteMethod(this.classNameMappedBy, this.classNameOther));
+                        .and(new AddServiceOtherDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddIntegrationTestOneDeleteMethod(this.classNameOther, this.classNameMappedBy, true));
                     break;
                 }
             }

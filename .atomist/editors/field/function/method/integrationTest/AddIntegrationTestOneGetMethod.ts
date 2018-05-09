@@ -19,22 +19,22 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
             if (this.biDirectional) {
                 getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
                     `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-                    cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
-                    ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}List().get(0);
-                    cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
+                    cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+                    ${this.otherClass} ${this.otherClass.toLowerCase()} = new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0);
+                    cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
             } else {
                 getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
                     `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
-                    cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
+                    cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
                     ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();
-                    cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());`
+                    cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());`
             }
         } else {
             getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
                 `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-                cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+                cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
                 ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}();
-                cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
+                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
         }
 
         const rawJavaMethod = `
@@ -55,7 +55,7 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
     public void testGet${this.otherClass}s_with${this.oneClass}No${this.otherClass}s() throws Exception {
     
         ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}(${this.oneClass.toLowerCase()}Repository);
-        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+        cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
@@ -82,6 +82,9 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
             const file: File = project.findFile(path);
             javaFunctions.addFunction(file, `testGet${this.otherClass}s_with${this.oneClass}With${this.otherClass}s`, rawJavaMethod);
 
+            if (this.oneSide && this.biDirectional) {
+                javaFunctions.addImport(file, "java.util.ArrayList");
+            }
             javaFunctions.addImport(file, "org.junit.Test");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");

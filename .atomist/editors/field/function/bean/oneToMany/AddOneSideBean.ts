@@ -13,7 +13,7 @@ export class AddOneSideBean extends EditFunction {
     edit(project: Project, params: Params): void {
         const inputHook = "// @Input";
         const rawJavaCode = `@OneToMany(cascade = CascadeType.ALL, mappedBy = "${this.oneClass.toLowerCase()}")
-    private List<${this.otherClass}> ${this.otherClass.toLowerCase()}List;
+    private Set<${this.otherClass}> ${this.otherClass.toLowerCase()}Set;
     
     ` + inputHook;
 
@@ -22,7 +22,7 @@ export class AddOneSideBean extends EditFunction {
             const file: File = project.findFile(beanPath);
             file.replace(inputHook, rawJavaCode);
 
-            javaFunctions.addImport(file, "java.util.List");
+            javaFunctions.addImport(file, "java.util.Set");
             javaFunctions.addImport(file, "javax.persistence.OneToMany");
             javaFunctions.addImport(file, "javax.persistence.CascadeType");
         } else {

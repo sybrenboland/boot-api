@@ -13,7 +13,7 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const getManySideClass = this.oneSide ?
-            `${this.oneClass.toLowerCase()}.get${this.otherClass}List().get(0)` :
+            `new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0)` :
             `${this.oneClass.toLowerCase()}.get${this.otherClass}()`;
 
         const rawJavaMethod = `
@@ -22,9 +22,9 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
     
         ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
             `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+        cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${getManySideClass};
-        cleanUpList${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
+        cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + ` +
@@ -43,7 +43,7 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
     public void testDelete${this.otherClass}_with${this.oneClass}No${this.otherClass}s() throws Exception {
     
         ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}(${this.oneClass.toLowerCase()}Repository);
-        cleanUpList${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+        cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s/-1"))
@@ -75,6 +75,7 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
             javaFunctions.addFunction(file, `testDelete${this.otherClass}_with${this.oneClass}With${this.otherClass}s`, rawJavaMethod);
 
             javaFunctions.addImport(file, "org.junit.Test");
+            javaFunctions.addImport(file, "java.util.ArrayList");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);

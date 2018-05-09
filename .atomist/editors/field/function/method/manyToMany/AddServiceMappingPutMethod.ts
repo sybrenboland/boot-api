@@ -12,11 +12,6 @@ export class AddServiceMappingPutMethod extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
-        const innerPartMethod = javaFunctions.trueOfFalse(params.biDirectional) ?
-            `${this.oneClass.toLowerCase()}.get${this.otherClass}Set().add(${this.otherClass.toLowerCase()});
-                ${javaFunctions.lowercaseFirst(this.oneClass)}Repository.save(${this.oneClass.toLowerCase()});` :
-            `${this.oneClass.toLowerCase()}.get${this.otherClass}Set().add(${this.otherClass.toLowerCase()});
-                ${javaFunctions.lowercaseFirst(this.oneClass)}Repository.save(${this.oneClass.toLowerCase()});`;
 
         const rawJavaMethod = `
     public boolean update${this.oneClass}With${this.otherClass}(long ${this.oneClass.toLowerCase()}Id, ` +
@@ -31,7 +26,8 @@ export class AddServiceMappingPutMethod extends EditFunction {
             if (${this.otherClass.toLowerCase()}Optional.isPresent()) {
                 ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.otherClass.toLowerCase()}Optional.get();
 
-                ${innerPartMethod}
+                ${this.otherClass.toLowerCase()}.get${this.oneClass}Set().add(${this.oneClass.toLowerCase()});
+                ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(${this.otherClass.toLowerCase()});
                 return true;
             }
         }
