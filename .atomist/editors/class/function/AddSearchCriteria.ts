@@ -482,8 +482,7 @@ public class ${this.className}RepositoryImpl extends AbstractHibernateRepository
 
         List<Predicate> predicates = createPredicates(sc, criteria, root);
 
-        criteriaQuery
-                .select(criteria.count(root))
+        criteriaQuery.select(criteria.count(root)).distinct(true)
                 .where(predicates.toArray(new Predicate[predicates.size()]));
 
         return getEntityManager()
@@ -500,7 +499,8 @@ public class ${this.className}RepositoryImpl extends AbstractHibernateRepository
 
         List<Predicate> predicates = createPredicates(sc, criteria, root);
 
-        criteriaQuery.select(root).where(predicates.toArray(new Predicate[predicates.size()]));
+        criteriaQuery.select(root).distinct(true)
+                .where(predicates.toArray(new Predicate[predicates.size()]));
 
         return getEntityManager()
                 .createQuery(criteriaQuery)

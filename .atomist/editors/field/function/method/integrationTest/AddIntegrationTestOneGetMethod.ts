@@ -20,21 +20,24 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
                 getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
                     `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
                     cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
-                    ${this.otherClass} ${this.otherClass.toLowerCase()} = new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0);
-                    cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
+                ${this.otherClass} ${this.otherClass.toLowerCase()} = new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0);
+                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
+                
+                ${this.otherClass} ${this.otherClass.toLowerCase()}3 = IntegrationTestFactory.givenA${this.otherClass}(${this.otherClass.toLowerCase()}Repository);
+                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}3.getId());`
             } else {
                 getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
                     `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
                     cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
-                    ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();
-                    cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());`
+                ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();
+                cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());`
             }
         } else {
             getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
                 `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
                 cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
-                ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}();
-                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
+             ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}();
+             cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
         }
 
         const rawJavaMethod = `
@@ -48,7 +51,8 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
                         .andReturn().getResponse();
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
-        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));
+        assertTrue("Wrong grand total returned.", response.getContentAsString().contains("\\"grandTotal\\":1"));
+        assertTrue("Wrong number of results returned.", response.getContentAsString().contains("\\"numberOfResults\\":1"));
     }
 
     @Test
@@ -61,8 +65,10 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
                         .andReturn().getResponse();
 
-        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
-        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong grand total returned.", response.getContentAsString().contains("\\"grandTotal\\":0"));
+        assertTrue("Wrong number of results returned.", response.getContentAsString().contains("\\"numberOfResults\\":0"));
+        assertTrue("Wrong entities returned.", response.getContentAsString().contains("\\"results\\":[]"));
     }
 
     @Test
@@ -72,8 +78,10 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/-1/${this.otherClass.toLowerCase()}s"))
                         .andReturn().getResponse();
 
-        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
-        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong grand total returned.", response.getContentAsString().contains("\\"grandTotal\\":0"));
+        assertTrue("Wrong number of results returned.", response.getContentAsString().contains("\\"numberOfResults\\":0"));
+        assertTrue("Wrong entities returned.", response.getContentAsString().contains("\\"results\\":[]"));
     }`;
 
         const path = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";

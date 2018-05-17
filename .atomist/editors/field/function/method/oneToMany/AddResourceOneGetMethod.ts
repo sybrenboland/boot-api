@@ -19,12 +19,14 @@ export class AddResourceOneGetMethod extends EditFunction {
             `${javaFunctions.lowercaseFirst(this.otherClass)}Service.fetch${this.otherClass}sFor${this.oneClass}` +
             `(${this.oneClass.toLowerCase()}Id);
 
-        if (${this.otherClass.toLowerCase()}List.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(${this.otherClass.toLowerCase()}List.stream()` +
-            `.map(${javaFunctions.lowercaseFirst(this.otherClass)}Converter::toJson).collect(Collectors.toList()));
-        }
+        JsonSearchResult<Json${this.otherClass}> result = JsonSearchResult.<Json${this.otherClass}>builder()
+                .results(${this.otherClass.toLowerCase()}List.stream().` +
+            `map(${this.otherClass.toLowerCase()}Converter::toJson).collect(Collectors.toList()))
+                .numberOfResults(${this.otherClass.toLowerCase()}List.size())
+                .grandTotalNumberOfResults(${this.otherClass.toLowerCase()}List.size())
+                .build();
+        
+        return ResponseEntity.ok(result);
     }`;
 
         const path = params.apiModule + params.basePath + "/api/resource/" + this.oneClass + "Controller.java";
@@ -38,6 +40,8 @@ export class AddResourceOneGetMethod extends EditFunction {
             javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
             javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+            javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.otherClass);
+            javaFunctions.addImport(file, params.basePackage + ".domain.entities.JsonSearchResult");
 
             javaFunctions.addToConstructor(
                 file,
