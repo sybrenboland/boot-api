@@ -7,7 +7,7 @@ import {Project} from "@atomist/rug/model/Project";
 
 export class AddIntegrationTestOnePutMethod extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean) {
+    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean, private biDirectional: boolean) {
         super();
     }
 
@@ -16,7 +16,8 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
             `new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0)` :
             `${this.oneClass.toLowerCase()}.get${this.otherClass}()`;
 
-        const rawJavaMethod = `
+        const withExistingTest = this.biDirectional ?
+            `
     @Test
     public void testPut${this.otherClass}_with${this.oneClass}() throws Exception {
 
@@ -26,8 +27,8 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
         cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
-                mockMvc.perform(MockMvcRequestBuilders.put("/${this.oneClass.toLowerCase()}s/" + ` +
-            `${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()))
+                mockMvc.perform(MockMvcRequestBuilders.put("/${this.oneClass.toLowerCase()}s/" + \` +
+            \`${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()))
                         .andReturn().getResponse();
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
@@ -41,8 +42,8 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
     @Test
     public void testPut${this.otherClass}_with${this.oneClass}With${this.otherClass}() throws Exception {
     
-        ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
-            `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
+        ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(\` +
+            \`${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
         cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${getManySideClass};
         cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
@@ -59,7 +60,11 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
                         .andReturn().getResponse().getContentAsString()
                         .contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));
     }
+` :
+            ``;
 
+        const rawJavaMethod = `
+    ${withExistingTest}
     @Test
     public void testPut${this.otherClass}_with${this.oneClass}No${this.otherClass}() throws Exception {
     

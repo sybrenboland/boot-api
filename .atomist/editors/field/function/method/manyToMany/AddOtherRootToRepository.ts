@@ -18,14 +18,14 @@ export class AddOtherRootToRepository extends EditFunction {
         const propertyArgumentInputHook = "= createPredicates(";
         const rawJavaArgument = propertyArgumentInputHook + `criteriaQuery, `;
 
-        const path = params.persistenceModule + params.basePath + "/persistence/db/repo/" + this.oneClass + "RepositoryImpl.java";
+        const path = params.persistenceModule + params.basePath + "/persistence/db/repo/" + this.otherClass + "RepositoryImpl.java";
         const file: File = project.findFile(path);
 
         if (project.fileExists(path)) {
             file.replace(argumentDefinitionInputHook, rawJavaArgumentDefinition);
             file.replace(propertyArgumentInputHook, rawJavaArgument);
 
-            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
         } else {
             console.error("Custom repository implementation class not added yet!");
         }

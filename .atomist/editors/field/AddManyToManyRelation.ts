@@ -207,7 +207,7 @@ export class AddManyToManyRelation implements EditProject {
                 .and(new AddIntegrationTestFactoryMethodsOne(this.classNameMappedBy, this.classNameOther, javaFunctions.trueOfFalse(this.biDirectional), true))
                 .and(new AddIntegrationTestOneGetMethod(this.classNameMappedBy, this.classNameOther, true, javaFunctions.trueOfFalse(this.biDirectional)));
         }
-        if (javaFunctions.trueOfFalse(this.showInOutputOther)) {
+        if (javaFunctions.trueOfFalse(this.showInOutputOther) && javaFunctions.trueOfFalse(this.biDirectional)) {
             builder.and(new AddResourceInterfaceOneGetMethod(this.classNameOther, this.classNameMappedBy))
                 .and(new AddResourceOneGetMethod(this.classNameOther, this.classNameMappedBy))
                 .and(new AddServiceOneGetMethod(this.classNameOther, this.classNameMappedBy))
@@ -226,7 +226,7 @@ export class AddManyToManyRelation implements EditProject {
                     builder.and(new AddResourceInterfacePutMethod(this.classNameMappedBy, this.classNameOther))
                         .and(new AddResourcePutMethod(this.classNameMappedBy, this.classNameOther))
                         .and(new AddServiceMappingPutMethod(this.classNameMappedBy, this.classNameOther))
-                        .and(new AddIntegrationTestOnePutMethod(this.classNameMappedBy, this.classNameOther, true));
+                        .and(new AddIntegrationTestOnePutMethod(this.classNameMappedBy, this.classNameOther, true, javaFunctions.trueOfFalse(this.biDirectional)));
                     break;
                 }
                 case "DELETE": {
@@ -247,14 +247,18 @@ export class AddManyToManyRelation implements EditProject {
                     builder.and(new AddResourceInterfacePutMethod(this.classNameOther, this.classNameMappedBy))
                         .and(new AddResourcePutMethod(this.classNameOther, this.classNameMappedBy))
                         .and(new AddServiceOtherPutMethod(this.classNameMappedBy, this.classNameOther))
-                        .and(new AddIntegrationTestOnePutMethod(this.classNameOther, this.classNameMappedBy, true));
+                        .and(new AddIntegrationTestOnePutMethod(this.classNameOther, this.classNameMappedBy, true, javaFunctions.trueOfFalse(this.biDirectional)))
+                        .and(new AddIntegrationTestManySetup(this.classNameOther, this.classNameMappedBy, false))
+                        .and(new AddIntegrationTestFactoryMethodsMany(this.classNameOther, this.classNameMappedBy, javaFunctions.trueOfFalse(this.biDirectional), true));
                     break;
                 }
                 case "DELETE": {
                     builder.and(new AddResourceInterfaceDeleteMethod(this.classNameOther, this.classNameMappedBy))
                         .and(new AddResourceDeleteMethod(this.classNameOther, this.classNameMappedBy))
                         .and(new AddServiceOtherDeleteMethod(this.classNameMappedBy, this.classNameOther))
-                        .and(new AddIntegrationTestOneDeleteMethod(this.classNameOther, this.classNameMappedBy, true));
+                        .and(new AddIntegrationTestOneDeleteMethod(this.classNameOther, this.classNameMappedBy, true))
+                        .and(new AddIntegrationTestManySetup(this.classNameOther, this.classNameMappedBy, false))
+                        .and(new AddIntegrationTestFactoryMethodsMany(this.classNameOther, this.classNameMappedBy, javaFunctions.trueOfFalse(this.biDirectional), true));
                     break;
                 }
             }

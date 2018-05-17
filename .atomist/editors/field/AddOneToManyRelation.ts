@@ -211,7 +211,7 @@ export class AddOneToManyRelation implements EditProject {
                     builder.and(new AddResourceInterfacePutMethod(this.classNameMany, this.classNameOne))
                         .and(new AddResourcePutMethod(this.classNameMany, this.classNameOne))
                         .and(new AddServiceManyPutMethod(this.classNameOne, this.classNameMany))
-                        .and(new AddIntegrationTestOnePutMethod(this.classNameMany, this.classNameOne, false));
+                        .and(new AddIntegrationTestOnePutMethod(this.classNameMany, this.classNameOne, false, javaFunctions.trueOfFalse(this.biDirectional)));
                     break;
                 }
                 case "DELETE": {
@@ -233,7 +233,7 @@ export class AddOneToManyRelation implements EditProject {
                         builder.and(new AddResourceInterfacePutMethod(this.classNameOne, this.classNameMany))
                             .and(new AddResourcePutMethod(this.classNameOne, this.classNameMany))
                             .and(new AddServiceOnePutMethod(this.classNameOne, this.classNameMany))
-                            .and(new AddIntegrationTestOnePutMethod(this.classNameOne, this.classNameMany, true));
+                            .and(new AddIntegrationTestOnePutMethod(this.classNameOne, this.classNameMany, true, javaFunctions.trueOfFalse(this.biDirectional)));
                         break;
                     }
                     case "DELETE": {

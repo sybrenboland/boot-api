@@ -19,7 +19,7 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
             if (this.biDirectional) {
                 getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
                     `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-                    cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+                cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
                 ${this.otherClass} ${this.otherClass.toLowerCase()} = new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0);
                 cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
                 
@@ -28,14 +28,14 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
             } else {
                 getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
                     `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
-                    cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
-                ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();
+                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
+                ${this.oneClass} ${this.oneClass.toLowerCase()} = new ArrayList<>(${this.otherClass.toLowerCase()}.get${this.oneClass}Set()).get(0);
                 cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());`
             }
         } else {
             getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
                 `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-                cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
+             cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
              ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}();
              cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
         }
