@@ -33,6 +33,7 @@ import { AddIntegrationTestOneDeleteMethod } from "./function/method/integration
 import { AddIntegrationTestOnePutMethod } from "./function/method/integrationTest/AddIntegrationTestOnePutMethod";
 import { AddIntegrationTestFactoryMethodsOne } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsOne";
 import { AddIntegrationTestFactoryMethodsMany } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsMany";
+import { AddIntegrationTestManyGetMethod } from "./function/method/integrationTest/AddIntegrationTestManyGetMethod";
 
 /**
  * AddOneToManyRelation editor
@@ -256,14 +257,14 @@ export class AddOneToManyRelation implements EditProject {
                 .and(new AddFieldToPredicates(this.classNameOne, this.classNameMany))
                 .and(new AddIntegrationTestManySetup(this.classNameOne, this.classNameMany, true))
                 .and(new AddIntegrationTestFactoryMethodsOne(this.classNameOne, this.classNameMany, javaFunctions.trueOfFalse(this.biDirectional), false))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameOne, this.classNameMany, true, javaFunctions.trueOfFalse(this.biDirectional)));
+                .and(new AddIntegrationTestOneGetMethod(this.classNameOne, this.classNameMany, javaFunctions.trueOfFalse(this.biDirectional), false));
         }
         if (javaFunctions.trueOfFalse(this.showInOutputMany)) {
             builder.and(new AddLinkToConverterMany(this.classNameOne, this.classNameMany, true))
                 .and(new AddResourceInterfaceGetMethodMany(this.classNameOne, this.classNameMany, true))
                 .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false))
                 .and(new AddIntegrationTestFactoryMethodsMany(this.classNameMany, this.classNameOne, javaFunctions.trueOfFalse(this.biDirectional), false))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameMany, this.classNameOne, false, javaFunctions.trueOfFalse(this.biDirectional)))
+                .and(new AddIntegrationTestManyGetMethod(this.classNameMany, this.classNameOne))
                 .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
                 .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
         }

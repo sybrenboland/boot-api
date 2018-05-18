@@ -172,7 +172,6 @@ export class AddPUT implements EditProject {
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
         assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/"));
-        cleanUpNew${this.className}(response.getContentAsString());
         // @FieldInputAssert
     }
 
@@ -180,7 +179,6 @@ export class AddPUT implements EditProject {
     public void testPut${this.className}_updateObject() throws Exception {
     
         ${this.className} saved${this.className} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
-        cleanUpSet${this.className}.add(saved${this.className}.getId());
 
         Json${this.className} ${this.className.toLowerCase()} = IntegrationTestFactory.givenAJson${this.className}();
 

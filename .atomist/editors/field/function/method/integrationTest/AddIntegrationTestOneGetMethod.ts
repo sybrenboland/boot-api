@@ -7,7 +7,7 @@ import { Project } from "@atomist/rug/model/Project";
 
 export class AddIntegrationTestOneGetMethod extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean, private biDirectional: boolean) {
+    constructor(private oneClass: string, private otherClass: string, private biDirectional: boolean, private otherSideMany: boolean) {
         super();
     }
 
@@ -15,29 +15,20 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
 
         let getObjects;
 
-        if (this.oneSide) {
-            if (this.biDirectional) {
-                getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
-                    `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-                cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
-                ${this.otherClass} ${this.otherClass.toLowerCase()} = new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0);
-                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
-                
-                ${this.otherClass} ${this.otherClass.toLowerCase()}3 = IntegrationTestFactory.givenA${this.otherClass}(${this.otherClass.toLowerCase()}Repository);
-                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}3.getId());`
+        if (this.biDirectional) {
+            getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
+                `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
+                IntegrationTestFactory.givenA${this.otherClass}(${this.otherClass.toLowerCase()}Repository);`
+        } else {
+            if (this.otherSideMany) {
+                getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
+                    `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
+                ${this.oneClass} ${this.oneClass.toLowerCase()} = new ArrayList<>(${this.otherClass.toLowerCase()}.get${this.oneClass}Set()).get(0);`
             } else {
                 getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
                     `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
-                cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
-                ${this.oneClass} ${this.oneClass.toLowerCase()} = new ArrayList<>(${this.otherClass.toLowerCase()}.get${this.oneClass}Set()).get(0);
-                cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());`
+                ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();`;
             }
-        } else {
-            getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
-                `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-             cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
-             ${this.otherClass} ${this.otherClass.toLowerCase()} = ${this.oneClass.toLowerCase()}.get${this.otherClass}();
-             cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());`
         }
 
         const rawJavaMethod = `
@@ -59,7 +50,6 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
     public void testGet${this.otherClass}s_with${this.oneClass}No${this.otherClass}s() throws Exception {
     
         ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}(${this.oneClass.toLowerCase()}Repository);
-        cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
@@ -90,7 +80,7 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
             const file: File = project.findFile(path);
             javaFunctions.addFunction(file, `testGet${this.otherClass}s_with${this.oneClass}With${this.otherClass}s`, rawJavaMethod);
 
-            if (this.oneSide && this.biDirectional) {
+            if (this.biDirectional) {
                 javaFunctions.addImport(file, "java.util.ArrayList");
             }
             javaFunctions.addImport(file, "org.junit.Test");

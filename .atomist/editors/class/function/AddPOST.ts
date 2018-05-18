@@ -172,7 +172,6 @@ export class AddPOST implements EditProject {
 
         assertEquals("Wrong status code returned.", HttpStatus.CREATED.value(), response.getStatus());
         assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/"));
-        cleanUpNew${this.className}(response.getContentAsString());
         // @FieldInputAssert
     }`;
 

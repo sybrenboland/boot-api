@@ -22,9 +22,7 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
     
         ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
             `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-        cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
         ${this.otherClass} ${this.otherClass.toLowerCase()} = ${getManySideClass};
-        cleanUpSet${this.otherClass}.add(${this.otherClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + ` +
@@ -43,7 +41,6 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
     public void testDelete${this.otherClass}_with${this.oneClass}No${this.otherClass}s() throws Exception {
     
         ${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}(${this.oneClass.toLowerCase()}Repository);
-        cleanUpSet${this.oneClass}.add(${this.oneClass.toLowerCase()}.getId());
 
         MockHttpServletResponse response =
                 mockMvc.perform(MockMvcRequestBuilders.delete("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s/-1"))

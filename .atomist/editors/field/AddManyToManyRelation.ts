@@ -205,7 +205,7 @@ export class AddManyToManyRelation implements EditProject {
                 .and(new AddOtherRootToRepository(this.classNameMappedBy, this.classNameOther))
                 .and(new AddIntegrationTestManySetup(this.classNameMappedBy, this.classNameOther, true))
                 .and(new AddIntegrationTestFactoryMethodsOne(this.classNameMappedBy, this.classNameOther, javaFunctions.trueOfFalse(this.biDirectional), true))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameMappedBy, this.classNameOther, true, javaFunctions.trueOfFalse(this.biDirectional)));
+                .and(new AddIntegrationTestOneGetMethod(this.classNameMappedBy, this.classNameOther, javaFunctions.trueOfFalse(this.biDirectional), true));
         }
         if (javaFunctions.trueOfFalse(this.showInOutputOther) && javaFunctions.trueOfFalse(this.biDirectional)) {
             builder.and(new AddResourceInterfaceOneGetMethod(this.classNameOther, this.classNameMappedBy))
@@ -217,7 +217,7 @@ export class AddManyToManyRelation implements EditProject {
                 .and(new AddOtherRootToRepository(this.classNameOther, this.classNameMappedBy))
                 .and(new AddIntegrationTestManySetup(this.classNameOther, this.classNameMappedBy, false))
                 .and(new AddIntegrationTestFactoryMethodsMany(this.classNameOther, this.classNameMappedBy, javaFunctions.trueOfFalse(this.biDirectional), true))
-                .and(new AddIntegrationTestOneGetMethod(this.classNameOther, this.classNameMappedBy, true, javaFunctions.trueOfFalse(this.biDirectional)));
+                .and(new AddIntegrationTestOneGetMethod(this.classNameOther, this.classNameMappedBy, javaFunctions.trueOfFalse(this.biDirectional), true));
         }
 
         this.methodsMappingSide.split(",").forEach(method => {

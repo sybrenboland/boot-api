@@ -17,8 +17,7 @@ export class AddIntegrationTestManySetup extends EditFunction {
             const file: File = project.findFile(pathIntegrationTests);
 
             this.addRepositoryOtherSide(file);
-            this.addCleanUpSet(file);
-            this.deleteCleanUpSetInTearDown(file);
+            this.deleteInTearDown(file);
 
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
@@ -40,22 +39,11 @@ export class AddIntegrationTestManySetup extends EditFunction {
         }
     }
 
-    private addCleanUpSet(file: File): void {
+    private deleteInTearDown(file: File): void {
         const rawJavaMethod = `
-    private Set<Long> cleanUpSet${this.otherClass} = new HashSet<>();`;
+        ${this.otherClass.toLowerCase()}Repository.deleteAll();`;
 
-        if (!file.contains(`cleanUpSet${this.otherClass} = new HashSet<>();`)) {
-            const functionInput = "// @InjectInput";
-
-            file.replace(functionInput, functionInput + "\n" + rawJavaMethod);
-        }
-    }
-
-    private deleteCleanUpSetInTearDown(file: File): void {
-        const rawJavaMethod = `
-        cleanUpSet${this.otherClass}.stream().forEach(${this.otherClass.toLowerCase()}Repository::deleteById);`;
-
-        if (!file.contains(`${this.otherClass.toLowerCase()}Repository::deleteById`)) {
+        if (!file.contains(`${this.otherClass.toLowerCase()}Repository.deleteAll();`)) {
 
             if (this.oneSide) {
                 const functionInput = "// @TearDownInputTop";
