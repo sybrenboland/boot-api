@@ -5,7 +5,7 @@ import { javaFunctions } from "../../../../functions/JavaClassFunctions";
 import { Project } from "@atomist/rug/model/Project";
 
 
-export class AddIntegrationTestOneGetMethod extends EditFunction {
+export class AddIntegrationTestGetMethod extends EditFunction {
 
     constructor(private oneClass: string, private otherClass: string, private biDirectional: boolean, private otherSideMany: boolean) {
         super();
@@ -18,16 +18,16 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
         if (this.biDirectional) {
             getObjects = `${this.oneClass} ${this.oneClass.toLowerCase()} = IntegrationTestFactory.givenA${this.oneClass}With${this.otherClass}(` +
                 `${this.oneClass.toLowerCase()}Repository, ${this.otherClass.toLowerCase()}Repository);
-                IntegrationTestFactory.givenA${this.otherClass}(${this.otherClass.toLowerCase()}Repository);`
+            IntegrationTestFactory.givenA${this.otherClass}(${this.otherClass.toLowerCase()}Repository);`
         } else {
             if (this.otherSideMany) {
                 getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
                     `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
-                ${this.oneClass} ${this.oneClass.toLowerCase()} = new ArrayList<>(${this.otherClass.toLowerCase()}.get${this.oneClass}Set()).get(0);`
+            ${this.oneClass} ${this.oneClass.toLowerCase()} = new ArrayList<>(${this.otherClass.toLowerCase()}.get${this.oneClass}Set()).get(0);`
             } else {
                 getObjects = `${this.otherClass} ${this.otherClass.toLowerCase()} = IntegrationTestFactory.givenA${this.otherClass}With${this.oneClass}(` +
                     `${this.otherClass.toLowerCase()}Repository, ${this.oneClass.toLowerCase()}Repository);
-                ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();`;
+            ${this.oneClass} ${this.oneClass.toLowerCase()} = ${this.otherClass.toLowerCase()}.get${this.oneClass}();`;
             }
         }
 
@@ -87,6 +87,8 @@ export class AddIntegrationTestOneGetMethod extends EditFunction {
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+
         } else {
             console.error("Integration test class not added yet!");
         }

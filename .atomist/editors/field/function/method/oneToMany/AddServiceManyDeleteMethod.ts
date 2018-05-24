@@ -6,11 +6,22 @@ import {javaFunctions} from "../../../../functions/JavaClassFunctions";
 
 export class AddServiceManyDeleteMethod extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string) {
+    constructor(private oneClass: string, private otherClass: string, private mappingSide: boolean) {
         super();
     }
 
     edit(project: Project, params: Params): void {
+
+        const save = this.mappingSide ?
+            `${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}Optional.get().toBuilder()
+                            .${this.otherClass.toLowerCase()}(null)
+                            .build();
+                    ${this.oneClass.toLowerCase()}Repository.save(new${this.oneClass});` :
+            `${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
+                            .${this.oneClass.toLowerCase()}(null)
+                            .build();
+                    ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});`;
+
         const rawJavaMethod = `
     public boolean remove${this.oneClass}(long ${this.otherClass.toLowerCase()}Id, ` +
             `long ${this.oneClass.toLowerCase()}Id) {
@@ -26,10 +37,7 @@ export class AddServiceManyDeleteMethod extends EditFunction {
                 if (${this.oneClass.toLowerCase()}Optional.isPresent() && ${this.oneClass.toLowerCase()}Optional.get().getId().` +
                 `equals(${this.otherClass.toLowerCase()}.get${this.oneClass}().getId())) {
     
-                    ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}.toBuilder()
-                            .${this.oneClass.toLowerCase()}(null)
-                            .build();
-                    ${this.otherClass.toLowerCase()}Repository.save(new${this.otherClass});
+                    ${save}
                     return true;
                 }
             }

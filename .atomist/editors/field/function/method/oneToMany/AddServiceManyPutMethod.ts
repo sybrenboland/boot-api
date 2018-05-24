@@ -7,11 +7,22 @@ import {Project} from "@atomist/rug/model/Project";
 
 export class AddServiceManyPutMethod extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string) {
+    constructor(private oneClass: string, private otherClass: string, private mappingSide: boolean) {
         super();
     }
 
     edit(project: Project, params: Params): void {
+
+        const save = this.mappingSide ?
+            `${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}Optional.get().toBuilder()
+                        .${this.otherClass.toLowerCase()}(${this.otherClass.toLowerCase()}Optional.get())
+                        .build();
+                ${javaFunctions.lowercaseFirst(this.oneClass)}Repository.save(new${this.oneClass});` :
+            `${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}Optional.get().toBuilder()
+                        .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()}Optional.get())
+                        .build();
+                ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(new${this.otherClass});`;
+
         const rawJavaMethod = `
     public boolean update${this.otherClass}With${this.oneClass}(long ${this.otherClass.toLowerCase()}Id, ` +
             `long ${this.oneClass.toLowerCase()}Id) {
@@ -23,10 +34,7 @@ export class AddServiceManyPutMethod extends EditFunction {
             `${javaFunctions.lowercaseFirst(this.oneClass)}Repository.findById(${this.oneClass.toLowerCase()}Id);
             if (${this.oneClass.toLowerCase()}Optional.isPresent()) {
 
-                ${this.otherClass} new${this.otherClass} = ${this.otherClass.toLowerCase()}Optional.get().toBuilder()
-                        .${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()}Optional.get())
-                        .build();
-                ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.save(new${this.otherClass});
+                ${save}
                 return true;
             }
         }

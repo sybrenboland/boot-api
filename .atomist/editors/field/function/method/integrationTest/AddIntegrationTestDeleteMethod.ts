@@ -5,9 +5,9 @@ import {javaFunctions} from "../../../../functions/JavaClassFunctions";
 import {Project} from "@atomist/rug/model/Project";
 
 
-export class AddIntegrationTestOneDeleteMethod extends EditFunction {
+export class AddIntegrationTestDeleteMethod extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean) {
+    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean, private otherSideMany: boolean) {
         super();
     }
 
@@ -15,6 +15,13 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
         const getManySideClass = this.oneSide ?
             `new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0)` :
             `${this.oneClass.toLowerCase()}.get${this.otherClass}()`;
+
+        const getCheck = this.otherSideMany ?
+            `assertFalse("Wrong entity link returned.",
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
+                        .andReturn().getResponse().getContentAsString()
+                        .contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));` :
+            ``;
 
         const rawJavaMethod = `
     @Test
@@ -31,10 +38,7 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
         assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
-        assertFalse("Wrong entity link returned.",
-                mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
-                        .andReturn().getResponse().getContentAsString()
-                        .contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));
+        ${getCheck}
     }
 
     @Test
@@ -71,8 +75,10 @@ export class AddIntegrationTestOneDeleteMethod extends EditFunction {
             const file: File = project.findFile(path);
             javaFunctions.addFunction(file, `testDelete${this.otherClass}_with${this.oneClass}With${this.otherClass}s`, rawJavaMethod);
 
+            if (this.oneSide) {
+                javaFunctions.addImport(file, "java.util.ArrayList");
+            }
             javaFunctions.addImport(file, "org.junit.Test");
-            javaFunctions.addImport(file, "java.util.ArrayList");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);

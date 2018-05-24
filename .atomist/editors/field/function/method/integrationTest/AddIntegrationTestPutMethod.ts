@@ -5,9 +5,9 @@ import {javaFunctions} from "../../../../functions/JavaClassFunctions";
 import {Project} from "@atomist/rug/model/Project";
 
 
-export class AddIntegrationTestOnePutMethod extends EditFunction {
+export class AddIntegrationTestPutMethod extends EditFunction {
 
-    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean, private biDirectional: boolean) {
+    constructor(private oneClass: string, private otherClass: string, private oneSide: boolean, private biDirectional: boolean, private otherSideMany: boolean) {
         super();
     }
 
@@ -15,6 +15,13 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
         const getManySideClass = this.oneSide ?
             `new ArrayList<>(${this.oneClass.toLowerCase()}.get${this.otherClass}Set()).get(0)` :
             `${this.oneClass.toLowerCase()}.get${this.otherClass}()`;
+
+        const getCheck = this.otherSideMany ?
+            `assertTrue("Wrong entity link returned.",
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
+                        .andReturn().getResponse().getContentAsString()
+                        .contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));` :
+            ``;
 
         const withExistingTest = this.biDirectional ?
             `
@@ -31,10 +38,7 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
         assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
-        assertTrue("Wrong entity link returned.",
-                mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
-                        .andReturn().getResponse().getContentAsString()
-                        .contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));
+        ${getCheck}
     }
     
     @Test
@@ -51,10 +55,7 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
 
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
         assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
-        assertTrue("Wrong entity link returned.",
-                mockMvc.perform(MockMvcRequestBuilders.get("/${this.oneClass.toLowerCase()}s/" + ${this.oneClass.toLowerCase()}.getId() + "/${this.otherClass.toLowerCase()}s"))
-                        .andReturn().getResponse().getContentAsString()
-                        .contains("/${this.otherClass.toLowerCase()}s/" + ${this.otherClass.toLowerCase()}.getId()));
+        ${getCheck}
     }
 ` :
             ``;
@@ -91,10 +92,11 @@ export class AddIntegrationTestOnePutMethod extends EditFunction {
             const file: File = project.findFile(path);
             javaFunctions.addFunction(file, `testPut${this.otherClass}_with${this.oneClass}With${this.otherClass}`, rawJavaMethod);
 
+            if (this.oneSide) {
+                javaFunctions.addImport(file, "java.util.ArrayList");
+            }
             javaFunctions.addImport(file, "org.junit.Test");
-            javaFunctions.addImport(file, "java.util.ArrayList");
             javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
-            javaFunctions.addImport(file, "org.springframework.test.web.servlet.result.MockMvcResultMatchers");
             javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
         } else {
             console.error("Integration test class not added yet!");

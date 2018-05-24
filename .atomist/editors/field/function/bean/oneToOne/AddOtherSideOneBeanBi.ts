@@ -25,7 +25,7 @@ export class AddOtherSideOneBeanBi extends EditFunction {
 
             javaFunctions.addImport(file, "javax.persistence.OneToOne");
             javaFunctions.addImport(file, "javax.persistence.FetchType");
-            javaFunctions.addImport(file, "javax.persistence.MapsId");
+            javaFunctions.addImport(file, "javax.persistence.JoinColumn");
         } else {
             console.error("Bean class many side not added yet!");
         }
