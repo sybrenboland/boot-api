@@ -22,7 +22,7 @@ import {AddResourceInterfaceOneDeleteMethod} from "./function/method/oneToOne/Ad
 import {AddResourceOneDeleteMethodUni} from "./function/method/oneToOne/AddResourceOneDeleteMethodUni";
 import {AddServiceOnePutMethodUni} from "./function/method/oneToOne/AddServiceOnePutMethodUni";
 import { AddIntegrationTestManySetup } from "./function/method/integrationTest/AddIntegrationTestManySetup";
-import { AddIntegrationTestGetMethod } from "./function/method/integrationTest/AddIntegrationTestGetMethod";
+import { AddFieldIntegrationTestFactoryOneUni } from "./function/method/integrationTest/AddFieldIntegrationTestFactoryOneUni";
 import { AddIntegrationTestDeleteMethod } from "./function/method/integrationTest/AddIntegrationTestDeleteMethod";
 import { AddIntegrationTestPutMethod } from "./function/method/integrationTest/AddIntegrationTestPutMethod";
 import { AddResourceInterfacePutMethod } from "./function/method/AddResourceInterfacePutMethod";
@@ -32,7 +32,11 @@ import { AddServiceManyDeleteMethod } from "./function/method/oneToMany/AddServi
 import { AddResourceDeleteMethod } from "./function/method/AddResourceDeleteMethod";
 import { AddResourceInterfaceDeleteMethod } from "./function/method/AddResourceInterfaceDeleteMethod";
 import { AddIntegrationTestFactoryMethodsOne } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsOne";
-import { AddIntegrationTestGetMethodOne } from "./function/method/integrationTest/AddIntegrationTestGetMethodOne";
+import { NoCreatePutResource } from "./function/method/oneToOne/NoCreatePutResource";
+import { DeletePostResource } from "./function/method/oneToOne/DeletePostResource";
+import { AddIntegrationTestDeleteMethodUni } from "./function/method/integrationTest/AddIntegrationTestDeleteMethodUni";
+import { AddIntegrationTestOneGetMethod } from "./function/method/integrationTest/AddIntegrationTestOneGetMethod";
+import { AddIntegrationTestGetMethodOneSide } from "./function/method/integrationTest/AddIntegrationTestGetMethodOneSide";
 
 /**
  * AddOneToOneRelation editor
@@ -198,21 +202,25 @@ export class AddOneToOneRelation implements EditProject {
                 .and(new AddMappingSideOneBean(this.classNameMappedBy, this.classNameOther));
         } else {
             builder.and(new AddOtherSideOneBeanUni(this.classNameMappedBy, this.classNameOther))
-                .and(new ResetPrimaryKeyToForeignKey(this.classNameMappedBy, this.classNameOther));
+                .and(new ResetPrimaryKeyToForeignKey(this.classNameMappedBy, this.classNameOther))
+                .and(new AddFieldIntegrationTestFactoryOneUni(this.classNameOther, this.classNameMappedBy))
+                .and(new DeletePostResource(this.classNameOther))
+                .and(new NoCreatePutResource(this.classNameOther));
         }
 
         if (javaFunctions.trueOfFalse(this.showInOutputMapped)) {
             builder.and(new AddLinkToConverterMany(this.classNameOther, this.classNameMappedBy, false))
-                .and(new AddResourceInterfaceGetMethodMany(this.classNameMappedBy, this.classNameOther, false));
+                .and(new AddResourceInterfaceGetMethodMany(this.classNameMappedBy, this.classNameOther, false))
+                .and(new AddIntegrationTestManySetup(this.classNameMappedBy, this.classNameOther, true));
 
             if(biDirectional) {
                 builder.and(new AddResourceGetMethodManyBi(this.classNameMappedBy, this.classNameOther))
                     .and(new AddServiceGetMethodMany(this.classNameMappedBy, this.classNameOther))
-                    .and(new AddIntegrationTestManySetup(this.classNameMappedBy, this.classNameOther, true))
                     .and(new AddIntegrationTestFactoryMethodsOne(this.classNameMappedBy, this.classNameOther, true))
-                    .and(new AddIntegrationTestGetMethodOne(this.classNameMappedBy, this.classNameOther));
+                    .and(new AddIntegrationTestGetMethodOneSide(this.classNameMappedBy, this.classNameOther));
             } else {
-                builder.and(new AddResourceGetMethodManyUni(this.classNameMappedBy, this.classNameOther));
+                builder.and(new AddResourceGetMethodManyUni(this.classNameMappedBy, this.classNameOther))
+                    .and(new AddIntegrationTestOneGetMethod(this.classNameMappedBy, this.classNameOther, true));
             }
         }
 
@@ -225,9 +233,10 @@ export class AddOneToOneRelation implements EditProject {
                     .and(new AddServiceGetMethodMany(this.classNameOther, this.classNameMappedBy))
                     .and(new AddIntegrationTestManySetup(this.classNameOther, this.classNameMappedBy, false))
                     .and(new AddIntegrationTestFactoryMethodsOne(this.classNameOther, this.classNameMappedBy, false))
-                    .and(new AddIntegrationTestGetMethodOne(this.classNameOther, this.classNameMappedBy));
+                    .and(new AddIntegrationTestGetMethodOneSide(this.classNameOther, this.classNameMappedBy));
             } else {
-                builder.and(new AddResourceGetMethodManyUni(this.classNameOther, this.classNameMappedBy));
+                builder.and(new AddResourceGetMethodManyUni(this.classNameOther, this.classNameMappedBy))
+                    .and(new AddIntegrationTestOneGetMethod(this.classNameOther, this.classNameMappedBy, false));
             }
         }
 
@@ -249,7 +258,7 @@ export class AddOneToOneRelation implements EditProject {
                     } else {
                         builder.and(new AddResourceInterfaceOneDeleteMethod(this.classNameMappedBy, this.classNameOther))
                             .and(new AddResourceOneDeleteMethodUni(this.classNameMappedBy, this.classNameOther))
-                            .and(new AddIntegrationTestDeleteMethod(this.classNameMappedBy, this.classNameOther, false, false));
+                            .and(new AddIntegrationTestDeleteMethodUni(this.classNameMappedBy, this.classNameOther));
                     }
                     break;
                 }

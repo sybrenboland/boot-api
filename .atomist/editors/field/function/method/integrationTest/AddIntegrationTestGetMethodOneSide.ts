@@ -5,7 +5,7 @@ import { javaFunctions } from "../../../../functions/JavaClassFunctions";
 import { Project } from "@atomist/rug/model/Project";
 
 
-export class AddIntegrationTestGetMethodOne extends EditFunction {
+export class AddIntegrationTestGetMethodOneSide extends EditFunction {
 
     constructor(private oneClass: string, private otherClass: string) {
         super();
