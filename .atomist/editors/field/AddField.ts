@@ -31,7 +31,7 @@ export class AddField implements EditProject {
         displayName: "Type",
         description: "Type of the field we want to add",
         pattern: Pattern.any,
-        validInput: "Java type that is supported: String, int, long, boolean, LocalDateTime",
+        validInput: "Java type that is supported: String, Integer, Long, Boolean, LocalDateTime",
         minLength: 1,
         maxLength: 100,
         required: true,
@@ -117,7 +117,7 @@ export class AddField implements EditProject {
 
     public edit(project: Project) {
 
-        const supportedTypes = ['String', 'int', 'long', 'boolean', 'LocalDateTime'];
+        const supportedTypes = ['String', 'Integer', 'Long', 'Boolean', 'LocalDateTime'];
         if (supportedTypes.some(type => type === this.type)) {
 
             const basePath = "/src/main/java/" + fileFunctions.toPath(this.basePackage);
@@ -125,6 +125,8 @@ export class AddField implements EditProject {
             this.addChangelog(project);
             this.addFieldToPredicates(project, basePath);
             this.addFieldToSearchCriteria(project, basePath);
+            this.addIntegrationTestInput(project);
+            this.addIntegrationTestChecks(project);
 
             if (this.type === "LocalDateTime") {
                 dateFieldFunctions.addDateField(
@@ -205,13 +207,11 @@ export class AddField implements EditProject {
     private addFieldToConverter(project: Project, basePath: string) {
 
         const inputJsonHook = "// @InputJsonField";
-        let rawJsonInput = `.${this.fieldName}(${this.className.toLowerCase()}` +
-            `.${javaFunctions.methodPrefix(this.type)}${javaFunctions.capitalize(this.fieldName)}())
+        let rawJsonInput = `.${this.fieldName}(${this.className.toLowerCase()}.get${javaFunctions.capitalize(this.fieldName)}())
                 ` + inputJsonHook;
 
         const inputBeanHook = "// @InputBeanField";
-        let rawBeanInput = `.${this.fieldName}(json${this.className}` +
-            `.${javaFunctions.methodPrefix(this.type)}${javaFunctions.capitalize(this.fieldName)}())
+        let rawBeanInput = `.${this.fieldName}(json${this.className}.get${javaFunctions.capitalize(this.fieldName)}())
                 ` + inputBeanHook;
 
         const path = this.apiModule + basePath + "/api/convert/" + this.className + "Converter.java";
@@ -244,7 +244,8 @@ export class AddField implements EditProject {
 
     private addFieldToSearchCriteria(project: Project, basePath: string) {
         const inputHook = "// @Input";
-        const rawJavaCode = `private Optional<${javaFunctions.box(this.type)}> ${this.fieldName} = Optional.empty();
+        const rawJavaCode = `@Builder.Default
+    private Optional<${javaFunctions.box(this.type)}> ${this.fieldName} = Optional.empty();
     
     ` + inputHook;
 
@@ -303,17 +304,63 @@ export class AddField implements EditProject {
         }
     }
 
+    private addIntegrationTestInput(project: Project) {
+
+        const path = this.apiModule + "/src/test/java/integration/IntegrationTestFactory.java";
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            const fieldInputHook = `// @FieldInput${this.className}Bean`;
+            const rawFieldInput = ` .${this.fieldName}(${this.getTestValue(this.type)})
+                ` + fieldInputHook;
+            file.replace(fieldInputHook, rawFieldInput);
+
+            const jsonFieldInputHook = `// @FieldInputJson${this.className}`;
+            const rawJsonFieldInput = ` .${this.fieldName}(${this.getDifferentTestValue(this.type)})
+                ` + jsonFieldInputHook;
+            file.replace(jsonFieldInputHook, rawJsonFieldInput);
+
+            if (this.type === "LocalDateTime") {
+                javaFunctions.addImport(file, "java.time.LocalDateTime");
+                javaFunctions.addImport(file, "java.time.ZonedDateTime");
+            }
+        } else {
+            console.error("Integration test factory class not added yet!");
+        }
+    }
+
+    private addIntegrationTestChecks(project: Project) {
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            const assertInputHook = "// @FieldInputAssert";
+            const rawAssert = `assertTrue("Wrong field returned.", response.getContentAsString()` +
+                `.contains("\\"${this.fieldName}\\":" + ${this.getQuotedField(this.type, this.className, this.fieldName)}));
+        ` + assertInputHook;
+            file.replace(assertInputHook, rawAssert);
+
+            if (this.type === "LocalDateTime") {
+                javaFunctions.addImport(file, "java.time.LocalDateTime");
+                javaFunctions.addImport(file, "java.time.ZonedDateTime");
+            }
+        } else {
+            console.error("Integration test class not added yet!");
+        }
+    }
+
     private convertToDbType(javaType: string) {
         let dbType: string;
         switch (javaType) {
             case "String":
                 dbType = "varchar(255)";
                 break;
-            case "int":
-            case "long":
+            case "Integer":
+            case "Long":
                 dbType = "BIGINT";
                 break;
-            case "boolean":
+            case "Boolean":
                 dbType = "BOOLEAN";
                 break;
             case "LocalDateTime":
@@ -322,6 +369,65 @@ export class AddField implements EditProject {
         }
 
         return dbType;
+    }
+
+    private getTestValue(javaType: string) {
+        let testValue;
+        switch (javaType) {
+            case "String":
+                testValue = "\"string\"";
+                break;
+            case "Integer":
+                testValue = "3";
+                break;
+            case "Long":
+                testValue = "3147483647L";
+                break;
+            case "Boolean":
+                testValue = "true";
+                break;
+            case "LocalDateTime":
+                testValue = "LocalDateTime.now()";
+                break;
+        }
+
+        return testValue;
+    }
+
+    private getDifferentTestValue(javaType: string) {
+        let testValue;
+        switch (javaType) {
+            case "String":
+                testValue = "\"different string\"";
+                break;
+            case "Integer":
+                testValue = "4";
+                break;
+            case "Long":
+                testValue = "4447483647L";
+                break;
+            case "Boolean":
+                testValue = "false";
+                break;
+            case "LocalDateTime":
+                testValue = "ZonedDateTime.now().minusDays(4)";
+                break;
+        }
+
+        return testValue;
+    }
+
+    private getQuotedField(javaType: string, className: string, fieldName: string) {
+        let value;
+        if (javaType === "String") {
+            value = `"\\""` + " + " + className.toLowerCase() + ".get" + javaFunctions.capitalize(fieldName) + "()" + " + " + `"\\""`;
+        } else if (javaType === "LocalDateTime") {
+            value = `"\\""` + " + " + className.toLowerCase() + ".get" + javaFunctions.capitalize(fieldName) + "().toString().substring(0, 16)";
+        } else {
+            value = className.toLowerCase() + ".get" + javaFunctions.capitalize(fieldName) + "()";
+        }
+
+        return value;
     }
 }
 

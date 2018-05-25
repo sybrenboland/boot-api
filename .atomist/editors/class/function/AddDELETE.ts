@@ -80,6 +80,7 @@ export class AddDELETE implements EditProject {
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
         this.addServiceMethod(project, basePathCore);
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -147,6 +148,47 @@ export class AddDELETE implements EditProject {
 
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
         javaFunctions.addImport(file, "java.util.Optional");
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testDelete${this.className}_unknownObject() throws Exception {
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/-1"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+    }
+
+    @Test
+    public void testDelete${this.className}_deleteObject() throws Exception {
+    
+        ${this.className} saved${this.className} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
+
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.delete("/${this.className.toLowerCase()}s/" + saved${this.className}.getId()))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+        assertFalse("Entity not deleted", ${this.className.toLowerCase()}Repository.findById(saved${this.className}.getId()).isPresent());
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testDelete" + this.className + "_unknownObject", rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertFalse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+        javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
     }
 }
 

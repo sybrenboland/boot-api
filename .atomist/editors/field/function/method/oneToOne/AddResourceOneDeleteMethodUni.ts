@@ -23,11 +23,16 @@ export class AddResourceOneDeleteMethodUni extends EditFunction {
                 ResponseEntity.notFound().build();
     }`;
 
-        const path = params.apiModule + params.basePath + "/core/resource/" + this.oneClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "delete" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
+        const path = params.apiModule + params.basePath + "/api/resource/" + this.oneClass + "Controller.java";
 
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "delete" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
+
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        } else {
+            console.error("Resource class not added yet!");
+        }
     }
 }

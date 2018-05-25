@@ -3,7 +3,8 @@ import {File} from "@atomist/rug/model/File";
 export class JavaClassFunctions {
 
     public addFunction(file: File, newFunctionName: string, newFunction: string): void {
-        if (!file.contains(newFunctionName)) {
+
+        if (!file.contains(newFunctionName + "(")) {
             const functionInput = "// @Input";
 
             file.replace(functionInput, functionInput + "\n" + newFunction);
@@ -11,6 +12,7 @@ export class JavaClassFunctions {
     }
 
     public addAnnotationToClass(file: File, newAnnotation: string): void {
+
         if (!file.contains(newAnnotation)) {
             const classInput = "public class";
             const annotationReplacement = newAnnotation + "\n" + classInput;
@@ -20,7 +22,8 @@ export class JavaClassFunctions {
     }
 
     public addImport(file: File, newImport: string): void {
-        if (!file.contains(newImport)) {
+
+        if (!file.contains(newImport + ";")) {
             const newImportInput = ["import " + newImport + ";"];
 
             const newContent = file.content.split("\n").slice(0, 2)
@@ -32,11 +35,11 @@ export class JavaClassFunctions {
         }
     }
 
-    public addToConstructor(file: File, className: string, argument: string) {
-        if (!file.contains(this.capitalize(argument))) {
-            this.addMemberToClass(file, "private final " + this.capitalize(argument) + " " + argument);
-            this.addConstructorArgument(file, className, this.capitalize(argument) + " " + argument);
-            this.addConstructorAssignment(file, argument);
+    public addToConstructor(file: File, className: string, argumentType: string, argumentName: string) {
+        if (!file.contains(argumentName + ";")) {
+            this.addMemberToClass(file, "private final " + argumentType + " " + argumentName);
+            this.addConstructorArgument(file, className, argumentType + " " + argumentName);
+            this.addConstructorAssignment(file, argumentName);
         }
     }
 
@@ -72,6 +75,10 @@ export class JavaClassFunctions {
 
     public capitalize(word: string) {
         return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+    public lowercaseFirst(word: string) {
+        return word.charAt(0).toLowerCase() + word.slice(1);
     }
 
     public methodPrefix(type: string) {

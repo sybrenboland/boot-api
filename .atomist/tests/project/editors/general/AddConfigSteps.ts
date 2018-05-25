@@ -21,13 +21,13 @@ When("the AddConfig is run", (p: Project, w: ProjectScenarioWorld) => {
 Then("a (.*) configuration file has been added to (.*) module$",
     (p: Project, w, configName: string, moduleName: string) => {
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/configuration/" + configName + "Configuration.java");
+        + fileFunctions.toPath(BasePackage) + "/" + moduleName.toLowerCase() + "/configuration/" + configName + "Configuration.java");
 });
 
 Then("the (.*) configuration file imports the (.*) configuration$",
     (p: Project, w, baseModuleName: string, importModuleName: string) => {
     return p.fileContains(getModule(baseModuleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/configuration/" + baseModuleName + "Configuration.java",
+        + fileFunctions.toPath(BasePackage) + "/" + baseModuleName.toLowerCase() + "/configuration/" + baseModuleName + "Configuration.java",
         importModuleName + "Configuration.class",
         );
 });

@@ -25,6 +25,7 @@ export class AddMappingSideManyBean extends EditFunction {
             file.replace(inputHook, rawJavaCode);
             javaFunctions.addImport(file, "java.util.Set");
             javaFunctions.addImport(file, "java.util.HashSet");
+            javaFunctions.addImport(file, "javax.persistence.ManyToMany");
         } else {
             console.error("Bean class mapping side not added yet!");
         }

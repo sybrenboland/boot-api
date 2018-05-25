@@ -18,5 +18,5 @@ When("the AddRepository is run with className (.*)", (p: Project, w: ProjectScen
 
 Then("a repository class is added to the (.*) module", (p: Project, w, moduleName: string) => {
     return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/db/repo/" + classNameRepository + "Repository.java");
+        + fileFunctions.toPath(BasePackage) + "/" + moduleName.toLowerCase() + "/db/repo/" + classNameRepository + "Repository.java");
 });

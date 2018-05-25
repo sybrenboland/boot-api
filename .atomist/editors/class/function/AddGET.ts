@@ -80,6 +80,8 @@ export class AddGET implements EditProject {
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
         addServiceMethodFetchBean(project, this.className, this.basePackage, basePathCore);
+
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -131,6 +133,45 @@ export class AddGET implements EditProject {
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testGet${this.className}_with${this.className}() throws Exception {
+
+        ${this.className} ${this.className.toLowerCase()} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
+
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/" + ${this.className.toLowerCase()}.getId()))
+                        .andReturn().getResponse();
+                        
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/" + ${this.className.toLowerCase()}.getId()));
+        // @FieldInputAssert
+    }
+
+    @Test
+    public void testGet${this.className}_without${this.className}() throws Exception {
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s/-1"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testGet" + this.className + "_with" + this.className, rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
     }
 }
 

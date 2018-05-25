@@ -9,7 +9,7 @@ import {AddReferenceColumn} from "./function/database/AddReferenceColumn";
 import {AddForeignKeyChangeSet} from "./function/database/AddForeignKeyChangeSet";
 import {AddOtherSideOneBeanBi} from "./function/bean/oneToOne/AddOtherSideOneBeanBi";
 import {AddMappingSideOneBean} from "./function/bean/oneToOne/AddMappingSideOneBean";
-import {ResetPrimaryKeyToForeignKey} from "./function/bean/oneToOne/ResetPrimaryKeyToForeignKey";
+import {ResetPrimaryKeyToForeignKey} from "./function/database/ResetPrimaryKeyToForeignKey";
 import {AddOtherSideOneBeanUni} from "./function/bean/oneToOne/AddOtherSideOneBeanUni";
 import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConverterMany";
 import {AddResourceInterfaceGetMethodMany} from "./function/method/manyToMany/AddResourceInterfaceManyGetMethod";
@@ -18,12 +18,25 @@ import {AddServiceGetMethodMany} from "./function/method/oneToMany/AddServiceMan
 import {AddResourceGetMethodManyUni} from "./function/method/manyToMany/AddResourceManyGetMethodUni";
 import {AddResourceInterfaceOnePutMethod} from "./function/method/oneToOne/AddResourceInterfaceOnePutMethod";
 import {AddResourceOnePutMethod} from "./function/method/oneToOne/AddResourceOnePutMethod";
-import {AddServiceOnePutMethodBi} from "./function/method/oneToOne/AddServiceOnePutMethodBi";
 import {AddResourceInterfaceOneDeleteMethod} from "./function/method/oneToOne/AddResourceInterfaceOneDeleteMethod";
 import {AddResourceOneDeleteMethodUni} from "./function/method/oneToOne/AddResourceOneDeleteMethodUni";
-import {AddResourceOneDeleteMethodBi} from "./function/method/oneToOne/AddResourceOneDeleteMethodBi";
-import {AddServiceOneDeleteMethod} from "./function/method/oneToOne/AddServiceOneDeleteMethod";
 import {AddServiceOnePutMethodUni} from "./function/method/oneToOne/AddServiceOnePutMethodUni";
+import { AddIntegrationTestManySetup } from "./function/method/integrationTest/AddIntegrationTestManySetup";
+import { AddFieldIntegrationTestFactoryOneUni } from "./function/method/integrationTest/AddFieldIntegrationTestFactoryOneUni";
+import { AddIntegrationTestDeleteMethod } from "./function/method/integrationTest/AddIntegrationTestDeleteMethod";
+import { AddIntegrationTestPutMethod } from "./function/method/integrationTest/AddIntegrationTestPutMethod";
+import { AddResourceInterfacePutMethod } from "./function/method/AddResourceInterfacePutMethod";
+import { AddResourcePutMethod } from "./function/method/AddResourcePutMethod";
+import { AddServiceManyPutMethod } from "./function/method/oneToMany/AddServiceManyPutMethod";
+import { AddServiceManyDeleteMethod } from "./function/method/oneToMany/AddServiceManyDeleteMethod";
+import { AddResourceDeleteMethod } from "./function/method/AddResourceDeleteMethod";
+import { AddResourceInterfaceDeleteMethod } from "./function/method/AddResourceInterfaceDeleteMethod";
+import { AddIntegrationTestFactoryMethodsOne } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsOne";
+import { NoCreatePutResource } from "./function/method/oneToOne/NoCreatePutResource";
+import { DeletePostResource } from "./function/method/oneToOne/DeletePostResource";
+import { AddIntegrationTestDeleteMethodUni } from "./function/method/integrationTest/AddIntegrationTestDeleteMethodUni";
+import { AddIntegrationTestOneGetMethod } from "./function/method/integrationTest/AddIntegrationTestOneGetMethod";
+import { AddIntegrationTestGetMethodOneSide } from "./function/method/integrationTest/AddIntegrationTestGetMethodOneSide";
 
 /**
  * AddOneToOneRelation editor
@@ -189,43 +202,63 @@ export class AddOneToOneRelation implements EditProject {
                 .and(new AddMappingSideOneBean(this.classNameMappedBy, this.classNameOther));
         } else {
             builder.and(new AddOtherSideOneBeanUni(this.classNameMappedBy, this.classNameOther))
-                .and(new ResetPrimaryKeyToForeignKey(this.classNameMappedBy, this.classNameOther));
+                .and(new ResetPrimaryKeyToForeignKey(this.classNameMappedBy, this.classNameOther))
+                .and(new AddFieldIntegrationTestFactoryOneUni(this.classNameOther, this.classNameMappedBy))
+                .and(new DeletePostResource(this.classNameOther))
+                .and(new NoCreatePutResource(this.classNameOther));
         }
 
         if (javaFunctions.trueOfFalse(this.showInOutputMapped)) {
             builder.and(new AddLinkToConverterMany(this.classNameOther, this.classNameMappedBy, false))
-                .and(new AddResourceInterfaceGetMethodMany(this.classNameMappedBy, this.classNameOther, false));
+                .and(new AddResourceInterfaceGetMethodMany(this.classNameMappedBy, this.classNameOther, false))
+                .and(new AddIntegrationTestManySetup(this.classNameMappedBy, this.classNameOther, true));
 
             if(biDirectional) {
                 builder.and(new AddResourceGetMethodManyBi(this.classNameMappedBy, this.classNameOther))
-                    .and(new AddServiceGetMethodMany(this.classNameMappedBy, this.classNameOther));
+                    .and(new AddServiceGetMethodMany(this.classNameMappedBy, this.classNameOther))
+                    .and(new AddIntegrationTestFactoryMethodsOne(this.classNameMappedBy, this.classNameOther, true))
+                    .and(new AddIntegrationTestGetMethodOneSide(this.classNameMappedBy, this.classNameOther));
             } else {
-                builder.and(new AddResourceGetMethodManyUni(this.classNameMappedBy, this.classNameOther));
+                builder.and(new AddResourceGetMethodManyUni(this.classNameMappedBy, this.classNameOther))
+                    .and(new AddIntegrationTestOneGetMethod(this.classNameMappedBy, this.classNameOther, true));
             }
         }
 
         if (javaFunctions.trueOfFalse(this.showInOutputOther)) {
             builder.and(new AddLinkToConverterMany(this.classNameMappedBy, this.classNameOther, false))
-                .and(new AddResourceInterfaceGetMethodMany(this.classNameOther, this.classNameMappedBy, false))
-                .and(new AddResourceGetMethodManyUni(this.classNameOther, this.classNameMappedBy));
+                .and(new AddResourceInterfaceGetMethodMany(this.classNameOther, this.classNameMappedBy, false));
+
+            if(biDirectional) {
+                builder.and(new AddResourceGetMethodManyBi(this.classNameOther, this.classNameMappedBy))
+                    .and(new AddServiceGetMethodMany(this.classNameOther, this.classNameMappedBy))
+                    .and(new AddIntegrationTestManySetup(this.classNameOther, this.classNameMappedBy, false))
+                    .and(new AddIntegrationTestFactoryMethodsOne(this.classNameOther, this.classNameMappedBy, false))
+                    .and(new AddIntegrationTestGetMethodOneSide(this.classNameOther, this.classNameMappedBy));
+            } else {
+                builder.and(new AddResourceGetMethodManyUni(this.classNameOther, this.classNameMappedBy))
+                    .and(new AddIntegrationTestOneGetMethod(this.classNameOther, this.classNameMappedBy, false));
+            }
         }
 
         this.methodsMappingSide.split(",").forEach(method => {
             switch (method) {
                 case "PUT": {
-                    builder.and(new AddResourceInterfaceOnePutMethod(this.classNameMappedBy, this.classNameOther))
-                        .and(new AddResourceOnePutMethod(this.classNameMappedBy, this.classNameOther))
-                        .and(new AddServiceOnePutMethodBi(this.classNameMappedBy, this.classNameOther));
+                    builder.and(new AddResourceInterfacePutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddResourcePutMethod(this.classNameMappedBy, this.classNameOther))
+                        .and(new AddServiceManyPutMethod(this.classNameOther, this.classNameMappedBy, true))
+                        .and(new AddIntegrationTestPutMethod(this.classNameMappedBy, this.classNameOther, false, javaFunctions.trueOfFalse(this.biDirectional), false));
                     break;
                 }
                 case "DELETE": {
                     if (biDirectional) {
-                        builder.and(new AddResourceInterfaceOneDeleteMethod(this.classNameMappedBy, this.classNameOther))
-                            .and(new AddResourceOneDeleteMethodBi(this.classNameMappedBy, this.classNameOther))
-                            .and(new AddServiceOneDeleteMethod(this.classNameMappedBy, this.classNameOther));
+                        builder.and(new AddResourceInterfaceDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddResourceDeleteMethod(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddServiceManyDeleteMethod(this.classNameOther, this.classNameMappedBy, true))
+                            .and(new AddIntegrationTestDeleteMethod(this.classNameMappedBy, this.classNameOther, false, false));
                     } else {
                         builder.and(new AddResourceInterfaceOneDeleteMethod(this.classNameMappedBy, this.classNameOther))
-                            .and(new AddResourceOneDeleteMethodUni(this.classNameMappedBy, this.classNameOther));
+                            .and(new AddResourceOneDeleteMethodUni(this.classNameMappedBy, this.classNameOther))
+                            .and(new AddIntegrationTestDeleteMethodUni(this.classNameMappedBy, this.classNameOther));
                     }
                     break;
                 }
@@ -236,21 +269,24 @@ export class AddOneToOneRelation implements EditProject {
             switch (method) {
                 case "PUT": {
                     if (biDirectional) {
-                        builder.and(new AddResourceInterfaceOnePutMethod(this.classNameOther, this.classNameMappedBy))
-                            .and(new AddResourceOnePutMethod(this.classNameOther, this.classNameMappedBy))
-                            .and(new AddServiceOnePutMethodBi(this.classNameOther, this.classNameMappedBy));
+                        builder.and(new AddResourceInterfacePutMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddResourcePutMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddServiceManyPutMethod(this.classNameMappedBy, this.classNameOther, false))
+                            .and(new AddIntegrationTestPutMethod(this.classNameOther, this.classNameMappedBy, false, javaFunctions.trueOfFalse(this.biDirectional), false));
                     } else {
                         builder.and(new AddResourceInterfaceOnePutMethod(this.classNameOther, this.classNameMappedBy))
                             .and(new AddResourceOnePutMethod(this.classNameOther, this.classNameMappedBy))
-                            .and(new AddServiceOnePutMethodUni(this.classNameOther, this.classNameMappedBy));
+                            .and(new AddServiceOnePutMethodUni(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddIntegrationTestPutMethod(this.classNameOther, this.classNameMappedBy, false, javaFunctions.trueOfFalse(this.biDirectional), false));
                     }
                     break;
                 }
                 case "DELETE": {
                     if (biDirectional) {
-                        builder.and(new AddResourceInterfaceOneDeleteMethod(this.classNameOther, this.classNameMappedBy))
-                            .and(new AddResourceOneDeleteMethodBi(this.classNameOther, this.classNameMappedBy))
-                            .and(new AddServiceOneDeleteMethod(this.classNameOther, this.classNameMappedBy));
+                        builder.and(new AddResourceInterfaceDeleteMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddResourceDeleteMethod(this.classNameOther, this.classNameMappedBy))
+                            .and(new AddServiceManyDeleteMethod(this.classNameMappedBy, this.classNameOther, false))
+                            .and(new AddIntegrationTestDeleteMethod(this.classNameOther, this.classNameMappedBy, false, false));
                     }
                     break;
                 }

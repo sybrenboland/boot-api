@@ -2,6 +2,7 @@ import {EditFunction} from "../../EditFunction";
 import {Params} from "../../Params";
 import {File} from "@atomist/rug/model/File";
 import {Project} from "@atomist/rug/model/Project";
+import {javaFunctions} from "../../../../functions/JavaClassFunctions";
 
 export class AddOtherSideOneBeanBi extends EditFunction {
 
@@ -18,10 +19,13 @@ export class AddOtherSideOneBeanBi extends EditFunction {
     ` + inputHook;
 
         const beanPath = params.persistenceModule + params.basePath + "/persistence/db/hibernate/bean/" + this.otherClass + ".java";
-        const beanFile: File = project.findFile(beanPath);
-
         if (project.fileExists(beanPath)) {
-            beanFile.replace(inputHook, rawJavaCode);
+            const file: File = project.findFile(beanPath);
+            file.replace(inputHook, rawJavaCode);
+
+            javaFunctions.addImport(file, "javax.persistence.OneToOne");
+            javaFunctions.addImport(file, "javax.persistence.FetchType");
+            javaFunctions.addImport(file, "javax.persistence.JoinColumn");
         } else {
             console.error("Bean class many side not added yet!");
         }

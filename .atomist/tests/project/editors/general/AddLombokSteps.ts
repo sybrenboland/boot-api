@@ -8,7 +8,7 @@ const lombokVersion = "1.16.17";
 
 When("the AddLombok is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     pathInput = PersistenceModule + "/src/main/java/" + fileFunctions.toPath(BasePackage)
-        + "/db/hibernate/bean/" + classNameInput + ".java";
+        + "/persistence/db/hibernate/bean/" + classNameInput + ".java";
 
     const editor = w.editor("AddLombok");
     w.editWith(editor, {

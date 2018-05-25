@@ -106,6 +106,16 @@ spring:
     change-log: classpath:/db/liquibase/master-changelog.xml
 ---
 spring:
+  profiles: test
+  datasource:
+    url: jdbc:h2:mem:testDB
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+  liquibase:
+    change-log: classpath:/db/liquibase/master-changelog.xml
+---
+spring:
   profiles: production
   jpa:
     show_sql: false

@@ -24,10 +24,15 @@ export class AddResourcePutMethod extends EditFunction {
     }`;
 
         const path = params.apiModule + params.basePath + "/api/resource/" + this.oneClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
+
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+        } else {
+            console.error("Resource class not added yet!");
+        }
     }
 }

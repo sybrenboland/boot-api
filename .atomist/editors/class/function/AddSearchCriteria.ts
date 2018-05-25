@@ -122,6 +122,8 @@ export class AddSearchCriteria implements EditProject {
         this.addCustomRepositoryImplementation(project, basePath);
         this.addAbstractRepository(project, basePath);
         this.extendRepository(project, basePath);
+
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -249,10 +251,13 @@ import lombok.Builder;
 @Builder
 public class ${this.className}SearchCriteria {
 
+    @Builder.Default
     private int maxResults = 10;
 
+    @Builder.Default
     private int start = 0;
 
+    @Builder.Default
     private Optional<Long> id = Optional.empty();
     
     // @Input
@@ -274,7 +279,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service("${this.className.toLowerCase()}SearchCriteriaConverter")
+@Service("${javaFunctions.lowercaseFirst(this.className)}SearchCriteriaConverter")
 public class ${this.className}SearchCriteriaConverter {
 
     public ${this.className}SearchCriteria createSearchCriteria` +
@@ -328,7 +333,7 @@ public class ${this.className}SearchCriteriaConverter {
 
         ${this.className}SearchCriteria sc;
         try {
-            sc = ${this.className.toLowerCase()}SearchCriteriaConverter.createSearchCriteria(searchCriteria);
+            sc = ${javaFunctions.lowercaseFirst(this.className)}SearchCriteriaConverter.createSearchCriteria(searchCriteria);
         } catch (ConvertException e) {
             log.warn("Conversion failed!", e);
             return ResponseEntity.badRequest().build();
@@ -354,8 +359,11 @@ public class ${this.className}SearchCriteriaConverter {
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "list", rawJavaMethod);
 
-        javaFunctions.addToConstructor(file, this.className + "Controller",
-            this.className.toLowerCase() + "SearchCriteriaConverter");
+        javaFunctions.addToConstructor(
+            file,
+            this.className + "Controller",
+            this.className + "SearchCriteriaConverter",
+            javaFunctions.lowercaseFirst(this.className) + "SearchCriteriaConverter");
         javaFunctions.addImport(file, this.basePackage + ".api.convert." + this.className + "SearchCriteriaConverter");
 
         javaFunctions.addAnnotationToClass(file, "@Slf4j");
@@ -474,8 +482,7 @@ public class ${this.className}RepositoryImpl extends AbstractHibernateRepository
 
         List<Predicate> predicates = createPredicates(sc, criteria, root);
 
-        criteriaQuery
-                .select(criteria.count(root))
+        criteriaQuery.select(criteria.count(root)).distinct(true)
                 .where(predicates.toArray(new Predicate[predicates.size()]));
 
         return getEntityManager()
@@ -492,7 +499,8 @@ public class ${this.className}RepositoryImpl extends AbstractHibernateRepository
 
         List<Predicate> predicates = createPredicates(sc, criteria, root);
 
-        criteriaQuery.select(root).where(predicates.toArray(new Predicate[predicates.size()]));
+        criteriaQuery.select(root).distinct(true)
+                .where(predicates.toArray(new Predicate[predicates.size()]));
 
         return getEntityManager()
                 .createQuery(criteriaQuery)
@@ -572,6 +580,49 @@ public abstract class AbstractHibernateRepository<T> {
         const file: File = project.findFile(path);
 
         file.replace(">", `>, ${this.className}RepositoryCustom`)
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testList_without${this.className}s() throws Exception {
+    
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong grand total returned.", response.getContentAsString().contains("\\"grandTotal\\":0"));
+        assertTrue("Wrong number of results returned.", response.getContentAsString().contains("\\"numberOfResults\\":0"));
+        assertTrue("Wrong entities returned.", response.getContentAsString().contains("\\"results\\":[]"));
+    }
+
+    @Test
+    public void testList_with${this.className}s() throws Exception {
+    
+        ${this.className} saved${this.className} = IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
+        IntegrationTestFactory.givenA${this.className}(${this.className.toLowerCase()}Repository);
+
+        MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.get("/${this.className.toLowerCase()}s"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatus());
+        assertTrue("Wrong grand total returned.", response.getContentAsString().contains("\\"grandTotal\\":2"));
+        assertTrue("Wrong number of results returned.", response.getContentAsString().contains("\\"numberOfResults\\":2"));
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("${this.className.toLowerCase()}s/" + saved${this.className}.getId()));
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testList_without" + this.className + "s", rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
     }
 }
 

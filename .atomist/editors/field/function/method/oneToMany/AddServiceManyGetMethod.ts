@@ -14,21 +14,29 @@ export class AddServiceGetMethodMany extends EditFunction {
         const rawJavaMethod = `
     public ${this.oneClass} fetch${this.oneClass}For${this.otherClass}` +
             `(long ${this.otherClass.toLowerCase()}Id) {
-        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${this.otherClass.toLowerCase()}Repository.findById` +
+        Optional<${this.otherClass}> ${this.otherClass.toLowerCase()}Optional = ${javaFunctions.lowercaseFirst(this.otherClass)}Repository.findById` +
             `(${this.otherClass.toLowerCase()}Id);
         return ${this.otherClass.toLowerCase()}Optional.isPresent() && ${this.otherClass.toLowerCase()}Optional.get().` +
             `get${this.oneClass}() != null ? ${this.otherClass.toLowerCase()}Optional.get().get${this.oneClass}() : null;
     }`;
 
         const path = params.coreModule + params.basePath + "/core/service/" + this.oneClass + "Service.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "fetch" + this.oneClass + "sFor" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "fetch" + this.oneClass + "sFor" + this.otherClass, rawJavaMethod);
 
-        javaFunctions.addToConstructor(file, this.oneClass + "Service",
-            this.otherClass.toLowerCase() + "Repository");
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
-        javaFunctions.addImport(file, "java.util.Optional");
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+
+            javaFunctions.addToConstructor(
+                file,
+                this.oneClass + "Service",
+                this.otherClass + "Repository",
+                javaFunctions.lowercaseFirst(this.otherClass) + "Repository");
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.otherClass + "Repository");
+            javaFunctions.addImport(file, "java.util.Optional");
+        } else {
+            console.error("Service class not added yet!");
+        }
     }
 }

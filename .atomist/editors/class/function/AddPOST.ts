@@ -73,16 +73,17 @@ export class AddPOST implements EditProject {
     public edit(project: Project) {
 
         const basePathApi = this.apiModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/" + this.apiModule;
+            this.basePackage.replace(/\./gi, "/") + "/api";
 
         const basePathCore = this.coreModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/" + this.coreModule;
+            this.basePackage.replace(/\./gi, "/") + "/core";
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
         addServiceMethodSaveBean(project, this.className, this.basePackage, basePathCore);
         this.addExceptionHandler(project);
+        this.addIntegrationTests(project);
     }
 
     private addDependencies(project: Project): void {
@@ -122,15 +123,14 @@ export class AddPOST implements EditProject {
         ${this.className} new${this.className} = ${this.className.toLowerCase()}Service` +
             `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}));
 
-        return ResponseEntity.created(new URI(${this.className.toLowerCase()}Converter` +
-            `.toJson(new${this.className}).getLink("self").getHref())).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(${this.className.toLowerCase()}Converter.toJson(new${this.className}));
     }`;
 
         const path = basePath + "/resource/" + this.className + "Controller.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "post" + this.className, rawJavaMethod);
 
-        javaFunctions.addImport(file, "java.net.URI");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
         javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
@@ -146,6 +146,46 @@ export class AddPOST implements EditProject {
         addExceptionHandler.basePackage = this.basePackage;
 
         addExceptionHandler.edit(project);
+    }
+
+    private addIntegrationTests(project: Project) {
+        const rawJavaMethod = `
+    @Test
+    public void testPost${this.className}_invalidObject() throws Exception {
+    
+         MockHttpServletResponse response =
+                mockMvc.perform(MockMvcRequestBuilders.post("/${this.className.toLowerCase()}s"))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.BAD_REQUEST.value(), response.getStatus());
+        assertTrue("Wrong entity returned.", response.getContentAsString().isEmpty());
+    }
+
+    @Test
+    public void testPost${this.className}_newObject() throws Exception {
+    
+        Json${this.className} ${this.className.toLowerCase()} = IntegrationTestFactory.givenAJson${this.className}();
+
+        MockHttpServletResponse response =
+                mockMvc.perform(IntegrationTestUtils.doPost("/${this.className.toLowerCase()}s", ${this.className.toLowerCase()}))
+                        .andReturn().getResponse();
+
+        assertEquals("Wrong status code returned.", HttpStatus.CREATED.value(), response.getStatus());
+        assertTrue("Wrong entity link returned.", response.getContentAsString().contains("/${this.className.toLowerCase()}s/"));
+        // @FieldInputAssert
+    }`;
+
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const file: File = project.findFile(path);
+        javaFunctions.addFunction(file, "testPost" + this.className + "_invalidObject", rawJavaMethod);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
+        javaFunctions.addImport(file, "org.springframework.mock.web.MockHttpServletResponse");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertEquals");
+        javaFunctions.addImport(file, "static org.junit.Assert.assertTrue");
+        javaFunctions.addImport(file, "org.springframework.test.web.servlet.request.MockMvcRequestBuilders");
+        javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 }
 

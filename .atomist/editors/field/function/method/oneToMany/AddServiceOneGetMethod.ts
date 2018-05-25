@@ -25,10 +25,15 @@ export class AddServiceOneGetMethod extends EditFunction {
     }`;
 
         const path = params.coreModule + params.basePath + "/core/service/" + this.otherClass + "Service.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "fetch" + this.otherClass + "sFor" + this.oneClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, "java.util.List");
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "fetch" + this.otherClass + "sFor" + this.oneClass, rawJavaMethod);
+
+            javaFunctions.addImport(file, "java.util.List");
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+        } else {
+            console.error("Service class not added yet!");
+        }
     }
 }

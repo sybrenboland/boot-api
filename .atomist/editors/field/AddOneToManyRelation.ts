@@ -26,8 +26,14 @@ import {AddResourceInterfaceGetMethodMany} from "./function/method/manyToMany/Ad
 import {AddLinkToConverterMany} from "./function/method/manyToMany/AddLinkToConverterMany";
 import {AddServiceGetMethodMany} from "./function/method/oneToMany/AddServiceManyGetMethod";
 import {AddResourceGetMethodManyBi} from "./function/method/manyToMany/AddResourceManyGetMethodBi";
-import {AddResourceGetMethodManyUni} from "./function/method/manyToMany/AddResourceManyGetMethodUni";
 import {Params} from "./function/Params";
+import { AddIntegrationTestManySetup } from "./function/method/integrationTest/AddIntegrationTestManySetup";
+import { AddIntegrationTestFactoryMethodsMany } from "./function/method/integrationTest/AddIntegrationTestFactoryMethodsMany";
+import { AddIntegrationTestManyGetMethod } from "./function/method/integrationTest/AddIntegrationTestManyGetMethod";
+import { AddIntegrationTestPutMethod } from "./function/method/integrationTest/AddIntegrationTestPutMethod";
+import { AddIntegrationTestDeleteMethod } from "./function/method/integrationTest/AddIntegrationTestDeleteMethod";
+import { AddIntegrationTestGetMethod } from "./function/method/integrationTest/AddIntegrationTestGetMethod";
+import { AddIntegrationTestFactoryMethods } from "./function/method/integrationTest/AddIntegrationTestFactoryMethods";
 
 /**
  * AddOneToManyRelation editor
@@ -205,13 +211,15 @@ export class AddOneToManyRelation implements EditProject {
                 case "PUT": {
                     builder.and(new AddResourceInterfacePutMethod(this.classNameMany, this.classNameOne))
                         .and(new AddResourcePutMethod(this.classNameMany, this.classNameOne))
-                        .and(new AddServiceManyPutMethod(this.classNameOne, this.classNameMany));
+                        .and(new AddServiceManyPutMethod(this.classNameOne, this.classNameMany, false))
+                        .and(new AddIntegrationTestPutMethod(this.classNameMany, this.classNameOne, false, javaFunctions.trueOfFalse(this.biDirectional), true));
                     break;
                 }
                 case "DELETE": {
                     builder.and(new AddResourceInterfaceDeleteMethod(this.classNameMany, this.classNameOne))
                         .and(new AddResourceDeleteMethod(this.classNameMany, this.classNameOne))
-                        .and(new AddServiceManyDeleteMethod(this.classNameOne, this.classNameMany));
+                        .and(new AddServiceManyDeleteMethod(this.classNameOne, this.classNameMany, false))
+                        .and(new AddIntegrationTestDeleteMethod(this.classNameMany, this.classNameOne, false, true));
                     break;
                 }
             }
@@ -225,13 +233,15 @@ export class AddOneToManyRelation implements EditProject {
                     case "PUT": {
                         builder.and(new AddResourceInterfacePutMethod(this.classNameOne, this.classNameMany))
                             .and(new AddResourcePutMethod(this.classNameOne, this.classNameMany))
-                            .and(new AddServiceOnePutMethod(this.classNameOne, this.classNameMany));
+                            .and(new AddServiceOnePutMethod(this.classNameOne, this.classNameMany))
+                            .and(new AddIntegrationTestPutMethod(this.classNameOne, this.classNameMany, true, javaFunctions.trueOfFalse(this.biDirectional), true));
                         break;
                     }
                     case "DELETE": {
                         builder.and(new AddResourceInterfaceDeleteMethod(this.classNameOne, this.classNameMany))
                             .and(new AddResourceDeleteMethod(this.classNameOne, this.classNameMany))
-                            .and(new AddServiceOneDeleteMethod(this.classNameOne, this.classNameMany));
+                            .and(new AddServiceOneDeleteMethod(this.classNameOne, this.classNameMany))
+                            .and(new AddIntegrationTestDeleteMethod(this.classNameOne, this.classNameMany, true, true));
                         break;
                     }
                 }
@@ -244,18 +254,19 @@ export class AddOneToManyRelation implements EditProject {
                 .and(new AddServiceOneGetMethod(this.classNameOne, this.classNameMany))
                 .and(new AddLinkToConverterOne(this.classNameOne, this.classNameMany))
                 .and(new AddFieldToSearchCriteria(this.classNameOne, this.classNameMany))
-                .and(new AddFieldToPredicates(this.classNameOne, this.classNameMany));
+                .and(new AddFieldToPredicates(this.classNameOne, this.classNameMany))
+                .and(new AddIntegrationTestManySetup(this.classNameOne, this.classNameMany, true))
+                .and(new AddIntegrationTestFactoryMethods(this.classNameOne, this.classNameMany, javaFunctions.trueOfFalse(this.biDirectional), false))
+                .and(new AddIntegrationTestGetMethod(this.classNameOne, this.classNameMany, javaFunctions.trueOfFalse(this.biDirectional), false));
         }
         if (javaFunctions.trueOfFalse(this.showInOutputMany)) {
             builder.and(new AddLinkToConverterMany(this.classNameOne, this.classNameMany, true))
-                .and(new AddResourceInterfaceGetMethodMany(this.classNameOne, this.classNameMany, true));
-
-            if(javaFunctions.trueOfFalse(this.biDirectional)) {
-                builder.and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
-                    .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
-            } else {
-                builder.and(new AddResourceGetMethodManyUni(this.classNameOne, this.classNameMany));
-            }
+                .and(new AddResourceInterfaceGetMethodMany(this.classNameOne, this.classNameMany, true))
+                .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false))
+                .and(new AddIntegrationTestFactoryMethodsMany(this.classNameMany, this.classNameOne, javaFunctions.trueOfFalse(this.biDirectional), false))
+                .and(new AddIntegrationTestManyGetMethod(this.classNameMany, this.classNameOne))
+                .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
+                .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
         }
 
         const params: Params = new Params(

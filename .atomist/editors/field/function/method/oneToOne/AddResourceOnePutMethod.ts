@@ -19,25 +19,33 @@ export class AddResourceOnePutMethod extends EditFunction {
 
         ${this.otherClass} new${this.otherClass} = ${this.oneClass.toLowerCase()}Service.` +
             `update${this.oneClass}With${this.otherClass}(${this.oneClass.toLowerCase()}Id, ` +
-            `${this.otherClass.toLowerCase()}Converter.fromJson(json${this.otherClass}));
+            `${javaFunctions.lowercaseFirst(this.otherClass)}Converter.fromJson(json${this.otherClass}));
 
         return  new${this.otherClass} != null ?
-                ResponseEntity.ok(${this.otherClass.toLowerCase()}Converter.toJson(new${this.otherClass})) :
+                ResponseEntity.ok(${javaFunctions.lowercaseFirst(this.otherClass)}Converter.toJson(new${this.otherClass})) :
                 ResponseEntity.notFound().build();
     }`;
 
-        const path = params.apiModule + params.basePath + "/core/resource/" + this.oneClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
+        const path = params.apiModule + params.basePath + "/api/resource/" + this.oneClass + "Controller.java";
 
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.otherClass);
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
-        javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
-        javaFunctions.addToConstructor(file, this.oneClass + "Controller",
-            this.otherClass.toLowerCase() + "Converter");
-        javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.otherClass + "Converter");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+            javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.otherClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.oneClass);
+            javaFunctions.addImport(file, params.basePackage + ".persistence.db.hibernate.bean." + this.otherClass);
+
+            javaFunctions.addToConstructor(
+                file,
+                this.oneClass + "Controller",
+                this.otherClass + "Converter",
+                javaFunctions.lowercaseFirst(this.otherClass) + "Converter");
+            javaFunctions.addImport(file, params.basePackage + ".api.convert." + this.otherClass + "Converter");
+        } else {
+            console.error("Resource class not added yet!");
+        }
     }
 }

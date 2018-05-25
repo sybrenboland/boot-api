@@ -19,13 +19,18 @@ export class AddResourceInterfaceOnePutMethod extends EditFunction {
             `@RequestBody Json${this.otherClass} ${this.otherClass.toLowerCase()});`;
 
         const path = params.apiModule + params.basePath + "/api/resource/I" + this.oneClass + "Controller.java";
-        const file: File = project.findFile(path);
-        javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
 
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
-        javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
-        javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.otherClass);
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+            javaFunctions.addFunction(file, "put" + this.otherClass + "With" + this.oneClass, rawJavaMethod);
+
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.PathVariable");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
+            javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
+            javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
+            javaFunctions.addImport(file, params.basePackage + ".domain.entities.Json" + this.otherClass);
+        } else {
+            console.error("Resource interface not added yet!");
+        }
     }
 }
