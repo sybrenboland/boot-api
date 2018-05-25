@@ -25,26 +25,24 @@ Feature: Add Many-Many relation should add a relation between two beans
 
     Then the combination changelog is extended with FK_CAR_PERSON_CAR
     Then the combination changelog is extended with FK_PERSON_PERSON_CAR
-    Then the name carSet is added to class Person in package db.hibernate.bean of the Persistence module
-    Then the name personSet is added to class Car in package db.hibernate.bean of the Persistence module
-    Then the name cars is not added to class PersonConverter in package convert of the Api module
-    Then the name persons is not added to class CarConverter in package convert of the Api module
+    Then the name carSet is added to class Person in package persistence.db.hibernate.bean of the Persistence module
+    Then the name personSet is added to class Car in package persistence.db.hibernate.bean of the Persistence module
 
-    Then the name putPersonWithCar is added to class ICarController in package resource of the Api module
-    Then the name putPersonWithCar is added to class CarController in package resource of the Api module
-    Then the name updateCarWithPerson is added to class CarService in package service of the Core module
+    Then the name putPersonWithCar is added to class ICarController in package api.resource of the Api module
+    Then the name putPersonWithCar is added to class CarController in package api.resource of the Api module
+    Then the name updateCarWithPerson is added to class CarService in package core.service of the Core module
 
-    Then the name putCarWithPerson is added to class IPersonController in package resource of the Api module
-    Then the name putCarWithPerson is added to class PersonController in package resource of the Api module
-    Then the name updatePersonWithCar is added to class PersonService in package service of the Core module
+    Then the name putCarWithPerson is added to class IPersonController in package api.resource of the Api module
+    Then the name putCarWithPerson is added to class PersonController in package api.resource of the Api module
+    Then the name updatePersonWithCar is added to class PersonService in package core.service of the Core module
 
-    Then the name deletePersonWithCar is added to class ICarController in package resource of the Api module
-    Then the name deletePersonWithCar is added to class CarController in package resource of the Api module
-    Then the name removePerson is added to class CarService in package service of the Core module
+    Then the name deletePersonWithCar is added to class ICarController in package api.resource of the Api module
+    Then the name deletePersonWithCar is added to class CarController in package api.resource of the Api module
+    Then the name removePerson is added to class CarService in package core.service of the Core module
 
-    Then the name deleteCarWithPerson is added to class IPersonController in package resource of the Api module
-    Then the name deleteCarWithPerson is added to class PersonController in package resource of the Api module
-    Then the name removeCar is added to class PersonService in package service of the Core module
+    Then the name deleteCarWithPerson is added to class IPersonController in package api.resource of the Api module
+    Then the name deleteCarWithPerson is added to class PersonController in package api.resource of the Api module
+    Then the name removeCar is added to class PersonService in package core.service of the Core module
 
   Scenario: Add Many-Many relation should add a relation with output of both classes
     When the NewMavenProject is run
@@ -70,26 +68,24 @@ Feature: Add Many-Many relation should add a relation between two beans
 
     Then the combination changelog is extended with FK_CAR_PERSON_CAR
     Then the combination changelog is extended with FK_PERSON_PERSON_CAR
-    Then the name carSet is not added to class Person in package db.hibernate.bean of the Persistence module
-    Then the name personSet is added to class Car in package db.hibernate.bean of the Persistence module
-    Then the name cars is added to class PersonConverter in package convert of the Api module
-    Then the name persons is added to class CarConverter in package convert of the Api module
+    Then the name carSet is not added to class Person in package persistence.db.hibernate.bean of the Persistence module
+    Then the name personSet is added to class Car in package persistence.db.hibernate.bean of the Persistence module
 
-    Then the name putPersonWithCar is added to class ICarController in package resource of the Api module
-    Then the name putPersonWithCar is added to class CarController in package resource of the Api module
-    Then the name updateCarWithPerson is added to class CarService in package service of the Core module
+    Then the name putPersonWithCar is added to class ICarController in package api.resource of the Api module
+    Then the name putPersonWithCar is added to class CarController in package api.resource of the Api module
+    Then the name updateCarWithPerson is added to class CarService in package core.service of the Core module
 
-    Then the name putCarWithPerson is added to class IPersonController in package resource of the Api module
-    Then the name putCarWithPerson is added to class PersonController in package resource of the Api module
-    Then the name updatePersonWithCar is added to class PersonService in package service of the Core module
+    Then the name putCarWithPerson is added to class IPersonController in package api.resource of the Api module
+    Then the name putCarWithPerson is added to class PersonController in package api.resource of the Api module
+    Then the name updatePersonWithCar is added to class PersonService in package core.service of the Core module
 
-    Then the name deletePersonWithCar is added to class ICarController in package resource of the Api module
-    Then the name deletePersonWithCar is added to class CarController in package resource of the Api module
-    Then the name removePerson is added to class CarService in package service of the Core module
+    Then the name deletePersonWithCar is added to class ICarController in package api.resource of the Api module
+    Then the name deletePersonWithCar is added to class CarController in package api.resource of the Api module
+    Then the name removePerson is added to class CarService in package core.service of the Core module
 
-    Then the name deleteCarWithPerson is not added to class IPersonController in package resource of the Api module
-    Then the name deleteCarWithPerson is not added to class PersonController in package resource of the Api module
-    Then the name removeCar is not added to class PersonService in package service of the Core module
+    Then the name deleteCarWithPerson is not added to class IPersonController in package api.resource of the Api module
+    Then the name deleteCarWithPerson is not added to class PersonController in package api.resource of the Api module
+    Then the name removeCar is not added to class PersonService in package core.service of the Core module
 
   Scenario: Add Many-Many relation should add a relation with output of only the one side class
     When the NewMavenProject is run
@@ -115,26 +111,24 @@ Feature: Add Many-Many relation should add a relation between two beans
 
     Then the combination changelog is extended with FK_CAR_PERSON_CAR
     Then the combination changelog is extended with FK_PERSON_PERSON_CAR
-    Then the name carSet is added to class Person in package db.hibernate.bean of the Persistence module
-    Then the name personSet is added to class Car in package db.hibernate.bean of the Persistence module
-    Then the name cars is added to class PersonConverter in package convert of the Api module
-    Then the name persons is not added to class CarConverter in package convert of the Api module
+    Then the name carSet is added to class Person in package persistence.db.hibernate.bean of the Persistence module
+    Then the name personSet is added to class Car in package persistence.db.hibernate.bean of the Persistence module
 
-    Then the name putPersonWithCar is not added to class ICarController in package resource of the Api module
-    Then the name putPersonWithCar is not added to class CarController in package resource of the Api module
-    Then the name updateCarWithPerson is not added to class CarService in package service of the Core module
+    Then the name putPersonWithCar is not added to class ICarController in package api.resource of the Api module
+    Then the name putPersonWithCar is not added to class CarController in package api.resource of the Api module
+    Then the name updateCarWithPerson is not added to class CarService in package core.service of the Core module
 
-    Then the name putCarWithPerson is added to class IPersonController in package resource of the Api module
-    Then the name putCarWithPerson is added to class PersonController in package resource of the Api module
-    Then the name updatePersonWithCar is added to class PersonService in package service of the Core module
+    Then the name putCarWithPerson is added to class IPersonController in package api.resource of the Api module
+    Then the name putCarWithPerson is added to class PersonController in package api.resource of the Api module
+    Then the name updatePersonWithCar is added to class PersonService in package core.service of the Core module
 
-    Then the name deletePersonWithCar is not added to class ICarController in package resource of the Api module
-    Then the name deletePersonWithCar is not added to class CarController in package resource of the Api module
-    Then the name removePerson is not added to class CarService in package service of the Core module
+    Then the name deletePersonWithCar is not added to class ICarController in package api.resource of the Api module
+    Then the name deletePersonWithCar is not added to class CarController in package api.resource of the Api module
+    Then the name removePerson is not added to class CarService in package core.service of the Core module
 
-    Then the name deleteCarWithPerson is not added to class IPersonController in package resource of the Api module
-    Then the name deleteCarWithPerson is not added to class PersonController in package resource of the Api module
-    Then the name removeCar is not added to class PersonService in package service of the Core module
+    Then the name deleteCarWithPerson is not added to class IPersonController in package api.resource of the Api module
+    Then the name deleteCarWithPerson is not added to class PersonController in package api.resource of the Api module
+    Then the name removeCar is not added to class PersonService in package core.service of the Core module
 
   Scenario: Add Many-Many relation should add a relation with output of only the many side class
     When the NewMavenProject is run
@@ -160,23 +154,21 @@ Feature: Add Many-Many relation should add a relation between two beans
 
     Then the combination changelog is extended with FK_CAR_PERSON_CAR
     Then the combination changelog is extended with FK_PERSON_PERSON_CAR
-    Then the name carSet is not added to class Person in package db.hibernate.bean of the Persistence module
-    Then the name personSet is added to class Car in package db.hibernate.bean of the Persistence module
-    Then the name cars is not added to class PersonConverter in package convert of the Api module
-    Then the name persons is added to class CarConverter in package convert of the Api module
+    Then the name carSet is not added to class Person in package persistence.db.hibernate.bean of the Persistence module
+    Then the name personSet is added to class Car in package persistence.db.hibernate.bean of the Persistence module
 
-    Then the name putPersonWithCar is not added to class ICarController in package resource of the Api module
-    Then the name putPersonWithCar is not added to class CarController in package resource of the Api module
-    Then the name updateCarWithPerson is not added to class CarService in package service of the Core module
+    Then the name putPersonWithCar is not added to class ICarController in package api.resource of the Api module
+    Then the name putPersonWithCar is not added to class CarController in package api.resource of the Api module
+    Then the name updateCarWithPerson is not added to class CarService in package core.service of the Core module
 
-    Then the name putCarWithPerson is not added to class IPersonController in package resource of the Api module
-    Then the name putCarWithPerson is not added to class PersonController in package resource of the Api module
-    Then the name updatePersonWithCar is not added to class PersonService in package service of the Core module
+    Then the name putCarWithPerson is not added to class IPersonController in package api.resource of the Api module
+    Then the name putCarWithPerson is not added to class PersonController in package api.resource of the Api module
+    Then the name updatePersonWithCar is not added to class PersonService in package core.service of the Core module
 
-    Then the name deletePersonWithCar is added to class ICarController in package resource of the Api module
-    Then the name deletePersonWithCar is added to class CarController in package resource of the Api module
-    Then the name removePerson is added to class CarService in package service of the Core module
+    Then the name deletePersonWithCar is added to class ICarController in package api.resource of the Api module
+    Then the name deletePersonWithCar is added to class CarController in package api.resource of the Api module
+    Then the name removePerson is added to class CarService in package core.service of the Core module
 
-    Then the name deleteCarWithPerson is not added to class IPersonController in package resource of the Api module
-    Then the name deleteCarWithPerson is not added to class PersonController in package resource of the Api module
-    Then the name removeCar is not added to class PersonService in package service of the Core module
+    Then the name deleteCarWithPerson is not added to class IPersonController in package api.resource of the Api module
+    Then the name deleteCarWithPerson is not added to class PersonController in package api.resource of the Api module
+    Then the name removeCar is not added to class PersonService in package core.service of the Core module

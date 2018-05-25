@@ -24,7 +24,7 @@ Then("a (.*) is added to (.*) module in package (.*)",
     (p: Project, w, javaClassName: string, moduleName: string, packageName: string) => {
 
         const pathToClass = getModule(moduleName) + mavenBasePath + fileFunctions.toPath(BasePackage)
-            + "/" +  moduleName.toLowerCase() + "/" + fileFunctions.toPath(packageName) + "/" + javaClassName + ".java";
+            + "/" + fileFunctions.toPath(packageName) + "/" + javaClassName + ".java";
 
         return p.fileExists(pathToClass);
     });

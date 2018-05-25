@@ -1,7 +1,7 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../../../editors/functions/FileFunctions";
-import {BasePackage, getModule, PersistenceModule} from "../../../common/Constants";
+import {BasePackage, PersistenceModule} from "../../../common/Constants";
 
 let classNameRepository: string;
 
@@ -16,7 +16,7 @@ When("the AddRepository is run with className (.*)", (p: Project, w: ProjectScen
     });
 });
 
-Then("a repository class is added to the (.*) module", (p: Project, w, moduleName: string) => {
-    return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/" + moduleName.toLowerCase() + "/db/repo/" + classNameRepository + "Repository.java");
+Then("a repository class is added", (p: Project, w) => {
+    return p.fileExists("persistenceModule/src/main/java/"
+        + fileFunctions.toPath(BasePackage) + "/persistence/db/repo/" + classNameRepository + "Repository.java");
 });

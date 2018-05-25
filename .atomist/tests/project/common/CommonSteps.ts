@@ -21,14 +21,14 @@ Then("the name (.*) is added to (.*) class of the (.*) module",
 
 Then("the name (.*) is added to class (.*) in package (.*) of the (.*) module",
     (p: Project, w, name: string, className: string, packageName: string, moduleName: string) => {
-    return p.fileContains(getModule(moduleName) + "/src/main/java/" + fileFunctions.toPath(BasePackage) + "/" + moduleName.toLowerCase()
-        + "/" + fileFunctions.toPath(packageName) + "/" + className + ".java", name);
+    return p.fileContains(getModule(moduleName) + "/src/main/java/" + fileFunctions.toPath(BasePackage) +
+        "/" + fileFunctions.toPath(packageName) + "/" + className + ".java", name);
 });
 
 Then("the name (.*) is not added to class (.*) in package (.*) of the (.*) module",
     (p: Project, w, name: string, className: string, packageName: string, moduleName: string) => {
-        return !p.fileContains(getModule(moduleName) + "/src/main/java/" + fileFunctions.toPath(BasePackage) + "/" + moduleName.toLowerCase()
-            + "/" + fileFunctions.toPath(packageName) + "/" + className + ".java", name);
+        return !p.fileContains(getModule(moduleName) + "/src/main/java/" + fileFunctions.toPath(BasePackage) +
+            "/" + fileFunctions.toPath(packageName) + "/" + className + ".java", name);
     });
 
 Then("the name (.*) is added to configuration file (.*) of module (.*)",
