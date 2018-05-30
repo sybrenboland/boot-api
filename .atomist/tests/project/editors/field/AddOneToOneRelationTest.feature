@@ -32,18 +32,22 @@ Feature: Add One-One relation should add a relation between two beans
     Then the name "putPersonWithDetail" is added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithDetail" is added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "updateDetailWithPerson" is added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testPutPerson_withDetailWithPerson" is added to the integration tests of class "Detail"
 
     Then the name "putDetailWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putDetailWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "updatePersonWithDetail" is added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testPutDetail_withPersonWithDetail" is added to the integration tests of class "Person"
 
     Then the name "deletePersonWithDetail" is added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithDetail" is added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "removePerson" is added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testDeletePerson_withDetailWithPerson" is added to the integration tests of class "Detail"
 
     Then the name "deleteDetailWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteDetailWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "removeDetail" is added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testDeleteDetail_withPersonWithDetail" is added to the integration tests of class "Person"
 
   Scenario: Add One-One relation should add a relation with output of both classes
     When the NewMavenProject is run
@@ -76,18 +80,22 @@ Feature: Add One-One relation should add a relation between two beans
     Then the name "putPersonWithDetail" is added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithDetail" is added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "updateDetailWithPerson" is added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testPutPerson_withDetail" is added to the integration tests of class "Detail"
 
     Then the name "putDetailWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putDetailWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "updatePersonWithDetail" is added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testPutDetail_withPerson" is added to the integration tests of class "Person"
 
     Then the name "deletePersonWithDetail" is not added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithDetail" is not added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "removePerson" is not added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testDeletePerson_withDetail" is not added to the integration tests of class "Detail"
 
     Then the name "deleteDetailWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteDetailWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "removeDetail" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testDeleteDetail_withPersonWithDetail" is added to the integration tests of class "Person"
 
   Scenario: Add One-One relation should add a relation with output of only the one side class
     When the NewMavenProject is run
@@ -120,18 +128,22 @@ Feature: Add One-One relation should add a relation between two beans
     Then the name "putPersonWithDetail" is not added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithDetail" is not added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "updateDetailWithPerson" is not added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testPutPerson_withDetailWithPerson" is not added to the integration tests of class "Detail"
 
     Then the name "putDetailWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putDetailWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "updatePersonWithDetail" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testPutDetail_withPersonWithDetail" is not added to the integration tests of class "Person"
 
     Then the name "deletePersonWithDetail" is added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithDetail" is added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "removePerson" is added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testDeletePerson_withDetailWithPerson" is added to the integration tests of class "Detail"
 
     Then the name "deleteDetailWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteDetailWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "removeDetail" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testDeleteDetail_withPersonWithDetail" is not added to the integration tests of class "Person"
 
   Scenario: Add One-One relation should add a relation with output of only the many side class
     When the NewMavenProject is run
@@ -164,15 +176,19 @@ Feature: Add One-One relation should add a relation between two beans
     Then the name "putPersonWithDetail" is not added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithDetail" is not added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "updateDetailWithPerson" is not added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testPutPerson_withDetailWithPerson" is not added to the integration tests of class "Detail"
 
     Then the name "putDetailWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putDetailWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "updatePersonWithDetail" is added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testPutDetail_withPerson" is added to the integration tests of class "Person"
 
     Then the name "deletePersonWithDetail" is not added to class "IDetailController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithDetail" is not added to class "DetailController" in package "api.resource" of the "Api" module
     Then the name "removePerson" is not added to class "DetailService" in package "core.service" of the "Core" module
+    Then the test "testDeletePerson_withDetailWithPerson" is not added to the integration tests of class "Detail"
 
     Then the name "deleteDetailWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteDetailWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
     Then the name "removeDetail" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the test "testDeleteDetail_withPersonWithDetail" is not added to the integration tests of class "Person"
