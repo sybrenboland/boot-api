@@ -5,7 +5,7 @@ import {ApiModule, BasePackage} from "../../../common/Constants";
 
 let classNameResource: string;
 
-When("the AddResource is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddResource is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameResource = classNameInput;
 
     const editor = w.editor("AddResource");

@@ -5,7 +5,7 @@ import { BasePackage, CoreModule } from "../../../common/Constants";
 
 let classNameService: string;
 
-When("the AddService is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddService is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameService = classNameInput;
 
     const editor = w.editor("AddService");

@@ -2,7 +2,7 @@ import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, When} from "@atomist/rug/test/project/Core";
 import {ApiModule, BasePackage} from "../../common/Constants";
 
-When("the AddExceptionHandler is run for (.*) of package (.*) to return http (.*) with message: (.*)",
+When("the AddExceptionHandler is run for \"([^\"]*)\" of package \"([^\"]*)\" to return http \"([^\"]*)\" with message: \"([^\"]*)\"",
     (p: Project, w: ProjectScenarioWorld, javaException: string, exceptionPackage: string,
      httpStatus: string, responseMessage: string) => {
 

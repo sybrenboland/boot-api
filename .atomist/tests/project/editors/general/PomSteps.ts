@@ -4,10 +4,10 @@ import { getModule } from "../../common/Constants";
 
 export const pomFile = "pom.xml";
 
-Then("new dependency to pom: (.*)$", (p: Project, w, dependency: string) => {
+Then("new dependency to pom: \"([^\"]*)\"$", (p: Project, w, dependency: string) => {
     return p.fileContains(pomFile, dependency);
 });
 
-Then("new dependency to (.*) module pom: (.*)$", (p: Project, w, module, dependency) => {
+Then("new dependency to \"([^\"]*)\" module pom: \"([^\"]*)\"$", (p: Project, w, module, dependency) => {
     return p.fileContains(getModule(module) + "/" + pomFile, dependency);
 });

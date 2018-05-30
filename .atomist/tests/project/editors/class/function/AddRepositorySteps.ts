@@ -5,7 +5,7 @@ import {BasePackage, PersistenceModule} from "../../../common/Constants";
 
 let classNameRepository: string;
 
-When("the AddRepository is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddRepository is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameRepository = classNameInput;
 
     const editor = w.editor("AddRepository");

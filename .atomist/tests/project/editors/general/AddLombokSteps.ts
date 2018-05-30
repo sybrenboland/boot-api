@@ -6,7 +6,7 @@ import {BasePackage, PersistenceModule} from "../../common/Constants";
 let pathInput: string;
 const lombokVersion = "1.16.17";
 
-When("the AddLombok is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddLombok is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     pathInput = PersistenceModule + "/src/main/java/" + fileFunctions.toPath(BasePackage)
         + "/persistence/db/hibernate/bean/" + classNameInput + ".java";
 
@@ -17,10 +17,10 @@ When("the AddLombok is run with className (.*)", (p: Project, w: ProjectScenario
     });
 });
 
-Then("new bean contains the import (.*)", (p: Project, w, importName: string) => {
+Then("new bean contains the import \"([^\"]*)\"", (p: Project, w, importName: string) => {
         return p.fileContains(pathInput, importName);
 });
 
-Then("new bean contains the annotation (.*)", (p: Project, w, annotation: string) => {
+Then("new bean contains the annotation \"([^\"]*)\"", (p: Project, w, annotation: string) => {
     return p.fileContains(pathInput, annotation);
 });

@@ -20,7 +20,7 @@ When("the AddDocker is run", (p: Project, w: ProjectScenarioWorld) => {
     });
 });
 
-Then("a dockerfile is added to the (.*) module$", (p: Project, w, module) => {
+Then("a dockerfile is added to the \"([^\"]*)\" module$", (p: Project, w, module) => {
     return p.fileExists(getModule(module) + "/src/main/docker/Dockerfile");
 });
 

@@ -6,7 +6,7 @@ import {BasePackage, DomainModule} from "../../../common/Constants";
 let classNameDomainClass: string;
 const jacksonVersion = "2.9.0";
 
-When("the AddDomainClass is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddDomainClass is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameDomainClass = classNameInput;
 
     const editor = w.editor("AddDomainClass");
