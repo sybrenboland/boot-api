@@ -20,6 +20,6 @@ When("the NewMavenProject is run", (p: Project, w: ProjectScenarioWorld) => {
     });
 });
 
-Then("the master pom has the given (.*)", (p: Project, w, searchText: string) => {
+Then("the master pom has the given ([^\"]*)", (p: Project, w, searchText: string) => {
     return p.fileContains("pom.xml", searchText);
 });

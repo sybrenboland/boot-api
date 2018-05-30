@@ -1,11 +1,11 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../../../editors/functions/FileFunctions";
-import {ApiModule, BasePackage, getModule} from "../../../common/Constants";
+import {ApiModule, BasePackage} from "../../../common/Constants";
 
 let classNameResource: string;
 
-When("the AddResource is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddResource is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameResource = classNameInput;
 
     const editor = w.editor("AddResource");
@@ -16,12 +16,12 @@ When("the AddResource is run with className (.*)", (p: Project, w: ProjectScenar
     });
 });
 
-Then("a resource class is added to the (.*) module", (p: Project, w, moduleName: string) => {
-    return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/" +  moduleName.toLowerCase() + "/resource/" + classNameResource + "Controller.java");
+Then("a resource class is added", (p: Project, w) => {
+    return p.fileExists("apiModule/src/main/java/"
+        + fileFunctions.toPath(BasePackage) + "/api/resource/" + classNameResource + "Controller.java");
 });
 
-Then("a resource interface is added to the (.*) module", (p: Project, w, moduleName: string) => {
-    return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/" +  moduleName.toLowerCase() + "/resource/I" + classNameResource + "Controller.java");
+Then("a resource interface is added", (p: Project, w) => {
+    return p.fileExists("apiModule/src/main/java/"
+        + fileFunctions.toPath(BasePackage) + "/api/resource/I" + classNameResource + "Controller.java");
 });

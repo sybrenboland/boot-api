@@ -1,11 +1,11 @@
 import {Project} from "@atomist/rug/model/Project";
 import {ProjectScenarioWorld, Then, When} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../../../editors/functions/FileFunctions";
-import { BasePackage, CoreModule, getModule } from "../../../common/Constants";
+import { BasePackage, CoreModule } from "../../../common/Constants";
 
 let classNameService: string;
 
-When("the AddService is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddService is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     classNameService = classNameInput;
 
     const editor = w.editor("AddService");
@@ -16,7 +16,7 @@ When("the AddService is run with className (.*)", (p: Project, w: ProjectScenari
     });
 });
 
-Then("a service class is added to the (.*) module", (p: Project, w, moduleName: string) => {
-    return p.fileExists(getModule(moduleName) + "/src/main/java/"
-        + fileFunctions.toPath(BasePackage) + "/" +  moduleName.toLowerCase() + "/service/" + classNameService + "Service.java");
+Then("a service class is added", (p: Project, w) => {
+    return p.fileExists("coreModule/src/main/java/"
+        + fileFunctions.toPath(BasePackage) + "/core/service/" + classNameService + "Service.java");
 });

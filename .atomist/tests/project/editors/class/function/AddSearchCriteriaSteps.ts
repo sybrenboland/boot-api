@@ -8,7 +8,7 @@ import {fileFunctions} from "../../../../../editors/functions/FileFunctions";
 
 const mavenBasePath = "/src/main/java/";
 
-When("the AddSearchCriteria is run with className (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddSearchCriteria is run with className \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     const editor = w.editor("AddSearchCriteria");
     w.editWith(editor, {
         className: classNameInput,
@@ -20,11 +20,11 @@ When("the AddSearchCriteria is run with className (.*)", (p: Project, w: Project
     });
 });
 
-Then("a (.*) is added to (.*) module in package (.*)",
+Then("a \"([^\"]*)\" is added to \"([^\"]*)\" module in package \"([^\"]*)\"",
     (p: Project, w, javaClassName: string, moduleName: string, packageName: string) => {
 
         const pathToClass = getModule(moduleName) + mavenBasePath + fileFunctions.toPath(BasePackage)
-            + "/" +  moduleName.toLowerCase() + "/" + fileFunctions.toPath(packageName) + "/" + javaClassName + ".java";
+            + "/" + fileFunctions.toPath(packageName) + "/" + javaClassName + ".java";
 
         return p.fileExists(pathToClass);
     });

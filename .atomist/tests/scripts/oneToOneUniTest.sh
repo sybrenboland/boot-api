@@ -6,7 +6,7 @@ rug edit shboland:boot-api:AddField className=Person basePackage=org.shboland fi
 rug edit shboland:boot-api:ApiForBean className=Details basePackage=org.shboland;
 rug edit shboland:boot-api:AddField className=Details basePackage=org.shboland fieldName=age type=Integer;
 
-rug edit shboland:boot-api:AddOneToManyRelation classNameOne=Person classNameMany=Details basePackage=org.shboland biDirectional=false;
+rug edit shboland:boot-api:AddOneToOneRelation classNameMappedBy=Person classNameOther=Details basePackage=org.shboland biDirectional=false;
 
 git init;
 git add .;

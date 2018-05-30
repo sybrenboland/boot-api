@@ -5,7 +5,7 @@ import { ApiModule, BasePackage } from "../../../common/Constants";
 const h2Version = "1.4.194";
 const jacksonMapperVersion = "1.9.13";
 
-When("the AddIntegrationTestSetup is run for class (.*)", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
+When("the AddIntegrationTestSetup is run for class \"([^\"]*)\"", (p: Project, w: ProjectScenarioWorld, classNameInput: string) => {
     const editor = w.editor("AddIntegrationTestSetup");
     w.editWith(editor, {
         className: classNameInput,
@@ -16,7 +16,7 @@ When("the AddIntegrationTestSetup is run for class (.*)", (p: Project, w: Projec
     });
 });
 
-Then("the bean (.*) has an integration test file", (p: Project, w, className: string) => {
+Then("the bean \"([^\"]*)\" has an integration test file", (p: Project, w, className: string) => {
     return p.fileExists(ApiModule + "/src/test/java/integration/" + className + "ResourceIT.java");
 });
 

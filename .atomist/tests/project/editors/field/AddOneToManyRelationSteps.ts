@@ -6,7 +6,7 @@ import {
 } from "../../common/Constants";
 import {javaFunctions} from "../../../../editors/functions/JavaClassFunctions";
 
-When("the AddOneToManyRelation is run with one (.*) (.*) in output with many (.*) (.*) in output (.*), with (.*) as methods on the one side and (.*) as methods on the many side",
+When("the AddOneToManyRelation is run with one \"([^\"]*)\" (.*) in output with many \"([^\"]*)\" (.*) in output (.*), with \"([^\"]*)\" as methods on the one side and \"([^\"]*)\" as methods on the many side",
     (p: Project, w: ProjectScenarioWorld, classNameOneSide: string, isOneSideInOutput: string,
      classNameManySide: string, isManySideInOutput: string, biDirectional: string,
      methodsOneSide: string, methodsManySide: string) => {
