@@ -21,6 +21,7 @@ import {addSearchCriteria} from "./function/AddSearchCriteria";
 import {addDocker} from "../general/AddDocker";
 import {addIntegrationTestSetup} from "./function/AddIntegrationTestSetup";
 import { addTravisCI } from "../general/AddTravisCI";
+import { addSonar } from "../general/AddSonar";
 
 /**
  * ApiForBean editor
@@ -293,6 +294,28 @@ export class ApiForBean implements EditProject {
     })
     public dockerhubPassword: string = "";
 
+    @Parameter({
+        displayName: "Github organization",
+        description: "Your github organization name",
+        pattern: Pattern.any,
+        validInput: "name",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public githubOrganization: string = "";
+
+    @Parameter({
+        displayName: "Sonar token",
+        description: "Sonar token of your sonar cloud account",
+        pattern: Pattern.any,
+        validInput: "token",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public sonarToken: string = "";
+
 
     public edit(project: Project) {
 
@@ -311,6 +334,7 @@ export class ApiForBean implements EditProject {
         this.addMethods(project);
         this.addSwagger(project);
         this.addDocker(project);
+        this.addSonar(project);
     }
 
     private setSpringBootVersion(project: Project) {
@@ -328,7 +352,9 @@ export class ApiForBean implements EditProject {
 
     private addTravisCI(project: Project) {
 
-        addTravisCI.edit(project);
+        if (this.withTravisCI) {
+            addTravisCI.edit(project);
+        }
     }
     
     private addConfigFiles(project: Project) {
@@ -639,6 +665,18 @@ export class ApiForBean implements EditProject {
         }
 
         addDocker.edit(project);
+    }
+
+    private addSonar(project: Project) {
+
+        if (this.githubOrganization !== "") {
+            addSonar.githubOrganization = this.githubOrganization;
+        }
+        if (this.sonarToken !== "") {
+            addSonar.sonarToken = this.sonarToken;
+        }
+
+        addSonar.edit(project);
     }
 }
 
