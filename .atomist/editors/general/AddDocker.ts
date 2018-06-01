@@ -115,11 +115,8 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
     }
 
     private addDockerImageBuildStep(project: Project) {
-        const inputHook = '</dependencies>';
+        const inputHook = '<plugins>';
         const rawChangeSetContent = inputHook + `
-    
-    <build>
-        <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -147,10 +144,7 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
                         </resource>
                     </resources>
                 </configuration>
-            </plugin>
-        </plugins>
-    </build>
-`;
+            </plugin>`;
 
         const path = this.apiModule + "/pom.xml";
         if (project.fileExists(path)) {
