@@ -281,7 +281,7 @@ export class ApiForBean implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public dockerhubUser: string = "";
+    public dockerhubUser: string = "<your dockerhub username>";
 
     @Parameter({
         displayName: "Dockerhub password",
@@ -292,7 +292,7 @@ export class ApiForBean implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public dockerhubPassword: string = "";
+    public dockerhubPassword: string = "<your dockerhub password>";
 
     @Parameter({
         displayName: "Github organization",
@@ -303,7 +303,7 @@ export class ApiForBean implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public githubOrganization: string = "";
+    public githubOrganization: string = "<your github organization name>";
 
     @Parameter({
         displayName: "Sonar token",
@@ -314,7 +314,18 @@ export class ApiForBean implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public sonarToken: string = "";
+    public sonarToken: string = "<your sonar token>";
+
+    @Parameter({
+        displayName: "Sonar project key",
+        description: "Sonar key of your project",
+        pattern: Pattern.any,
+        validInput: "Must be unique in your organizations sonar",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public sonarProjectKey: string = "shboland:api";
 
 
     public edit(project: Project) {
@@ -657,10 +668,10 @@ export class ApiForBean implements EditProject {
         if (this.port !== "0") {
             addDocker.port = this.port;
         }
-        if (this.dockerhubUser !== "") {
+        if (this.dockerhubUser !== "<your dockerhub username>") {
             addDocker.dockerhubUser = this.dockerhubUser;
         }
-        if (this.dockerhubPassword !== "") {
+        if (this.dockerhubPassword !== "<your dockerhub password>") {
             addDocker.dockerhubPassword = this.dockerhubPassword;
         }
 
@@ -669,11 +680,14 @@ export class ApiForBean implements EditProject {
 
     private addSonar(project: Project) {
 
-        if (this.githubOrganization !== "") {
+        if (this.githubOrganization !== "<your github organization name>") {
             addSonar.githubOrganization = this.githubOrganization;
         }
-        if (this.sonarToken !== "") {
+        if (this.sonarToken !== "<your sonar token>") {
             addSonar.sonarToken = this.sonarToken;
+        }
+        if (this.sonarProjectKey !== "shboland:api") {
+            addSonar.sonarProjectKey = this.sonarProjectKey;
         }
 
         addSonar.edit(project);

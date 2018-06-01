@@ -91,7 +91,7 @@ export class AddDocker implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public dockerhubUser: string = "";
+    public dockerhubUser: string = "<your dockerhub username>";
 
     @Parameter({
         displayName: "Dockerhub password",
@@ -102,7 +102,7 @@ export class AddDocker implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public dockerhubPassword: string = "";
+    public dockerhubPassword: string = "<your dockerhub password>";
 
 
     public edit(project: Project) {

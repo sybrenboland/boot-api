@@ -21,7 +21,7 @@ export class AddSonar implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public githubOrganization: string = "";
+    public githubOrganization: string = "<your github organization name>";
 
     @Parameter({
         displayName: "Sonar token",
@@ -32,7 +32,18 @@ export class AddSonar implements EditProject {
         maxLength: 50,
         required: false,
     })
-    public sonarToken: string = "";
+    public sonarToken: string = "<your sonar token>";
+
+    @Parameter({
+        displayName: "Sonar project key",
+        description: "Sonar key of your project",
+        pattern: Pattern.any,
+        validInput: "Must be unique in your organizations sonar",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public sonarProjectKey: string = "shboland:api";
 
     public edit(project: Project) {
 
@@ -74,7 +85,7 @@ export class AddSonar implements EditProject {
     }
 
     private addSonarProperyFile(project: Project) {
-        const rawFileContent = `sonar.projectKey=shboland:api
+        const rawFileContent = `sonar.projectKey=${this.sonarProjectKey}
 sonar.sources=./api/src/main/java,./core/src/main/java,./domain/src/main/java,./persistence/src/main/java
 sonar.java.binaries=**/target/classes
 `;
