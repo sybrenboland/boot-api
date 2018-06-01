@@ -21,8 +21,13 @@ cache:
   directories:
   - "$HOME/.m2"
 
+env:
+  global:
+
 install:
   - mvn clean install
+
+after_script:
 `;
         const path = '.travis.yml';
         if (!project.fileExists(path)) {

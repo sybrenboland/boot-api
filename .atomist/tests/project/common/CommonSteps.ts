@@ -56,3 +56,7 @@ Then("the test \"([^\"]*)\" is added to the integration tests of class \"([^\"]*
 Then("the test \"([^\"]*)\" is not added to the integration tests of class \"([^\"]*)\"", (p: Project, w, testName: string, className: string) => {
     return !p.fileContains(ApiModule + "/src/test/java/integration/" + className + "ResourceIT.java", testName);
 });
+
+Then("the name \"([^\"]*)\" is added to the travis file", (p: Project, w, matchingName: string) => {
+    return p.fileContains(".travis.yml", matchingName);
+});
