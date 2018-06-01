@@ -20,6 +20,7 @@ import {addSwagger} from "../general/AddSwagger";
 import {addSearchCriteria} from "./function/AddSearchCriteria";
 import {addDocker} from "../general/AddDocker";
 import {addIntegrationTestSetup} from "./function/AddIntegrationTestSetup";
+import { addTravisCI } from "../general/AddTravisCI";
 
 /**
  * ApiForBean editor
@@ -115,6 +116,17 @@ export class ApiForBean implements EditProject {
         required: false,
     })
     public databaseModule: string = "db";
+
+    @Parameter({
+        displayName: "withTravisCI",
+        description: "Do you want CI for this project",
+        pattern: Pattern.any,
+        validInput: "Release number",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public withTravisCI: string = "true";
 
     @Parameter({
         displayName: "Release",
@@ -263,6 +275,7 @@ export class ApiForBean implements EditProject {
     public edit(project: Project) {
 
         this.setSpringBootVersion(project);
+        this.addTravisCI(project);
         this.addConfigFiles(project);
         this.addLiquibase(project);
         this.addBeanClass(project);
@@ -289,6 +302,11 @@ export class ApiForBean implements EditProject {
             addSpringBoot.version = this.springBootVersion;
         }
         addSpringBoot.edit(project);
+    }
+
+    private addTravisCI(project: Project) {
+
+        addTravisCI.edit(project);
     }
     
     private addConfigFiles(project: Project) {
