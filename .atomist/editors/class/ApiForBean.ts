@@ -271,6 +271,28 @@ export class ApiForBean implements EditProject {
     })
     public jacksonMapperVersion: string = "";
 
+    @Parameter({
+        displayName: "Dockerhub user",
+        description: "User name for your dockerhub account",
+        pattern: Pattern.any,
+        validInput: "username",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public dockerhubUser: string = "";
+
+    @Parameter({
+        displayName: "Dockerhub password",
+        description: "Password for your dockerhub account",
+        pattern: Pattern.any,
+        validInput: "Password",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public dockerhubPassword: string = "";
+
 
     public edit(project: Project) {
 
@@ -608,6 +630,12 @@ export class ApiForBean implements EditProject {
         }
         if (this.port !== "0") {
             addDocker.port = this.port;
+        }
+        if (this.dockerhubUser !== "") {
+            addDocker.dockerhubUser = this.dockerhubUser;
+        }
+        if (this.dockerhubPassword !== "") {
+            addDocker.dockerhubPassword = this.dockerhubPassword;
         }
 
         addDocker.edit(project);
