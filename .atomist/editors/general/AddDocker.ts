@@ -189,9 +189,9 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
 ` + serviceHook;
 
-        const variableHook = `env:
-  global:`;
-        const variableInput = variableHook + `
+        const variableHook = `\\Qenv:\\E\\s\\s+\\Qglobal:\\E`;
+        const variableInput = `env:
+  global:
     - DOCKER_USER=${this.dockerhubUser}
     - DOCKER_PASS=${this.dockerhubPassword}`;
 
@@ -206,7 +206,7 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
             if (!file.contains('- docker')) {
                 file.replace(serviceHook, serviceInput);
-                file.replace(variableHook, variableInput);
+                file.regexpReplace(variableHook, variableInput);
                 file.replace(afterScriptHook, afterScriptInput);
             }
         }

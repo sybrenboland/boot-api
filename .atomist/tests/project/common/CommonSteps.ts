@@ -3,6 +3,10 @@ import {Then} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../editors/functions/FileFunctions";
 import { ApiModule, BasePackage, DatabaseModule, getModule, Release } from "./Constants";
 
+Then("the file \"([^\"]*)\" is added to the root of the project", (p: Project, w, fileName: string) => {
+    return p.fileExists(fileName);
+});
+
 Then("the README contains info about \"([^\"]*)\"",
     (p: Project, w, name: string) => {
         return p.fileContains("README.md", name);

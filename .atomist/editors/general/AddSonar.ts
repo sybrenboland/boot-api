@@ -35,6 +35,12 @@ export class AddSonar implements EditProject {
     public sonarToken: string = "";
 
     public edit(project: Project) {
+
+        this.addTravisConfiguration(project);
+        this.addSonarProperyFile(project);
+    }
+
+    private addTravisConfiguration(project: Project) {
         const addOnHook = `install:`;
         const addOnInput = `addons:
   sonarcloud:
@@ -44,9 +50,9 @@ export class AddSonar implements EditProject {
 
 ` + addOnHook;
 
-        const variableHook = `env:
-  global:`;
-        const variableInput = variableHook + `
+        const variableHook = `\\Qenv:\\E\\s\\s+\\Qglobal:\\E`;
+        const variableInput = `env:
+  global:
     - SONAR_TOKEN=${this.sonarToken}`;
 
         const scriptHook = `after_script:`;
@@ -61,9 +67,21 @@ export class AddSonar implements EditProject {
 
             if (!file.contains('- sonar-scanner')) {
                 file.replace(addOnHook, addOnInput);
-                file.replace(variableHook, variableInput);
+                file.regexpReplace(variableHook, variableInput);
                 file.replace(scriptHook, scriptInput);
             }
+        }
+    }
+
+    private addSonarProperyFile(project: Project) {
+        const rawFileContent = `sonar.projectKey=shboland:api
+sonar.sources=./api/src/main/java,./core/src/main/java,./domain/src/main/java,./persistence/src/main/java
+sonar.java.binaries=**/target/classes
+`;
+
+        const path = "sonar-project.properties";
+        if (!project.fileExists(path)) {
+            project.addFile(path, rawFileContent);
         }
     }
 }
