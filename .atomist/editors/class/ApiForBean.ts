@@ -22,6 +22,7 @@ import {addDocker} from "../general/AddDocker";
 import {addIntegrationTestSetup} from "./function/AddIntegrationTestSetup";
 import { addTravisCI } from "../general/AddTravisCI";
 import { addSonar } from "../general/AddSonar";
+import { javaFunctions } from "../functions/JavaClassFunctions";
 
 /**
  * ApiForBean editor
@@ -127,7 +128,7 @@ export class ApiForBean implements EditProject {
         maxLength: 100,
         required: false,
     })
-    public withTravisCI: string = "true";
+    public withTravisCI: string = "false";
 
     @Parameter({
         displayName: "Release",
@@ -363,7 +364,7 @@ export class ApiForBean implements EditProject {
 
     private addTravisCI(project: Project) {
 
-        if (this.withTravisCI) {
+        if (javaFunctions.trueOfFalse(this.withTravisCI)) {
             addTravisCI.edit(project);
         }
     }
