@@ -1,11 +1,13 @@
-import {File} from "@atomist/rug/model/File";
-import {Pom} from "@atomist/rug/model/Pom";
-import {Project} from "@atomist/rug/model/Project";
-import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
-import {EditProject} from "@atomist/rug/operations/ProjectEditor";
-import {Pattern} from "@atomist/rug/operations/RugOperation";
-import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
-import {javaFunctions} from "../../functions/JavaClassFunctions";
+import { File } from "@atomist/rug/model/File";
+import { Pom } from "@atomist/rug/model/Pom";
+import { Project } from "@atomist/rug/model/Project";
+import { Editor, Parameter, Tags } from "@atomist/rug/operations/Decorators";
+import { EditProject } from "@atomist/rug/operations/ProjectEditor";
+import { Pattern } from "@atomist/rug/operations/RugOperation";
+import { PathExpressionEngine } from "@atomist/rug/tree/PathExpression";
+import { javaFunctions } from "../../functions/JavaClassFunctions";
+import { fileFunctions } from "../../functions/FileFunctions";
+import { unitTestFunctions } from "../../functions/UnitTestFunctions";
 
 /**
  * AddDELETE editor
@@ -70,16 +72,15 @@ export class AddDELETE implements EditProject {
 
     public edit(project: Project) {
 
-        const basePathApi = this.apiModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/api";
-
-        const basePathCore = this.coreModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/core";
+        const basePathApi = this.apiModule + "/src/main/java/" + fileFunctions.toPath(this.basePackage) + "/api";
+        const basePathCore = this.coreModule + "/src/main/java/" + fileFunctions.toPath(this.basePackage) + "/core";
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
+        this.addResourceClassMethodUnitTest(project);
         this.addServiceMethod(project, basePathCore);
+        this.addServiceMethodUnitTest(project);
         this.addIntegrationTests(project);
     }
 
@@ -127,6 +128,52 @@ export class AddDELETE implements EditProject {
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
     }
 
+
+    private addResourceClassMethodUnitTest(project: Project) {
+
+        const rawJavaMethod = `@Test
+    public void testDelete${this.className}() {
+
+        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(true);
+
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+
+        assertNotNull("No object returned.", response);
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDelete${this.className}_No${this.className}Found() {
+
+        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(false);
+
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+
+        assertNotNull("No object returned.", response);
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatusCodeValue());
+    }`;
+
+        const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        if (!project.fileExists(pathControllerUnitTest)) {
+            unitTestFunctions.basicUnitTest(project, pathControllerUnitTest, this.className, this.basePackage);
+        }
+
+        const file: File = project.findFile(pathControllerUnitTest);
+        const inputHook = '// @Input';
+        file.replace(inputHook, rawJavaMethod);
+
+        unitTestFunctions.addMock(file, this.className + 'Service');
+        unitTestFunctions.addLongParameter(file, "ID");
+
+        javaFunctions.addImport(file, `${this.basePackage}.core.service.${this.className}Service`);
+        javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
+        javaFunctions.addImport(file, 'org.springframework.http.ResponseEntity');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
+    }
+
+
     private addServiceMethod(project: Project, basePath: string): void {
 
         const rawJavaMethod = `
@@ -148,6 +195,58 @@ export class AddDELETE implements EditProject {
 
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
         javaFunctions.addImport(file, "java.util.Optional");
+    }
+
+
+    private addServiceMethodUnitTest(project: Project) {
+
+        const rawJavaMethod = `@Test
+    public void testDelete${this.className}() {
+
+        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(true);
+
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+
+        assertNotNull("No object returned.", response);
+        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatusCodeValue());
+    }
+
+    @Test
+    public void testDelete${this.className}_No${this.className}Found() {
+
+        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(false);
+
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+
+        assertNotNull("No object returned.", response);
+        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatusCodeValue());
+    }`;
+
+        const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        if (!project.fileExists(pathControllerUnitTest)) {
+            unitTestFunctions.basicUnitTest(project, pathControllerUnitTest, this.className, this.basePackage);
+        }
+
+        const file: File = project.findFile(pathControllerUnitTest);
+        const inputHook = '// @Input';
+        file.replace(inputHook, rawJavaMethod);
+
+        unitTestFunctions.addMock(file, this.className + 'Repository');
+        unitTestFunctions.addLongParameter(file, "ID");
+        unitTestFunctions.addBeanParameter(file, this.className);
+
+        javaFunctions.addImport(file, `${this.basePackage}.persistence.db.hibernate.bean.${this.className}`);
+        javaFunctions.addImport(file, `${this.basePackage}.persistence.db.repo.${this.className}Repository`);
+        javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
+        javaFunctions.addImport(file, 'org.springframework.http.ResponseEntity');
+        javaFunctions.addImport(file, 'java.util.Optional');
+
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertFalse');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.never');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.times');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.verify');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
     }
 
     private addIntegrationTests(project: Project) {
