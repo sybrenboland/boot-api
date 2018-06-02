@@ -20,6 +20,8 @@ import {addSwagger} from "../general/AddSwagger";
 import {addSearchCriteria} from "./function/AddSearchCriteria";
 import {addDocker} from "../general/AddDocker";
 import {addIntegrationTestSetup} from "./function/AddIntegrationTestSetup";
+import { addTravisCI } from "../general/AddTravisCI";
+import { addSonar } from "../general/AddSonar";
 
 /**
  * ApiForBean editor
@@ -115,6 +117,17 @@ export class ApiForBean implements EditProject {
         required: false,
     })
     public databaseModule: string = "db";
+
+    @Parameter({
+        displayName: "withTravisCI",
+        description: "Do you want CI for this project",
+        pattern: Pattern.any,
+        validInput: "Release number",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public withTravisCI: string = "true";
 
     @Parameter({
         displayName: "Release",
@@ -259,10 +272,66 @@ export class ApiForBean implements EditProject {
     })
     public jacksonMapperVersion: string = "";
 
+    @Parameter({
+        displayName: "Dockerhub user",
+        description: "User name for your dockerhub account",
+        pattern: Pattern.any,
+        validInput: "username",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public dockerhubUser: string = "<your dockerhub username>";
+
+    @Parameter({
+        displayName: "Dockerhub password",
+        description: "Password for your dockerhub account",
+        pattern: Pattern.any,
+        validInput: "Password",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public dockerhubPassword: string = "<your dockerhub password>";
+
+    @Parameter({
+        displayName: "Github organization",
+        description: "Your github organization name",
+        pattern: Pattern.any,
+        validInput: "name",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public githubOrganization: string = "<your github organization name>";
+
+    @Parameter({
+        displayName: "Sonar token",
+        description: "Sonar token of your sonar cloud account",
+        pattern: Pattern.any,
+        validInput: "token",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public sonarToken: string = "<your sonar token>";
+
+    @Parameter({
+        displayName: "Sonar project key",
+        description: "Sonar key of your project",
+        pattern: Pattern.any,
+        validInput: "Must be unique in your organizations sonar",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public sonarProjectKey: string = "shboland:api";
+
 
     public edit(project: Project) {
 
         this.setSpringBootVersion(project);
+        this.addTravisCI(project);
         this.addConfigFiles(project);
         this.addLiquibase(project);
         this.addBeanClass(project);
@@ -276,6 +345,7 @@ export class ApiForBean implements EditProject {
         this.addMethods(project);
         this.addSwagger(project);
         this.addDocker(project);
+        this.addSonar(project);
     }
 
     private setSpringBootVersion(project: Project) {
@@ -289,6 +359,13 @@ export class ApiForBean implements EditProject {
             addSpringBoot.version = this.springBootVersion;
         }
         addSpringBoot.edit(project);
+    }
+
+    private addTravisCI(project: Project) {
+
+        if (this.withTravisCI) {
+            addTravisCI.edit(project);
+        }
     }
     
     private addConfigFiles(project: Project) {
@@ -591,8 +668,29 @@ export class ApiForBean implements EditProject {
         if (this.port !== "0") {
             addDocker.port = this.port;
         }
+        if (this.dockerhubUser !== "<your dockerhub username>") {
+            addDocker.dockerhubUser = this.dockerhubUser;
+        }
+        if (this.dockerhubPassword !== "<your dockerhub password>") {
+            addDocker.dockerhubPassword = this.dockerhubPassword;
+        }
 
         addDocker.edit(project);
+    }
+
+    private addSonar(project: Project) {
+
+        if (this.githubOrganization !== "<your github organization name>") {
+            addSonar.githubOrganization = this.githubOrganization;
+        }
+        if (this.sonarToken !== "<your sonar token>") {
+            addSonar.sonarToken = this.sonarToken;
+        }
+        if (this.sonarProjectKey !== "shboland:api") {
+            addSonar.sonarProjectKey = this.sonarProjectKey;
+        }
+
+        addSonar.edit(project);
     }
 }
 

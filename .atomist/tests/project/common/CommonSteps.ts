@@ -3,6 +3,10 @@ import {Then} from "@atomist/rug/test/project/Core";
 import {fileFunctions} from "../../../editors/functions/FileFunctions";
 import { ApiModule, BasePackage, DatabaseModule, getModule, Release } from "./Constants";
 
+Then("the file \"([^\"]*)\" is added to the root of the project", (p: Project, w, fileName: string) => {
+    return p.fileExists(fileName);
+});
+
 Then("the README contains info about \"([^\"]*)\"",
     (p: Project, w, name: string) => {
         return p.fileContains("README.md", name);
@@ -55,4 +59,8 @@ Then("the test \"([^\"]*)\" is added to the integration tests of class \"([^\"]*
 
 Then("the test \"([^\"]*)\" is not added to the integration tests of class \"([^\"]*)\"", (p: Project, w, testName: string, className: string) => {
     return !p.fileContains(ApiModule + "/src/test/java/integration/" + className + "ResourceIT.java", testName);
+});
+
+Then("the name \"([^\"]*)\" is added to the travis file", (p: Project, w, matchingName: string) => {
+    return p.fileContains(".travis.yml", matchingName);
 });

@@ -14,3 +14,4 @@ Feature: Adds methods to all layers implementing REST get method
     Then new dependency to "Api" module pom: "jackson-mapper-asl"
     Then the bean "Adres" has an integration test file
     Then a integration test util file has been added
+    Then new plugin to "Api" module pom: "maven-failsafe-plugin"

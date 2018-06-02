@@ -82,11 +82,35 @@ export class AddDocker implements EditProject {
     })
     public port: string = "8888";
 
+    @Parameter({
+        displayName: "Dockerhub user",
+        description: "User name for your dockerhub account",
+        pattern: Pattern.any,
+        validInput: "username",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public dockerhubUser: string = "<your dockerhub username>";
+
+    @Parameter({
+        displayName: "Dockerhub password",
+        description: "Password for your dockerhub account",
+        pattern: Pattern.any,
+        validInput: "Password",
+        minLength: 0,
+        maxLength: 50,
+        required: false,
+    })
+    public dockerhubPassword: string = "<your dockerhub password>";
+
+
     public edit(project: Project) {
 
         this.addDockerFile(project);
         this.addDockerProperties(project);
         this.addDockerImageBuildStep(project);
+        this.addDockerToTravisFile(project);
         this.extendComposeFile(project);
     }
 
@@ -115,11 +139,8 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
     }
 
     private addDockerImageBuildStep(project: Project) {
-        const inputHook = '</dependencies>';
+        const inputHook = '<plugins>';
         const rawChangeSetContent = inputHook + `
-    
-    <build>
-        <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -147,10 +168,7 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
                         </resource>
                     </resources>
                 </configuration>
-            </plugin>
-        </plugins>
-    </build>
-`;
+            </plugin>`;
 
         const path = this.apiModule + "/pom.xml";
         if (project.fileExists(path)) {
@@ -161,6 +179,36 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
             }
         } else {
             console.error("Pom not added yet!");
+        }
+    }
+
+    private addDockerToTravisFile(project: Project) {
+        const serviceHook = `cache:`;
+        const serviceInput = `services:
+  - docker
+
+` + serviceHook;
+
+        const variableHook = `\\Qenv:\\E\\s\\s+\\Qglobal:\\E`;
+        const variableInput = `env:
+  global:
+    - DOCKER_USER=${this.dockerhubUser}
+    - DOCKER_PASS=${this.dockerhubPassword}`;
+
+        const afterScriptHook = `after_script:`;
+        const afterScriptInput = afterScriptHook + `
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker push ${this.dockerImagePrefix}/${this.apiModule}:${this.release}`;
+
+        const path = ".travis.yml";
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            if (!file.contains('- docker')) {
+                file.replace(serviceHook, serviceInput);
+                file.regexpReplace(variableHook, variableInput);
+                file.replace(afterScriptHook, afterScriptInput);
+            }
         }
     }
 

@@ -76,6 +76,7 @@ export class AddIntegrationTestSetup implements EditProject {
     public edit(project: Project) {
 
         this.addDependencies(project);
+        this.addFailsafePlugin(project);
         this.addIntegrationTestFile(project);
         this.addIntegrationTestUtilsFile(project);
         this.addOrExtendIntegrationTestFactory(project);
@@ -116,6 +117,40 @@ export class AddIntegrationTestSetup implements EditProject {
             pom.addOrReplaceDependencyOfScope("com.h2database", "h2", "test");
             pom.addOrReplaceDependencyOfScope("org.codehaus.jackson", "jackson-mapper-asl", "test");
         });
+    }
+
+    private addFailsafePlugin(project: Project): void {
+
+        const pluginsInput = "</plugins>";
+        const rawContent = `
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>failsafe-integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        ` + pluginsInput;
+
+        const targetFilePath = this.apiModule + "/pom.xml";
+        if (project.fileExists(targetFilePath)) {
+            const apiModulePomFile: File = fileFunctions.findFile(project, targetFilePath);
+
+            if (!apiModulePomFile.contains("maven-failsafe-plugin")) {
+                apiModulePomFile.replace(pluginsInput, rawContent);
+            }
+        }
     }
 
     private addIntegrationTestFile(project: Project) {

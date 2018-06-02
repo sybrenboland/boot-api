@@ -94,6 +94,41 @@ To test your self created rugs use the rug-cli:
 > rug test
 ```
 
+## CI
+
+There is support for CI using Travis-CI. Do the following in preparation:
+
+- Create a github [organisation][organisation] for your user.
+- Use your github account to login to [sonarcloud][sonarcloud] and create a sonar token.               
+- Create a [dockerhub][dockerhub] account.
+
+[dockerhub]: https://hub.docker.com/
+[sonarcloud]: https://about.sonarcloud.io/
+[organisation]: https://github.com/settings/organizations
+    
+Now activate by setting 'withTravisCI=true' when running the ApiForBean editor and set values from the above steps:
+
+```
+> rug edit shboland:boot-api:ApiForBean                      \
+               className=Customer                            \
+               withTravisCI=true                             \
+               githubOrganization=<your github organization>
+```
+
+
+Now encrypt the values ```DOCKER_USER, DOCKER_PASS, SONAR_TOKEN``` with [travis encrypt][encrypt]. For example:
+
+```
+> travis encrypt DOCKER_PASS=<your dockerhub password>
+```
+
+[encrypt]: https://docs.travis-ci.com/user/encryption-keys/
+
+Push your code to github. Use your github account to sign into [travis][travis] and enable the project at profile. 
+Now you can trigger a build at More options -> trigger build. Tadaa!
+    
+[travis]: https://travis-ci.org/
+
 ## Authors
 
 * **Sybren Boland** - *Initial work* - [sybrenboland](https://github.com/sybrenboland)

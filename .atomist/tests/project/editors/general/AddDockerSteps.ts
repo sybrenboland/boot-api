@@ -6,6 +6,9 @@ const version = '1.2.3';
 const port = '8881';
 const dockerImagePrefix = 'prefix';
 const dockerPluginVersion = '0.4.14';
+const dockerhubUser = 'shboland';
+const dockerhubPassword = 'Password';
+
 
 When("the AddDocker is run", (p: Project, w: ProjectScenarioWorld) => {
 
@@ -16,7 +19,9 @@ When("the AddDocker is run", (p: Project, w: ProjectScenarioWorld) => {
         dockerImagePrefix: dockerImagePrefix,
         dockerPluginVersion: dockerPluginVersion,
         version: version,
-        port: port
+        port: port,
+        dockerhubUser: dockerhubUser,
+        dockerhubPassword: dockerhubPassword
     });
 });
 
