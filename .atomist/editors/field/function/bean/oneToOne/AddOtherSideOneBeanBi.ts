@@ -12,7 +12,7 @@ export class AddOtherSideOneBeanBi extends EditFunction {
 
     edit(project: Project, params: Params): void {
         const inputHook = "// @Input";
-        const rawJavaCode = `@OneToOne(fetch = FetchType.LAZY)
+        const rawJavaCode = `@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "${this.mappedByClass.toLowerCase()}_id")
     private ${this.mappedByClass} ${this.mappedByClass.toLowerCase()};
     
@@ -24,7 +24,7 @@ export class AddOtherSideOneBeanBi extends EditFunction {
             file.replace(inputHook, rawJavaCode);
 
             javaFunctions.addImport(file, "javax.persistence.OneToOne");
-            javaFunctions.addImport(file, "javax.persistence.FetchType");
+            javaFunctions.addImport(file, "javax.persistence.CascadeType");
             javaFunctions.addImport(file, "javax.persistence.JoinColumn");
         } else {
             console.error("Bean class many side not added yet!");
