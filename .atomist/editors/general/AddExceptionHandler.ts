@@ -4,6 +4,7 @@ import {Editor, Parameter, Tags} from "@atomist/rug/operations/Decorators";
 import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
+import { fileFunctions } from "../functions/FileFunctions";
 
 /**
  * AddExceptionHandler editor
@@ -81,11 +82,15 @@ export class AddExceptionHandler implements EditProject {
 
     public edit(project: Project) {
 
-        const basePath = this.apiModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/api";
+        const basePath = this.apiModule + "/src/main/java/" + fileFunctions.toPath(this.basePackage) + "/api";
+
+        const responseMessage = this.responseMessage != "" ?
+            this.responseMessage :
+            "There seems to be a problem with application.";
 
         this.addDependencies(project);
-        this.addHandlerClass(project, basePath);
+        this.addHandlerClass(project, basePath, responseMessage);
+        this.addUnitTest(project, responseMessage);
     }
 
     private addDependencies(project: Project): void {
@@ -96,11 +101,7 @@ export class AddExceptionHandler implements EditProject {
         });
     }
 
-    private addHandlerClass(project: Project, basePath: string): void {
-
-        const responseMessage = this.responseMessage != "" ?
-            this.responseMessage :
-            "There seems to be a problem with application.";
+    private addHandlerClass(project: Project, basePath: string, responseMessage: string): void {
 
         const rawJavaFileContent = `package ${this.basePackage}.api.exception;
 
@@ -130,6 +131,51 @@ public class Resource${this.javaException}Handler extends ResponseEntityExceptio
         if (!project.fileExists(path)) {
             project.addFile(path, rawJavaFileContent);
         }
+    }
+
+    private addUnitTest(project: Project, responseMessage: string) {
+
+        const rawUnitTest = `package ${this.basePackage}.api.exception;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.context.request.WebRequest;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+@RunWith(MockitoJUnitRunner.class)
+public class Resource${this.javaException}HandlerTest {
+
+    private Resource${this.javaException}Handler exceptionHandler = new Resource${this.javaException}Handler();
+
+    @Mock
+    private Exception exception;
+
+    @Mock
+    private WebRequest webRequest;
+
+    @Test
+    public void testHandleConflict() {
+
+        ResponseEntity<Object> result = exceptionHandler.handleConflict(exception, webRequest);
+
+        assertNotNull("No object returned!", result);
+        assertEquals("Wrong status returned!", HttpStatus.${this.httpResponse.toUpperCase()}.value(), result.getStatusCodeValue());
+        assertEquals(
+                "Wrong message returned!",
+                ${responseMessage},
+                result.getBody()
+        );
+    }
+}`;
+
+        const pathExceptionHandlerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/exception/Resource" + this.javaException + "HandlerTest.java";
+        project.addFile(pathExceptionHandlerUnitTest, rawUnitTest);
     }
 }
 

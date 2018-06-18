@@ -8,3 +8,4 @@ Feature: Add Exception Handler should add a exception handler class
     Then the name "URISyntaxException" is added to class "ResourceURISyntaxExceptionHandler" in package "api.exception" of the "Api" module
     Then the name "HttpStatus.CONFLICT" is added to class "ResourceURISyntaxExceptionHandler" in package "api.exception" of the "Api" module
     Then the name "Conflict!" is added to class "ResourceURISyntaxExceptionHandler" in package "api.exception" of the "Api" module
+    Then the unit test for "handleConflict" is added for the class "ResourceURISyntaxExceptionHandler" in the package "api.exception" of the "Api" module

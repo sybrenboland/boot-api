@@ -13,7 +13,7 @@ export class AddIntegrationTestFactoryMethodsOne extends EditFunction {
 
     edit(project: Project, params: Params): void {
 
-        const pathFactory = params.apiModule + "/src/test/java/integration/IntegrationTestFactory.java";
+        const pathFactory = params.apiModule + "/src/main/test/java/integration/IntegrationTestFactory.java";
         if (project.fileExists(pathFactory)) {
             const file: File = project.findFile(pathFactory);
 

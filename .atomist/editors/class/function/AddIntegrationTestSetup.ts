@@ -154,7 +154,7 @@ export class AddIntegrationTestSetup implements EditProject {
     }
 
     private addIntegrationTestFile(project: Project) {
-        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const path = this.apiModule + "/src/main/test/java/integration/" + this.className + "ResourceIT.java";
         const rawContent = `package integration;
 
 import org.junit.After;
@@ -215,7 +215,7 @@ public class ${this.className}ResourceIT {
     }
 
     private addIntegrationTestUtilsFile(project: Project) {
-        const path = this.apiModule + "/src/test/java/integration/IntegrationTestUtils.java";
+        const path = this.apiModule + "/src/main/test/java/integration/IntegrationTestUtils.java";
         const rawContent = `package integration;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -259,7 +259,7 @@ public class IntegrationTestUtils {
     }
 
     private addOrExtendIntegrationTestFactory(project: Project) {
-        const path = this.apiModule + "/src/test/java/integration/IntegrationTestFactory.java";
+        const path = this.apiModule + "/src/main/test/java/integration/IntegrationTestFactory.java";
         const rawContent = `package integration;
          
 

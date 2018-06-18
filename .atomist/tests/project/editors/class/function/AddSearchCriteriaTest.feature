@@ -23,4 +23,5 @@ Feature: Add search criteria should add GET with search criteria to the api chai
     Then a "ConvertException" is added to "Api" module in package "api.convert"
     Then a "AdresRepositoryCustom" is added to "Persistence" module in package "persistence.db.repo"
     Then a "AdresRepositoryImpl" is added to "Persistence" module in package "persistence.db.repo"
+    Then the unit test for "list" is added for the class "AdresRepositoryImpl" in the package "persistence.db.repo" of the "Persistence" module
     Then a "AbstractHibernateRepository" is added to "Persistence" module in package "persistence.db.repo"

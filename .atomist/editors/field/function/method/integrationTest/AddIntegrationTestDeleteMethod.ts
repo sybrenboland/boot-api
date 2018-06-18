@@ -69,7 +69,7 @@ export class AddIntegrationTestDeleteMethod extends EditFunction {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }`;
 
-        const path = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";
+        const path = params.apiModule + "/src/main/test/java/integration/" + this.oneClass + "ResourceIT.java";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);

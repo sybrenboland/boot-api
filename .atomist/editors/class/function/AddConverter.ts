@@ -8,7 +8,9 @@ import {fileFunctions} from "../../functions/FileFunctions";
 
 /**
  * AddConverter editor
+ * - Adds required dependencies
  * - Adds converter shell class
+ * - Adds unit tests
  */
 @Editor("AddConverter", "adds converter class")
 @Tags("rug", "api", "convert", "shboland")
@@ -168,7 +170,7 @@ public class ${this.className}ConverterTest {
     @Test
     public void testFromJson_WithId() {
 
-        ${this.className} result${this.className} = ${this.className.toLowerCase()}${this.className.toLowerCase()}Converter.fromJson(json${this.className}, ID);
+        ${this.className} result${this.className} = ${this.className.toLowerCase()}Converter.fromJson(json${this.className}, ID);
 
         assertNotNull("No object returned.", result${this.className});
         assertEquals("Field not set correctly.", ID, result${this.className}.getId());

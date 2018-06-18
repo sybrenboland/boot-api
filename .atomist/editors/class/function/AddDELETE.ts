@@ -15,6 +15,8 @@ import { unitTestFunctions } from "../../functions/UnitTestFunctions";
  * - Adds method to resource class and interface
  * - Adds method to service
  * - Adds method to converter
+ * - Adds unit tests
+ * - Adds integration tests
  *
  * Requires:
  * - Bean class
@@ -131,12 +133,14 @@ export class AddDELETE implements EditProject {
 
     private addResourceClassMethodUnitTest(project: Project) {
 
-        const rawJavaMethod = `@Test
+        const rawJavaMethod = `
+    
+    @Test
     public void testDelete${this.className}() {
 
-        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(true);
+        when(${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID)).thenReturn(true);
 
-        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(${this.className.toUpperCase()}_ID);
 
         assertNotNull("No object returned.", response);
         assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatusCodeValue());
@@ -145,9 +149,9 @@ export class AddDELETE implements EditProject {
     @Test
     public void testDelete${this.className}_No${this.className}Found() {
 
-        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(false);
+        when(${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID)).thenReturn(false);
 
-        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(${this.className.toUpperCase()}_ID);
 
         assertNotNull("No object returned.", response);
         assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatusCodeValue());
@@ -155,16 +159,17 @@ export class AddDELETE implements EditProject {
 
         const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
         if (!project.fileExists(pathControllerUnitTest)) {
-            unitTestFunctions.basicUnitTest(project, pathControllerUnitTest, this.className, this.basePackage);
+            unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.className, this.basePackage);
         }
 
         const file: File = project.findFile(pathControllerUnitTest);
         const inputHook = '// @Input';
-        file.replace(inputHook, rawJavaMethod);
+        file.replace(inputHook, inputHook + rawJavaMethod);
 
         unitTestFunctions.addMock(file, this.className + 'Service');
-        unitTestFunctions.addLongParameter(file, "ID");
+        unitTestFunctions.addLongParameter(file, `${this.className.toUpperCase()}_ID`);
 
+        javaFunctions.addImport(file, "org.junit.Test");
         javaFunctions.addImport(file, `${this.basePackage}.core.service.${this.className}Service`);
         javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
         javaFunctions.addImport(file, 'org.springframework.http.ResponseEntity');
@@ -200,47 +205,48 @@ export class AddDELETE implements EditProject {
 
     private addServiceMethodUnitTest(project: Project) {
 
-        const rawJavaMethod = `@Test
+        const rawJavaMethod = `
+    
+    @Test
     public void testDelete${this.className}() {
 
-        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(true);
+        when(${this.className.toLowerCase()}Repository.findById(${this.className.toUpperCase()}_ID)).thenReturn(Optional.of(${this.className.toLowerCase()}));
 
-        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+        boolean result = ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID);
 
-        assertNotNull("No object returned.", response);
-        assertEquals("Wrong status code returned.", HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertTrue("Wrong result returned!", result);
+        verify(${this.className.toLowerCase()}Repository, times(1)).delete(${this.className.toLowerCase()});
     }
 
     @Test
     public void testDelete${this.className}_No${this.className}Found() {
 
-        when(${this.className.toLowerCase()}Service.delete${this.className}(ID)).thenReturn(false);
+        when(${this.className.toLowerCase()}Repository.findById(${this.className.toUpperCase()}_ID)).thenReturn(Optional.empty());
 
-        ResponseEntity response = ${this.className.toLowerCase()}Controller.delete${this.className}(ID);
+        boolean result = ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID);
 
-        assertNotNull("No object returned.", response);
-        assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatusCodeValue());
+        assertFalse("Wrong result returned!", result);
+        verify(${this.className.toLowerCase()}Repository, never()).delete(${this.className.toLowerCase()});
     }`;
 
-        const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
-        if (!project.fileExists(pathControllerUnitTest)) {
-            unitTestFunctions.basicUnitTest(project, pathControllerUnitTest, this.className, this.basePackage);
+        const pathServiceUnitTest = this.coreModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/core/service/" + this.className + "ServiceTest.java";
+        if (!project.fileExists(pathServiceUnitTest)) {
+            unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, this.className, this.basePackage);
         }
 
-        const file: File = project.findFile(pathControllerUnitTest);
+        const file: File = project.findFile(pathServiceUnitTest);
         const inputHook = '// @Input';
-        file.replace(inputHook, rawJavaMethod);
+        file.replace(inputHook, inputHook + rawJavaMethod);
 
         unitTestFunctions.addMock(file, this.className + 'Repository');
-        unitTestFunctions.addLongParameter(file, "ID");
+        unitTestFunctions.addLongParameter(file, `${this.className.toUpperCase()}_ID`);
         unitTestFunctions.addBeanParameter(file, this.className);
 
-        javaFunctions.addImport(file, `${this.basePackage}.persistence.db.hibernate.bean.${this.className}`);
         javaFunctions.addImport(file, `${this.basePackage}.persistence.db.repo.${this.className}Repository`);
-        javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
-        javaFunctions.addImport(file, 'org.springframework.http.ResponseEntity');
+        javaFunctions.addImport(file, `${this.basePackage}.persistence.db.hibernate.bean.${this.className}`);
         javaFunctions.addImport(file, 'java.util.Optional');
 
+        javaFunctions.addImport(file, "org.junit.Test");
         javaFunctions.addImport(file, 'static org.junit.Assert.assertFalse');
         javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');
         javaFunctions.addImport(file, 'static org.mockito.Mockito.never');
@@ -276,7 +282,7 @@ export class AddDELETE implements EditProject {
         assertFalse("Entity not deleted", ${this.className.toLowerCase()}Repository.findById(saved${this.className}.getId()).isPresent());
     }`;
 
-        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
+        const path = this.apiModule + "/src/main/test/java/integration/" + this.className + "ResourceIT.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "testDelete" + this.className + "_unknownObject", rawJavaMethod);
 

@@ -53,7 +53,7 @@ export class AddIntegrationTestGetMethodOneSide extends EditFunction {
         assertTrue("Wrong entity link returned.", response.getContentAsString().isEmpty());
     }`;
 
-        const path = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";
+        const path = params.apiModule + "/src/main/test/java/integration/" + this.oneClass + "ResourceIT.java";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
