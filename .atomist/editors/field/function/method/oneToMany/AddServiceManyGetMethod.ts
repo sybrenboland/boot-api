@@ -90,7 +90,7 @@ export class AddServiceGetMethodMany extends EditFunction {
         assertEquals("Wrong object returned!", ${this.oneClass.toLowerCase()}, result.get());
     }`;
 
-        const pathServiceUnitTest = params.coreModule + "/src/main/test/java/" + fileFunctions.toPath(params.basePackage) + "/core/service/" + this.oneClass + "ServiceTest.java";
+        const pathServiceUnitTest = params.coreModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/core/service/" + this.oneClass + "ServiceTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, this.oneClass, params.basePackage);
         }

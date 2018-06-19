@@ -187,7 +187,7 @@ export class AddPUT implements EditProject {
         verify(${this.className.toLowerCase()}Converter, times(1)).toJson(any());
     }`;
 
-        const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        const pathControllerUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
         if (!project.fileExists(pathControllerUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.className, this.basePackage);
         }
@@ -202,6 +202,7 @@ export class AddPUT implements EditProject {
         unitTestFunctions.addBeanParameter(file, this.className);
         unitTestFunctions.addBeanParameter(file, 'Json' + this.className);
 
+        javaFunctions.addImport(file, 'java.util.Optional');
         javaFunctions.addImport(file, "org.junit.Test");
         javaFunctions.addImport(file, `${this.basePackage}.persistence.db.hibernate.bean.${this.className}`);
         javaFunctions.addImport(file, `${this.basePackage}.domain.entities.Json${this.className}`);
@@ -261,7 +262,7 @@ export class AddPUT implements EditProject {
         // @FieldInputAssert
     }`;
 
-        const path = this.apiModule + "/src/main/test/java/integration/" + this.className + "ResourceIT.java";
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "testPut" + this.className + "_invalidObject", rawJavaMethod);
 

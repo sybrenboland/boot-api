@@ -113,7 +113,7 @@ export class AddResourceOneGetMethod extends EditFunction {
         assertEquals("Wrong number of objects returned!", 2, jsonSearchResult.getResults().size());
     }`;
 
-        const pathServiceUnitTest = params.apiModule + "/src/main/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.otherClass + "ControllerTest.java";
+        const pathServiceUnitTest = params.apiModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.otherClass + "ControllerTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathServiceUnitTest, this.otherClass, params.basePackage);
         }

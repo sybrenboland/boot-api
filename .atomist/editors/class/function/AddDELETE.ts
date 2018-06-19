@@ -157,7 +157,7 @@ export class AddDELETE implements EditProject {
         assertEquals("Wrong status code returned.", HttpStatus.NOT_FOUND.value(), response.getStatusCodeValue());
     }`;
 
-        const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        const pathControllerUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
         if (!project.fileExists(pathControllerUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.className, this.basePackage);
         }
@@ -229,7 +229,7 @@ export class AddDELETE implements EditProject {
         verify(${this.className.toLowerCase()}Repository, never()).delete(${this.className.toLowerCase()});
     }`;
 
-        const pathServiceUnitTest = this.coreModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/core/service/" + this.className + "ServiceTest.java";
+        const pathServiceUnitTest = this.coreModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/core/service/" + this.className + "ServiceTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, this.className, this.basePackage);
         }
@@ -282,7 +282,7 @@ export class AddDELETE implements EditProject {
         assertFalse("Entity not deleted", ${this.className.toLowerCase()}Repository.findById(saved${this.className}.getId()).isPresent());
     }`;
 
-        const path = this.apiModule + "/src/main/test/java/integration/" + this.className + "ResourceIT.java";
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "testDelete" + this.className + "_unknownObject", rawJavaMethod);
 

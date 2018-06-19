@@ -12,7 +12,7 @@ export class AddIntegrationTestManySetup extends EditFunction {
 
     edit(project: Project, params: Params): void {
 
-        const pathIntegrationTests = params.apiModule + "/src/main/test/java/integration/" + this.oneClass + "ResourceIT.java";
+        const pathIntegrationTests = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";
         if (project.fileExists(pathIntegrationTests)) {
             const file: File = project.findFile(pathIntegrationTests);
 

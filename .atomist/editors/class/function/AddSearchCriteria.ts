@@ -126,6 +126,7 @@ export class AddSearchCriteria implements EditProject {
 
         this.addCustomRepository(project, basePath);
         this.addCustomRepositoryImplementation(project, basePath);
+        this.addTestDependencies(project);
         this.addTestConfigurationPersistenceModule(project);
         this.addCustomRepositoryImplementationUnitTest(project);
         this.addAbstractRepository(project, basePath);
@@ -339,6 +340,7 @@ public class ${this.className}SearchCriteriaConverterTest {
     private static final int MAX_RESULTS = 5;
     private static final int START = 1;
     private static final Long ID = 2L;
+    // @ParameterInput
 
     private Json${this.className}SearchCriteria json${this.className}SearchCriteria;
 
@@ -390,7 +392,7 @@ public class ${this.className}SearchCriteriaConverterTest {
 }
 `;
 
-        const pathConverterUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/convert/" + this.className + "SearchCriteriaConverterTest.java";
+        const pathConverterUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/convert/" + this.className + "SearchCriteriaConverterTest.java";
         if (!project.fileExists(pathConverterUnitTest)) {
             project.addFile(pathConverterUnitTest, rawJavaFileContent);
         }
@@ -516,7 +518,7 @@ public class ${this.className}SearchCriteriaConverterTest {
         assertEquals("Wrong object returned!", json${this.className}, jsonSearchResult.getResults().get(0));
     }`;
 
-        const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        const pathControllerUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
         if (!project.fileExists(pathControllerUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.className, this.basePackage);
         }
@@ -596,7 +598,7 @@ public class ${this.className}SearchCriteriaConverterTest {
         assertEquals("Wrong object returned!", ${this.className.toLowerCase()}, result${this.className}List.get(0));
     }`;
 
-        const pathServiceUnitTest = this.coreModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/core/service/" + this.className + "ServiceTest.java";
+        const pathServiceUnitTest = this.coreModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/core/service/" + this.className + "ServiceTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, this.className, this.basePackage);
         }
@@ -650,7 +652,7 @@ public class ConvertException extends RuntimeException {
         assertEquals("Wrong number returned!", NUMBER_OF_${this.className.toUpperCase()}S, resultNumber);
     }`;
 
-        const pathServiceUnitTest = this.coreModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/core/service/" + this.className + "ServiceTest.java";
+        const pathServiceUnitTest = this.coreModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/core/service/" + this.className + "ServiceTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, this.className, this.basePackage);
         }
@@ -775,9 +777,22 @@ public class ${this.className}RepositoryImpl extends AbstractHibernateRepository
         }
     }
 
+    private addTestDependencies(project: Project): void {
+
+        const eng: PathExpressionEngine = project.context.pathExpressionEngine;
+
+        // Persistencemodule pom
+        const targetPersistenceFilePath = this.persistenceModule + "/pom.xml";
+        const persistenceModulePomFile: File = fileFunctions.findFile(project, targetPersistenceFilePath);
+
+        eng.with<Pom>(persistenceModulePomFile, "/Pom()", pom => {
+            pom.addOrReplaceDependencyOfScope("com.h2database", "h2", "test");
+        });
+    }
+
     private addTestConfigurationPersistenceModule(project: Project) {
 
-        const propertiesPath = `${this.persistenceModule}/src/main/test/resources/application.yml`;
+        const propertiesPath = `${this.persistenceModule}/src/test/resources/application.yml`;
         const rawProperties = `spring.profiles.active: test
 ---
 spring:
@@ -795,7 +810,7 @@ spring:
         }
 
 
-        const configurationPath = `${this.persistenceModule}/src/main/test/java/${fileFunctions.toPath(this.basePackage)}/persistence/configuration/PersistenceTestConfiguration.java`;
+        const configurationPath = `${this.persistenceModule}/src/test/java/${fileFunctions.toPath(this.basePackage)}/persistence/configuration/PersistenceTestConfiguration.java`;
         const rawConfiguration = `package ${this.basePackage}.persistence.configuration;
 
 import org.springframework.context.annotation.Bean;
@@ -823,7 +838,7 @@ public class PersistenceTestConfiguration {
 
     private addCustomRepositoryImplementationUnitTest(project: Project) {
 
-        const path = `${this.persistenceModule}/src/main/test/java/${fileFunctions.toPath(this.basePackage)}/persistence/db/repo/${this.className}RepositoryImplTest.java`;
+        const path = `${this.persistenceModule}/src/test/java/${fileFunctions.toPath(this.basePackage)}/persistence/db/repo/${this.className}RepositoryImplTest.java`;
         const rawJavaContent = `package ${this.basePackage}.persistence.db.repo;
 
 import org.junit.After;
@@ -893,7 +908,7 @@ public class ${this.className}RepositoryImplTest {
 
         int result = ${this.className.toLowerCase()}Repository.findNumberOf${this.className}BySearchCriteria(searchCriteria);
 
-        assertEquals("Wrong number of objects returned!", 0, result);
+        assertEquals("Wrong number of objects returned with all properties!", 1, result);
     }
 
     @Test
@@ -926,11 +941,12 @@ public class ${this.className}RepositoryImplTest {
 
         ${this.className}SearchCriteria searchCriteria = ${this.className}SearchCriteria.builder()
                 .id(Optional.of(${this.className.toLowerCase()}Diff.getId()))
+                // @CriteriaDiffInput
                 .build();
 
         List<${this.className}> result = ${this.className.toLowerCase()}Repository.findBySearchCriteria(searchCriteria);
 
-        assertEquals("Wrong number of objects returned!", 0, result.size());
+        assertEquals("Wrong number of objects returned with all properties!", 1, result.size());
     }
 
     @Test
@@ -946,7 +962,7 @@ public class ${this.className}RepositoryImplTest {
     }
 
     @Test
-    public void testBySearchCriteria_WithIdProperty() {
+    public void testFindBySearchCriteria_WithIdProperty() {
 
         ${this.className}SearchCriteria searchCriteria = ${this.className}SearchCriteria.builder()
                 .id(Optional.of(${this.className.toLowerCase()}Diff.getId()))
@@ -1051,7 +1067,7 @@ public abstract class AbstractHibernateRepository<T> {
         assertTrue("Wrong entity link returned.", response.getContentAsString().contains("${this.className.toLowerCase()}s/" + saved${this.className}.getId()));
     }`;
 
-        const path = this.apiModule + "/src/main/test/java/integration/" + this.className + "ResourceIT.java";
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "testList_without" + this.className + "s", rawJavaMethod);
 

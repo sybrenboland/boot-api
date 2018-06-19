@@ -109,7 +109,7 @@ export class AddServiceManyPutMethod extends EditFunction {
         verify(${this.otherClass.toLocaleLowerCase()}Repository, times(1)).save(any(${this.otherClass}.class));
     }`;
 
-        const pathServiceUnitTest = params.coreModule + "/src/main/test/java/" + fileFunctions.toPath(params.basePackage) + "/core/service/" + this.otherClass + "ServiceTest.java";
+        const pathServiceUnitTest = params.coreModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/core/service/" + this.otherClass + "ServiceTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, this.otherClass, params.basePackage);
         }

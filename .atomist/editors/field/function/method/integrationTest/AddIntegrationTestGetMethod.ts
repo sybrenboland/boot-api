@@ -74,7 +74,7 @@ export class AddIntegrationTestGetMethod extends EditFunction {
         assertTrue("Wrong entities returned.", response.getContentAsString().contains("\\"results\\":[]"));
     }`;
 
-        const path = params.apiModule + "/src/main/test/java/integration/" + this.oneClass + "ResourceIT.java";
+        const path = params.apiModule + "/src/test/java/integration/" + this.oneClass + "ResourceIT.java";
 
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);

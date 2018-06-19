@@ -91,7 +91,7 @@ export class AddResourceGetMethodManyBi extends EditFunction {
         assertEquals("Wrong object returned!", json${this.oneClass}, response.getBody());
     }`;
 
-        const pathServiceUnitTest = params.apiModule + "/src/main/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.otherClass + "ControllerTest.java";
+        const pathServiceUnitTest = params.apiModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.otherClass + "ControllerTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathServiceUnitTest, this.otherClass, params.basePackage);
         }

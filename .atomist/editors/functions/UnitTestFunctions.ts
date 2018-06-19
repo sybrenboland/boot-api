@@ -90,12 +90,12 @@ public class ${className}ServiceTest {
         }
     }
 
-    getValue(type: string, number: number) {
+    getValue(type: string, number: number): string {
 
         let value: string;
         switch (type) {
             case "String":
-                value = number === 0 ? "string" : "other string";
+                value = number === 0 ? "\"string\"" : "\"other string\"";
                 break;
             case "Integer":
                 value = number === 0 ? "2" : "3";
@@ -107,6 +107,8 @@ public class ${className}ServiceTest {
                 value = number === 0 ? "false" : "true";
                 break;
         }
+
+        return value;
     }
 
     addIntParameter(file: File, name: string) {

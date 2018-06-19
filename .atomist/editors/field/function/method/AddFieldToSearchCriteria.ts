@@ -36,7 +36,7 @@ export class AddFieldToSearchCriteria extends EditFunction {
 
     private addFieldToUnitTest(project: Project, params: Params) {
 
-        const path = `${params.persistenceModule}/src/main/test/java/${fileFunctions.toPath(params.basePackage)}/persistence/db/repo/${this.otherClass}RepositoryImplTest.java`;
+        const path = `${params.persistenceModule}/src/test/java/${fileFunctions.toPath(params.basePackage)}/persistence/db/repo/${this.otherClass}RepositoryImplTest.java`;
         if (project.fileExists(path)) {
             const file: File = project.findFile(path);
 

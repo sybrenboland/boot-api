@@ -174,7 +174,7 @@ public class Resource${this.javaException}HandlerTest {
     }
 }`;
 
-        const pathExceptionHandlerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/exception/Resource" + this.javaException + "HandlerTest.java";
+        const pathExceptionHandlerUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/exception/Resource" + this.javaException + "HandlerTest.java";
         project.addFile(pathExceptionHandlerUnitTest, rawUnitTest);
     }
 }

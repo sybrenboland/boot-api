@@ -70,7 +70,7 @@ export class AddResourcePutMethod extends EditFunction {
         assertEquals("Wrong status code returned!", HttpStatus.OK.value(), response.getStatusCodeValue());
     }`;
 
-        const pathServiceUnitTest = params.apiModule + "/src/main/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.oneClass + "ControllerTest.java";
+        const pathServiceUnitTest = params.apiModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.oneClass + "ControllerTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathServiceUnitTest, this.oneClass, params.basePackage);
         }

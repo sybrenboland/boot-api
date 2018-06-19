@@ -127,12 +127,14 @@ import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ${this.className}ConverterTest {
 
     private ${this.className}Converter ${this.className.toLowerCase()}Converter = new ${this.className}Converter();
 
     private static final Long ID = 3L;
+    // @ParameterInput
 
     private ${this.className} ${this.className.toLowerCase()};
     private Json${this.className} json${this.className};
@@ -141,11 +143,11 @@ public class ${this.className}ConverterTest {
     public void setUp() {
 
         this.${this.className.toLowerCase()} = ${this.className}.builder()
-                // @InputTestField
+                // @FieldInput
                 .build();
 
         this.json${this.className} = Json${this.className}.builder()
-                // @InputJsonTestField
+                // @JsonFieldInput
                 .build();
     }
 
@@ -155,7 +157,7 @@ public class ${this.className}ConverterTest {
         Json${this.className} resultJson${this.className} = ${this.className.toLowerCase()}Converter.toJson(${this.className.toLowerCase()});
 
         assertNotNull("No object returned.", resultJson${this.className});
-        // @InputAssertJsonField
+        // @AssertJsonFieldInput
     }
 
     @Test
@@ -164,7 +166,8 @@ public class ${this.className}ConverterTest {
         ${this.className} result${this.className} = ${this.className.toLowerCase()}Converter.fromJson(json${this.className});
 
         assertNotNull("No object returned.", result${this.className});
-        // @InputAssertField
+        assertNull("Field not set correctly!", result${this.className}.getId());
+        // @AssertFieldInput
     }
 
     @Test
@@ -174,11 +177,11 @@ public class ${this.className}ConverterTest {
 
         assertNotNull("No object returned.", result${this.className});
         assertEquals("Field not set correctly.", ID, result${this.className}.getId());
-        // @InputAssertField
+        // @AssertFieldInput
     }
 }`;
 
-        const pathConverterUnitTest = this.module + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/convert/" + this.className + "ConverterTest.java";
+        const pathConverterUnitTest = this.module + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/convert/" + this.className + "ConverterTest.java";
         if (!project.fileExists(pathConverterUnitTest)) {
             project.addFile(pathConverterUnitTest, rawJavaFileContent);
         }

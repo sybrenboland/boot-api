@@ -76,16 +76,22 @@ export class AddLombok implements EditProject {
     private addImports(file: File): void {
         javaFunctions.addImport(file, "lombok.Getter");
         javaFunctions.addImport(file, "lombok.Builder");
-        javaFunctions.addImport(file, "lombok.AccessLevel");
         javaFunctions.addImport(file, "lombok.NoArgsConstructor");
-        javaFunctions.addImport(file, "lombok.AllArgsConstructor");
+
+        if (file.contains('@Column') || file.contains('@JsonProperty')) {
+            javaFunctions.addImport(file, "lombok.AccessLevel");
+            javaFunctions.addImport(file, "lombok.AllArgsConstructor");
+        }
     }
 
     private addAnnotations(file: File): void {
         javaFunctions.addAnnotationToClass(file, "@Getter");
         javaFunctions.addAnnotationToClass(file, "@Builder(toBuilder = true)");
         javaFunctions.addAnnotationToClass(file, "@NoArgsConstructor");
-        javaFunctions.addAnnotationToClass(file, "@AllArgsConstructor(access = AccessLevel.PRIVATE)");
+
+        if (file.contains('@Column') || file.contains('@JsonProperty')) {
+            javaFunctions.addAnnotationToClass(file, "@AllArgsConstructor(access = AccessLevel.PRIVATE)");
+        }
     }
 }
 

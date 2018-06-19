@@ -154,7 +154,7 @@ export class AddPOST implements EditProject {
         assertEquals("Wrong object returned!", json${this.className}, response.getBody());
     }`;
 
-        const pathControllerUnitTest = this.apiModule + "/src/main/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        const pathControllerUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
         if (!project.fileExists(pathControllerUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.className, this.basePackage);
         }
@@ -208,7 +208,7 @@ export class AddPOST implements EditProject {
         // @FieldInputAssert
     }`;
 
-        const path = this.apiModule + "/src/main/test/java/integration/" + this.className + "ResourceIT.java";
+        const path = this.apiModule + "/src/test/java/integration/" + this.className + "ResourceIT.java";
         const file: File = project.findFile(path);
         javaFunctions.addFunction(file, "testPost" + this.className + "_invalidObject", rawJavaMethod);
 
@@ -251,7 +251,7 @@ export function addServiceMethodSaveBeanUnitTest(project: Project, className: st
         assertEquals("Wrong object returned!", ${className.toLowerCase()}, saved${className});
     }`;
 
-    const pathServiceUnitTest = moduleName + "/src/main/test/java/" + fileFunctions.toPath(basePackage) + "/core/service/" + className + "ServiceTest.java";
+    const pathServiceUnitTest = moduleName + "/src/test/java/" + fileFunctions.toPath(basePackage) + "/core/service/" + className + "ServiceTest.java";
     if (!project.fileExists(pathServiceUnitTest)) {
         unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, className, basePackage);
     }
