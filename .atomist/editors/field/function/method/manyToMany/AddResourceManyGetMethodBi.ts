@@ -104,12 +104,14 @@ export class AddResourceGetMethodManyBi extends EditFunction {
         unitTestFunctions.addMock(file, this.oneClass + 'Converter');
         unitTestFunctions.addLongParameter(file, `${this.otherClass.toUpperCase()}_ID`);
         unitTestFunctions.addBeanParameter(file, this.oneClass);
+        unitTestFunctions.addBeanParameter(file, 'Json' + this.oneClass);
         unitTestFunctions.addBeanParameter(file, this.otherClass);
 
         javaFunctions.addImport(file, "org.junit.Test");
         javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.oneClass}`);
         javaFunctions.addImport(file, `${params.basePackage}.core.service.${this.oneClass}Service`);
         javaFunctions.addImport(file, `${params.basePackage}.api.convert.${this.oneClass}Converter`);
+        javaFunctions.addImport(file, `${params.basePackage}.domain.entities.Json${this.oneClass}`);
         javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
         javaFunctions.addImport(file, 'java.util.Optional');
         javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');

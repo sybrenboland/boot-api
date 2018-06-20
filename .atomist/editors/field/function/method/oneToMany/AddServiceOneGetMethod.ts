@@ -80,5 +80,6 @@ export class AddServiceOneGetMethod extends EditFunction {
         javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');
         javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');
         javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.any');
     }
 }

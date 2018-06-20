@@ -33,6 +33,7 @@ import { AddIntegrationTestPutMethod } from "./function/method/integrationTest/A
 import { AddIntegrationTestDeleteMethod } from "./function/method/integrationTest/AddIntegrationTestDeleteMethod";
 import { AddIntegrationTestGetMethod } from "./function/method/integrationTest/AddIntegrationTestGetMethod";
 import { AddIntegrationTestFactoryMethods } from "./function/method/integrationTest/AddIntegrationTestFactoryMethods";
+import {AddServiceOneDeleteMethod} from "./function/method/oneToOne/AddServiceOneDeleteMethod";
 
 /**
  * AddOneToManyRelation editor
@@ -232,14 +233,14 @@ export class AddOneToManyRelation implements EditProject {
                     case "PUT": {
                         builder.and(new AddResourceInterfacePutMethod(this.classNameOne, this.classNameMany))
                             .and(new AddResourcePutMethod(this.classNameOne, this.classNameMany))
-                            .and(new AddServiceManyPutMethod(this.classNameMany, this.classNameOne, true))
+                            .and(new AddServiceOnePutMethod(this.classNameOne, this.classNameMany))
                             .and(new AddIntegrationTestPutMethod(this.classNameOne, this.classNameMany, true, javaFunctions.trueOfFalse(this.biDirectional), true));
                         break;
                     }
                     case "DELETE": {
                         builder.and(new AddResourceInterfaceDeleteMethod(this.classNameOne, this.classNameMany))
                             .and(new AddResourceDeleteMethod(this.classNameOne, this.classNameMany))
-                            .and(new AddServiceManyDeleteMethod(this.classNameMany, this.classNameOne, true))
+                            .and(new AddServiceOneDeleteMethod(this.classNameOne, this.classNameMany))
                             .and(new AddIntegrationTestDeleteMethod(this.classNameOne, this.classNameMany, true, true));
                         break;
                     }
@@ -260,12 +261,12 @@ export class AddOneToManyRelation implements EditProject {
         }
         if (javaFunctions.trueOfFalse(this.showInOutputMany)) {
             builder.and(new AddLinkToConverterMany(this.classNameOne, this.classNameMany, true))
+                .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
+                .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany))
                 .and(new AddResourceInterfaceGetMethodMany(this.classNameOne, this.classNameMany, true))
                 .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false))
                 .and(new AddIntegrationTestFactoryMethodsMany(this.classNameMany, this.classNameOne, javaFunctions.trueOfFalse(this.biDirectional), false))
-                .and(new AddIntegrationTestManyGetMethod(this.classNameMany, this.classNameOne))
-                .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
-                .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
+                .and(new AddIntegrationTestManyGetMethod(this.classNameMany, this.classNameOne));
         }
 
         const params: Params = new Params(

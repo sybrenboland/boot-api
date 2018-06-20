@@ -113,7 +113,7 @@ export class AddResourceOneGetMethod extends EditFunction {
         assertEquals("Wrong number of objects returned!", 2, jsonSearchResult.getResults().size());
     }`;
 
-        const pathServiceUnitTest = params.apiModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.otherClass + "ControllerTest.java";
+        const pathServiceUnitTest = params.apiModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.oneClass + "ControllerTest.java";
         if (!project.fileExists(pathServiceUnitTest)) {
             unitTestFunctions.basicUnitTestController(project, pathServiceUnitTest, this.otherClass, params.basePackage);
         }
@@ -122,14 +122,18 @@ export class AddResourceOneGetMethod extends EditFunction {
         const inputHook = '// @Input';
         file.replace(inputHook, inputHook + rawJavaMethod);
 
-        unitTestFunctions.addMock(file, this.oneClass + 'Service');
-        unitTestFunctions.addMock(file, this.oneClass + 'Converter');
+        unitTestFunctions.addMock(file, this.otherClass + 'Service');
+        unitTestFunctions.addMock(file, this.otherClass + 'Converter');
         unitTestFunctions.addLongParameter(file, `${this.oneClass.toUpperCase()}_ID`);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, "java.util.ArrayList");
+        javaFunctions.addImport(file, "java.util.Arrays");
         javaFunctions.addImport(file, `${params.basePackage}.domain.entities.JsonSearchResult`);
-        javaFunctions.addImport(file, `${params.basePackage}.core.service.${this.oneClass}Service`);
-        javaFunctions.addImport(file, `${params.basePackage}.api.convert.${this.oneClass}Converter`);
+        javaFunctions.addImport(file, `${params.basePackage}.domain.entities.Json${this.otherClass}`);
+        javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.otherClass}`);
+        javaFunctions.addImport(file, `${params.basePackage}.core.service.${this.otherClass}Service`);
+        javaFunctions.addImport(file, `${params.basePackage}.api.convert.${this.otherClass}Converter`);
         javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
         javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');
         javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');

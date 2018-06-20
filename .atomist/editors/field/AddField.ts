@@ -345,9 +345,10 @@ export class AddField implements EditProject {
             file.replace(fieldInputHook, rawFieldInput + fieldInputHook);
 
             file.replace(beanCreationInputHook,
-                rawBeanCreation.replace(fieldInputHook, `.${this.fieldName}(${this.fieldName.toUpperCase()}_DIFF)`) + `
+                rawBeanCreation.replace(fieldInputHook, `.${this.fieldName}(${this.fieldName.toUpperCase()}_DIFF)
+                ` + fieldInputHook) + `
                 
-                ` + beanCreationInputHook
+        ` + beanCreationInputHook
             );
 
             const criteriaInputHook = '// @CriteriaInput';

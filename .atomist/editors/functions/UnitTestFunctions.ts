@@ -85,7 +85,7 @@ public class ${className}ServiceTest {
         
     private ${className} ${javaFunctions.lowercaseFirst(className)} = ${className}.builder().build();`;
 
-        if (!file.contains(`${className} ${javaFunctions.lowercaseFirst(className)}`)) {
+        if (!file.contains(`private ${className} ${javaFunctions.lowercaseFirst(className)} =`)) {
             file.replace(parameterHook, rawParameter);
         }
     }

@@ -136,5 +136,6 @@ export class AddServiceManyPutMethod extends EditFunction {
         javaFunctions.addImport(file, 'static org.mockito.Mockito.times');
         javaFunctions.addImport(file, 'static org.mockito.Mockito.verify');
         javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.any');
     }
 }

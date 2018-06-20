@@ -105,6 +105,7 @@ export class AddServiceGetMethodMany extends EditFunction {
         unitTestFunctions.addBeanParameter(file, this.oneClass);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.otherClass}`);
         javaFunctions.addImport(file, `${params.basePackage}.persistence.db.repo.${this.otherClass}Repository`);
         javaFunctions.addImport(file, 'java.util.Optional');
         javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');

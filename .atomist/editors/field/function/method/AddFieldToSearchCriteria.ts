@@ -3,6 +3,7 @@ import {Params} from "../Params";
 import {File} from "@atomist/rug/model/File";
 import {Project} from "@atomist/rug/model/Project";
 import { fileFunctions } from "../../../functions/FileFunctions";
+import {javaFunctions} from "../../../functions/JavaClassFunctions";
 
 
 export class AddFieldToSearchCriteria extends EditFunction {
@@ -50,11 +51,11 @@ export class AddFieldToSearchCriteria extends EditFunction {
             if (this.mappingSide) {
                 const deleteInputHook = '// @TearDownInputTop';
                 const rawDelete = deleteInputHook +`
-                ${this.oneClass}Repository.deleteAll();`;
+                ${this.oneClass.toLowerCase()}Repository.deleteAll();`;
                 file.replace(deleteInputHook, rawDelete);
             } else {
                 const deleteInputHook = '// @TearDownInputBottom';
-                const rawDelete = `${this.oneClass}Repository.deleteAll();
+                const rawDelete = `${this.oneClass.toLowerCase()}Repository.deleteAll();
                 ` + deleteInputHook;
                 file.replace(deleteInputHook, rawDelete);
             }
@@ -66,15 +67,20 @@ export class AddFieldToSearchCriteria extends EditFunction {
     private ${this.oneClass} ${this.oneClass.toLowerCase()}Diff;`;
             file.replace(parameterInputHook, rawParameters);
 
-            const beanCreationInputHook = '// ObjectCreationInput';
+            const beanCreationInputHook = '// @ObjectCreationInput';
             const rawBeanCreation = file.firstMatch(`\\Q${this.otherClass.toLowerCase()}Repository.save(\\E[\\s\\S]*?\\Q.build());\\E`);
 
             const fieldInputHook = '// @FieldInput';
-            const rawFieldInput = `.${this.oneClass.toLowerCase()}(${this.oneClass.toUpperCase()})
-            `;
+            const rawFieldInput = `.${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()})
+                `;
             file.replace(fieldInputHook, rawFieldInput + fieldInputHook);
+            javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.oneClass}`);
 
-            file.replace(beanCreationInputHook, rawBeanCreation.replace(fieldInputHook, `.${this.oneClass.toLowerCase()}(${this.oneClass.toUpperCase()}_DIFF)`) + beanCreationInputHook);
+            file.replace(beanCreationInputHook, rawBeanCreation.replace(fieldInputHook, `.${this.oneClass.toLowerCase()}(${this.oneClass.toLowerCase()}Diff)
+                ` + fieldInputHook) + `
+                
+        ` + beanCreationInputHook
+            );
 
             const subBeanCreationInputHook = '// @SubObjectCreationInput';
             const rawSubBeanCreation = subBeanCreationInputHook + `      
@@ -84,13 +90,13 @@ export class AddFieldToSearchCriteria extends EditFunction {
             file.replace(subBeanCreationInputHook, rawSubBeanCreation);
 
             const criteriaInputHook = '// @CriteriaInput';
-            const rawCriteria = `.${this.oneClass}Id(Optional.of(${this.oneClass.toLowerCase()}.getId()))
-            `;
+            const rawCriteria = `.${this.oneClass.toLowerCase()}Id(Optional.of(${this.oneClass.toLowerCase()}.getId()))
+                `;
             file.replace(criteriaInputHook, rawCriteria + criteriaInputHook);
 
             const criteriaDiffInputHook = '// @CriteriaDiffInput';
-            const rawCriteriaDiff = `.${this.oneClass}Id(Optional.of(${this.oneClass.toLowerCase()}Diff.getId()))
-            `;
+            const rawCriteriaDiff = `.${this.oneClass.toLowerCase()}Id(Optional.of(${this.oneClass.toLowerCase()}Diff.getId()))
+                `;
             file.replace(criteriaDiffInputHook, rawCriteriaDiff + criteriaDiffInputHook);
 
             const unitTestInputHook = '// @Input';
@@ -120,7 +126,7 @@ export class AddFieldToSearchCriteria extends EditFunction {
         assertEquals("Wrong number of objects returned!", 1, result.size());
     }
 
-` + unitTestInputHook;
+`;
             file.replace(unitTestInputHook, unitTestInputHook + rawUnitTests);
 
         } else {
