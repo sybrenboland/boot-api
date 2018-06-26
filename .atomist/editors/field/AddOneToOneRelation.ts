@@ -37,6 +37,7 @@ import { DeletePostResource } from "./function/method/oneToOne/DeletePostResourc
 import { AddIntegrationTestDeleteMethodUni } from "./function/method/integrationTest/AddIntegrationTestDeleteMethodUni";
 import { AddIntegrationTestOneGetMethod } from "./function/method/integrationTest/AddIntegrationTestOneGetMethod";
 import { AddIntegrationTestGetMethodOneSide } from "./function/method/integrationTest/AddIntegrationTestGetMethodOneSide";
+import {ExtendRepositoryUnitTestWithRelation} from "./function/method/oneToOne/ExtendRepositoryUnitTestWithRelation";
 
 /**
  * AddOneToOneRelation editor
@@ -205,7 +206,8 @@ export class AddOneToOneRelation implements EditProject {
                 .and(new ResetPrimaryKeyToForeignKey(this.classNameMappedBy, this.classNameOther))
                 .and(new AddFieldIntegrationTestFactoryOneUni(this.classNameOther, this.classNameMappedBy))
                 .and(new DeletePostResource(this.classNameOther))
-                .and(new NoCreatePutResource(this.classNameOther));
+                .and(new NoCreatePutResource(this.classNameOther))
+                .and(new ExtendRepositoryUnitTestWithRelation(this.classNameMappedBy, this.classNameOther));
         }
 
         if (javaFunctions.trueOfFalse(this.showInOutputMapped)) {

@@ -63,7 +63,8 @@ export class AddServiceManyPutMethod extends EditFunction {
                 this.otherClass + "Service",
                 this.oneClass + "Repository",
                 javaFunctions.lowercaseFirst(this.oneClass) + "Repository");
-            javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.oneClass + "Repository");
+            javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.oneClass}`);
+            javaFunctions.addImport(file, `${params.basePackage}.persistence.db.repo.${this.oneClass}Repository`);
             javaFunctions.addImport(file, "java.util.Optional");
         } else {
             console.error("Service class not added yet!");
@@ -71,6 +72,10 @@ export class AddServiceManyPutMethod extends EditFunction {
     }
 
     private addUnitTests(project: Project, params: Params) {
+
+        const repositoryCheck = this.mappingSide ?
+            `verify(${this.oneClass.toLocaleLowerCase()}Repository, never()).save(any(${this.oneClass}.class));` :
+            `verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));`;
 
         const rawJavaMethod = `
         
@@ -82,7 +87,7 @@ export class AddServiceManyPutMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.update${this.otherClass}With${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertFalse("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));
+        ${repositoryCheck}
     }
 
     @Test
@@ -94,7 +99,7 @@ export class AddServiceManyPutMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.update${this.otherClass}With${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertFalse("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));
+        ${repositoryCheck}
     }
 
     @Test
@@ -106,7 +111,7 @@ export class AddServiceManyPutMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.update${this.otherClass}With${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertTrue("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, times(1)).save(any(${this.otherClass}.class));
+        ${repositoryCheck.replace('never()', 'times(1)')}
     }`;
 
         const pathServiceUnitTest = params.coreModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/core/service/" + this.otherClass + "ServiceTest.java";
@@ -126,6 +131,7 @@ export class AddServiceManyPutMethod extends EditFunction {
         unitTestFunctions.addBeanParameter(file, this.oneClass);
 
         javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.oneClass}`);
         javaFunctions.addImport(file, `${params.basePackage}.persistence.db.repo.${this.otherClass}Repository`);
         javaFunctions.addImport(file, `${params.basePackage}.persistence.db.repo.${this.oneClass}Repository`);
         javaFunctions.addImport(file, 'java.util.Optional');
