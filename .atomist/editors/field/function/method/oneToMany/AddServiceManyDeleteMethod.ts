@@ -69,6 +69,10 @@ export class AddServiceManyDeleteMethod extends EditFunction {
 
     private addUnitTests(project: Project, params: Params) {
 
+        const saveAssertion = this.mappingSide ?
+            `verify(${this.oneClass.toLocaleLowerCase()}Repository, never()).save(any(${this.oneClass}.class));` :
+            `verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));`;
+
         const rawJavaMethod = `
         
     @Test
@@ -79,7 +83,7 @@ export class AddServiceManyDeleteMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.remove${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertFalse("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));
+        ${saveAssertion}
     }
 
     @Test
@@ -90,7 +94,7 @@ export class AddServiceManyDeleteMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.remove${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertFalse("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));
+        ${saveAssertion}
     }
 
     @Test
@@ -105,7 +109,7 @@ export class AddServiceManyDeleteMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.remove${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertFalse("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));
+        ${saveAssertion}
     }
 
     @Test
@@ -121,7 +125,7 @@ export class AddServiceManyDeleteMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.remove${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertFalse("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));
+        ${saveAssertion}
     }
 
     @Test
@@ -137,7 +141,7 @@ export class AddServiceManyDeleteMethod extends EditFunction {
         boolean result = ${this.otherClass.toLocaleLowerCase()}Service.remove${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
 
         assertTrue("Wrong result returned!", result);
-        verify(${this.otherClass.toLocaleLowerCase()}Repository, times(1)).save(any(${this.otherClass}.class));
+        ${saveAssertion.replace('never()', 'times(1)')}
     }`;
 
         const pathServiceUnitTest = params.coreModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/core/service/" + this.otherClass + "ServiceTest.java";
