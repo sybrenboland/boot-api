@@ -212,9 +212,9 @@ export class AddDELETE implements EditProject {
 
         when(${this.className.toLowerCase()}Repository.findById(${this.className.toUpperCase()}_ID)).thenReturn(Optional.of(${this.className.toLowerCase()}));
 
-        boolean result = ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID);
+        boolean resultDelete = ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID);
 
-        assertTrue("Wrong result returned!", result);
+        assertTrue("Wrong result returned!", resultDelete);
         verify(${this.className.toLowerCase()}Repository, times(1)).delete(${this.className.toLowerCase()});
     }
 
@@ -223,9 +223,9 @@ export class AddDELETE implements EditProject {
 
         when(${this.className.toLowerCase()}Repository.findById(${this.className.toUpperCase()}_ID)).thenReturn(Optional.empty());
 
-        boolean result = ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID);
+        boolean resultDelete = ${this.className.toLowerCase()}Service.delete${this.className}(${this.className.toUpperCase()}_ID);
 
-        assertFalse("Wrong result returned!", result);
+        assertFalse("Wrong result returned!", resultDelete);
         verify(${this.className.toLowerCase()}Repository, never()).delete(${this.className.toLowerCase()});
     }`;
 
