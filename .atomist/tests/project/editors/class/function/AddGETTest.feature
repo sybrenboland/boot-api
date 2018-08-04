@@ -10,5 +10,7 @@ Feature: Adds methods to all layers implementing REST get method
     Then new dependency to pom: "spring-boot-starter-web"
     Then the name "getAdres" is added to class "IAdresController" in package "api.resource" of the "Api" module
     Then the name "getAdres" is added to class "AdresController" in package "api.resource" of the "Api" module
+#    Then the unit test for "getAdres" is added for the class "AdresController" in the package "api.resource" of the "Api" module
     Then the name "fetchAdres" is added to class "AdresService" in package "core.service" of the "Core" module
+#    Then the unit test for "fetchAdres" is added for the class "AdresService" in the package "core.service" of the "Core" module
     Then the test "testGetAdres_withAdres" is added to the integration tests of class "Adres"

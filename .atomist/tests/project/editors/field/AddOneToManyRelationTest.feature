@@ -31,22 +31,30 @@ Feature: Add One-Many relation should add a relation between two beans
 
     Then the name "putPersonWithCar" is added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithCar" is added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "putPersonWithCar" is added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "updateCarWithPerson" is added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "updateCarWithPerson" is added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testPutCar_withPersonWithCar" is added to the integration tests of class "Person"
 
     Then the name "putCarWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putCarWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "putCarWithPerson" is added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "updatePersonWithCar" is added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "updatePersonWithCar" is added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testPutPerson_withCarNoPerson" is added to the integration tests of class "Car"
 
     Then the name "deletePersonWithCar" is added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithCar" is added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "deletePersonWithCar" is added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "removePerson" is added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "removePerson" is added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testDeleteCar_withPerson" is added to the integration tests of class "Person"
 
     Then the name "deleteCarWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteCarWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "deleteCarWithPerson" is added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "removeCar" is added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "removeCar" is added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testDeletePerson_withCarNoPerson" is added to the integration tests of class "Car"
 
   Scenario: Add One-Many relation should add a relation with output of both classes
@@ -79,22 +87,30 @@ Feature: Add One-Many relation should add a relation between two beans
 
     Then the name "putPersonWithCar" is added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithCar" is added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "putPersonWithCar" is added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "updateCarWithPerson" is added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "updateCarWithPerson" is added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testPutPerson_withCarNoPerson" is added to the integration tests of class "Car"
 
     Then the name "putCarWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putCarWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "putCarWithPerson" is not added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "updatePersonWithCar" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "updatePersonWithCar" is not added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testPutCar_withPersonWithCar" is not added to the integration tests of class "Person"
 
     Then the name "deletePersonWithCar" is added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithCar" is added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "deletePersonWithCar" is added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "removePerson" is added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "removePerson" is added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testDeletePerson_withCarNoPerson" is added to the integration tests of class "Car"
 
     Then the name "deleteCarWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteCarWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "deleteCarWithPerson" is not added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "removeCar" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "removeCar" is not added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testDeleteCar_withPerson" is not added to the integration tests of class "Person"
 
 
@@ -128,22 +144,30 @@ Feature: Add One-Many relation should add a relation between two beans
 
     Then the name "putPersonWithCar" is not added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithCar" is not added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "putPersonWithCar" is not added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "updateCarWithPerson" is not added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "updateCarWithPerson" is not added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testPutPerson_withCarNoPerson" is not added to the integration tests of class "Car"
 
     Then the name "putCarWithPerson" is added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putCarWithPerson" is added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "putCarWithPerson" is added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "updatePersonWithCar" is added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "updatePersonWithCar" is added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testPutCar_withPersonWithCar" is added to the integration tests of class "Person"
 
     Then the name "deletePersonWithCar" is not added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithCar" is not added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "deletePersonWithCar" is not added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "removePerson" is not added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "removePerson" is not added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testDeletePerson_withCarNoPerson" is not added to the integration tests of class "Car"
 
     Then the name "deleteCarWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteCarWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "deleteCarWithPerson" is not added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "removeCar" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "removeCar" is not added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testDeleteCar_withPerson" is not added to the integration tests of class "Person"
 
 
@@ -177,20 +201,28 @@ Feature: Add One-Many relation should add a relation between two beans
 
     Then the name "putPersonWithCar" is not added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "putPersonWithCar" is not added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "putPersonWithCar" is not added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "updateCarWithPerson" is not added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "updateCarWithPerson" is not added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testPutPerson_withCarNoPerson" is not added to the integration tests of class "Car"
 
     Then the name "putCarWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "putCarWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "putCarWithPerson" is not added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "updatePersonWithCar" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "updatePersonWithCar" is not added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testPutCar_withPersonWithCar" is not added to the integration tests of class "Person"
 
     Then the name "deletePersonWithCar" is added to class "ICarController" in package "api.resource" of the "Api" module
     Then the name "deletePersonWithCar" is added to class "CarController" in package "api.resource" of the "Api" module
+    Then the unit test for "deletePersonWithCar" is added for the class "CarController" in the package "api.resource" of the "Api" module
     Then the name "removePerson" is added to class "CarService" in package "core.service" of the "Core" module
+    Then the unit test for "removePerson" is added for the class "CarService" in the package "core.service" of the "Core" module
     Then the test "testDeletePerson_withCarNoPerson" is added to the integration tests of class "Car"
 
     Then the name "deleteCarWithPerson" is not added to class "IPersonController" in package "api.resource" of the "Api" module
     Then the name "deleteCarWithPerson" is not added to class "PersonController" in package "api.resource" of the "Api" module
+    Then the unit test for "deleteCarWithPerson" is not added for the class "PersonController" in the package "api.resource" of the "Api" module
     Then the name "removeCar" is not added to class "PersonService" in package "core.service" of the "Core" module
+    Then the unit test for "removeCar" is not added for the class "PersonService" in the package "core.service" of the "Core" module
     Then the test "testDeleteCar_withPerson" is not added to the integration tests of class "Person"

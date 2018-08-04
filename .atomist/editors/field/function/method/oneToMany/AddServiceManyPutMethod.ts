@@ -3,6 +3,8 @@ import {EditFunction} from "../../EditFunction";
 import {File} from "@atomist/rug/model/File";
 import {javaFunctions} from "../../../../functions/JavaClassFunctions";
 import {Project} from "@atomist/rug/model/Project";
+import {fileFunctions} from "../../../../functions/FileFunctions";
+import {unitTestFunctions} from "../../../../functions/UnitTestFunctions";
 
 
 export class AddServiceManyPutMethod extends EditFunction {
@@ -12,6 +14,12 @@ export class AddServiceManyPutMethod extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
+
+        this.addMethod(project, params);
+        this.addUnitTests(project, params);
+    }
+
+    private addMethod(project: Project, params: Params) {
 
         const save = this.mappingSide ?
             `${this.oneClass} new${this.oneClass} = ${this.oneClass.toLowerCase()}Optional.get().toBuilder()
@@ -55,10 +63,85 @@ export class AddServiceManyPutMethod extends EditFunction {
                 this.otherClass + "Service",
                 this.oneClass + "Repository",
                 javaFunctions.lowercaseFirst(this.oneClass) + "Repository");
-            javaFunctions.addImport(file, params.basePackage + ".persistence.db.repo." + this.oneClass + "Repository");
+            javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.oneClass}`);
+            javaFunctions.addImport(file, `${params.basePackage}.persistence.db.repo.${this.oneClass}Repository`);
             javaFunctions.addImport(file, "java.util.Optional");
         } else {
             console.error("Service class not added yet!");
         }
+    }
+
+    private addUnitTests(project: Project, params: Params) {
+
+        const repositoryCheck = this.mappingSide ?
+            `verify(${this.oneClass.toLocaleLowerCase()}Repository, never()).save(any(${this.oneClass}.class));` :
+            `verify(${this.otherClass.toLocaleLowerCase()}Repository, never()).save(any(${this.otherClass}.class));`;
+
+        const rawJavaMethod = `
+        
+    @Test
+    public void testUpdate${this.otherClass}With${this.oneClass}_No${this.otherClass}Found() {
+
+        when(${this.otherClass.toLocaleLowerCase()}Repository.findById(${this.otherClass.toUpperCase()}_ID)).thenReturn(Optional.empty());
+
+        boolean result = ${this.otherClass.toLocaleLowerCase()}Service.update${this.otherClass}With${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
+
+        assertFalse("Wrong result returned!", result);
+        ${repositoryCheck}
+    }
+
+    @Test
+    public void testUpdate${this.otherClass}With${this.oneClass}_No${this.oneClass}Found() {
+
+        when(${this.otherClass.toLocaleLowerCase()}Repository.findById(${this.otherClass.toUpperCase()}_ID)).thenReturn(Optional.of(${this.otherClass.toLocaleLowerCase()}));
+        when(${this.oneClass.toLocaleLowerCase()}Repository.findById(${this.oneClass.toUpperCase()}_ID)).thenReturn(Optional.empty());
+
+        boolean result = ${this.otherClass.toLocaleLowerCase()}Service.update${this.otherClass}With${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
+
+        assertFalse("Wrong result returned!", result);
+        ${repositoryCheck}
+    }
+
+    @Test
+    public void testUpdate${this.otherClass}With${this.oneClass}_With${this.otherClass}With${this.oneClass}() {
+
+        when(${this.otherClass.toLocaleLowerCase()}Repository.findById(${this.otherClass.toUpperCase()}_ID)).thenReturn(Optional.of(${this.otherClass.toLocaleLowerCase()}));
+        when(${this.oneClass.toLocaleLowerCase()}Repository.findById(${this.oneClass.toUpperCase()}_ID)).thenReturn(Optional.of(${this.oneClass.toLocaleLowerCase()}));
+
+        boolean result = ${this.otherClass.toLocaleLowerCase()}Service.update${this.otherClass}With${this.oneClass}(${this.otherClass.toUpperCase()}_ID, ${this.oneClass.toUpperCase()}_ID);
+
+        assertTrue("Wrong result returned!", result);
+        ${repositoryCheck.replace('never()', 'times(1)')}
+    }`;
+
+        const pathServiceUnitTest = params.coreModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/core/service/" + this.otherClass + "ServiceTest.java";
+        if (!project.fileExists(pathServiceUnitTest)) {
+            unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, this.otherClass, params.basePackage);
+        }
+
+        const file: File = project.findFile(pathServiceUnitTest);
+        const inputHook = '// @Input';
+        file.replace(inputHook, inputHook + rawJavaMethod);
+
+        unitTestFunctions.addMock(file, this.otherClass + 'Repository');
+        unitTestFunctions.addMock(file, this.oneClass + 'Repository');
+        unitTestFunctions.addLongParameter(file, `${this.otherClass.toUpperCase()}_ID`);
+        unitTestFunctions.addLongParameter(file, `${this.oneClass.toUpperCase()}_ID`);
+        unitTestFunctions.addBeanParameter(file, this.otherClass);
+        unitTestFunctions.addBeanParameter(file, this.oneClass);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.oneClass}`);
+        javaFunctions.addImport(file, `${params.basePackage}.persistence.db.repo.${this.otherClass}Repository`);
+        javaFunctions.addImport(file, `${params.basePackage}.persistence.db.repo.${this.oneClass}Repository`);
+        javaFunctions.addImport(file, 'java.util.Optional');
+
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertFalse');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.never');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.times');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.verify');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.any');
     }
 }

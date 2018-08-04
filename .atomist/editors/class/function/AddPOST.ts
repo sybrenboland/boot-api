@@ -6,7 +6,8 @@ import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {javaFunctions} from "../../functions/JavaClassFunctions";
-import {addExceptionHandler} from "../../general/AddExceptionHandler";
+import { fileFunctions } from "../../functions/FileFunctions";
+import { unitTestFunctions } from "../../functions/UnitTestFunctions";
 
 /**
  * AddPOST editor
@@ -15,6 +16,8 @@ import {addExceptionHandler} from "../../general/AddExceptionHandler";
  * - Adds method to service
  * - Adds method to converter
  * - Adds exception hadler class
+ * - Adds unit tests
+ * - Adds integration tests
  *
  * Requires:
  * - Bean class
@@ -72,17 +75,16 @@ export class AddPOST implements EditProject {
 
     public edit(project: Project) {
 
-        const basePathApi = this.apiModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/api";
+        const basePathApi = this.apiModule + "/src/main/java/" + fileFunctions.toPath(this.basePackage) + "/api";
 
-        const basePathCore = this.coreModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/core";
+        const basePathCore = this.coreModule + "/src/main/java/" + fileFunctions.toPath(this.basePackage) + "/core";
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
+        this.addResourceClassMethodUnitTest(project);
         addServiceMethodSaveBean(project, this.className, this.basePackage, basePathCore);
-        this.addExceptionHandler(project);
+        addServiceMethodSaveBeanUnitTest(project, this.className, this.basePackage, this.coreModule);
         this.addIntegrationTests(project);
     }
 
@@ -98,8 +100,7 @@ export class AddPOST implements EditProject {
 
         const rawJavaMethod = `    
     @RequestMapping(value = "", method = RequestMethod.POST)
-    ResponseEntity post${this.className}(@RequestBody Json${this.className} ${this.className.toLowerCase()}) ` +
-            `throws URISyntaxException;`;
+    ResponseEntity post${this.className}(@RequestBody Json${this.className} ${this.className.toLowerCase()});`;
 
         const path = basePath + "/resource/I" + this.className + "Controller.java";
         const file: File = project.findFile(path);
@@ -109,7 +110,6 @@ export class AddPOST implements EditProject {
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMethod");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestMapping");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
-        javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 
@@ -117,8 +117,7 @@ export class AddPOST implements EditProject {
 
         const rawJavaMethod = `
     @Override
-    public ResponseEntity post${this.className}(@RequestBody Json${this.className} json${this.className}) ` +
-            `throws URISyntaxException {
+    public ResponseEntity post${this.className}(@RequestBody Json${this.className} json${this.className}) {
             
         ${this.className} new${this.className} = ${this.className.toLowerCase()}Service` +
             `.save(${this.className.toLowerCase()}Converter.fromJson(json${this.className}));
@@ -131,25 +130,59 @@ export class AddPOST implements EditProject {
         javaFunctions.addFunction(file, "post" + this.className, rawJavaMethod);
 
         javaFunctions.addImport(file, "org.springframework.http.HttpStatus");
-        javaFunctions.addImport(file, "java.net.URISyntaxException");
         javaFunctions.addImport(file, "org.springframework.web.bind.annotation.RequestBody");
         javaFunctions.addImport(file, "org.springframework.http.ResponseEntity");
         javaFunctions.addImport(file, this.basePackage + ".domain.entities.Json" + this.className);
     }
 
-    private addExceptionHandler(project: Project) {
-        addExceptionHandler.javaException = "URISyntaxException";
-        addExceptionHandler.exceptionPackage = "java.net";
-        addExceptionHandler.httpResponse = "CONFLICT";
-        addExceptionHandler.responseMessage = "There seems to be a problem with application. Please try again.";
-        addExceptionHandler.apiModule = this.apiModule;
-        addExceptionHandler.basePackage = this.basePackage;
+    private addResourceClassMethodUnitTest(project: Project) {
 
-        addExceptionHandler.edit(project);
+        const rawJavaMethod = `
+        
+    @Test
+    public void testPost${this.className}() {
+
+        when(${this.className.toLowerCase()}Converter.fromJson(json${this.className})).thenReturn(${this.className.toLowerCase()});
+        when(${this.className.toLowerCase()}Service.save(${this.className.toLowerCase()})).thenReturn(${this.className.toLowerCase()});
+        when(${this.className.toLowerCase()}Converter.toJson(${this.className.toLowerCase()})).thenReturn(json${this.className});
+
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.post${this.className}(json${this.className});
+
+        assertNotNull("No response!", response);
+        assertEquals("Wrong status code returned!", HttpStatus.CREATED.value(), response.getStatusCodeValue());
+        assertTrue("Returned object of wrong type!", response.getBody() instanceof Json${this.className});
+        assertEquals("Wrong object returned!", json${this.className}, response.getBody());
+    }`;
+
+        const pathControllerUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        if (!project.fileExists(pathControllerUnitTest)) {
+            unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.className, this.basePackage);
+        }
+
+        const file: File = project.findFile(pathControllerUnitTest);
+        const inputHook = '// @Input';
+        file.replace(inputHook, inputHook + rawJavaMethod);
+
+        unitTestFunctions.addMock(file, this.className + 'Service');
+        unitTestFunctions.addMock(file, this.className + 'Converter');
+        unitTestFunctions.addBeanParameter(file, this.className);
+        unitTestFunctions.addBeanParameter(file, 'Json' + this.className);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, `${this.basePackage}.domain.entities.Json${this.className}`);
+        javaFunctions.addImport(file, `${this.basePackage}.core.service.${this.className}Service`);
+        javaFunctions.addImport(file, `${this.basePackage}.api.convert.${this.className}Converter`);
+        javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
+        javaFunctions.addImport(file, 'org.springframework.http.ResponseEntity');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
     }
 
     private addIntegrationTests(project: Project) {
         const rawJavaMethod = `
+        
     @Test
     public void testPost${this.className}_invalidObject() throws Exception {
     
@@ -201,6 +234,45 @@ export function addServiceMethodSaveBean(project: Project, className: string, ba
     javaFunctions.addFunction(file, "save", rawJavaMethod);
 
     javaFunctions.addImport(file, basePackage + ".persistence.db.hibernate.bean." + className);
+}
+
+export function addServiceMethodSaveBeanUnitTest(project: Project, className: string, basePackage: string, moduleName: string) {
+
+    const rawJavaMethod = `
+
+    @Test
+    public void testSave${className}() {
+
+        when(${className.toLowerCase()}Repository.save(${className.toLowerCase()})).thenReturn(${className.toLowerCase()});
+
+        ${className} saved${className} = ${className.toLowerCase()}Service.save(${className.toLowerCase()});
+
+        assertNotNull("Wrong result returned!", saved${className});
+        assertEquals("Wrong object returned!", ${className.toLowerCase()}, saved${className});
+    }`;
+
+    const pathServiceUnitTest = moduleName + "/src/test/java/" + fileFunctions.toPath(basePackage) + "/core/service/" + className + "ServiceTest.java";
+    if (!project.fileExists(pathServiceUnitTest)) {
+        unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, className, basePackage);
+    }
+
+    const file: File = project.findFile(pathServiceUnitTest);
+    const inputHook = '// @Input';
+
+    if (!file.contains(`testSave${className}`)) {
+        file.replace(inputHook, inputHook + rawJavaMethod);
+
+        unitTestFunctions.addMock(file, className + 'Repository');
+        unitTestFunctions.addBeanParameter(file, className);
+
+        javaFunctions.addImport(file, `${basePackage}.persistence.db.hibernate.bean.${className}`);
+        javaFunctions.addImport(file, `${basePackage}.persistence.db.repo.${className}Repository`);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
+    }
 }
 
 export const addPost = new AddPOST();

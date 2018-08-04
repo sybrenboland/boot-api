@@ -7,11 +7,12 @@ import {fileFunctions} from "../functions/FileFunctions";
 import {dateFieldFunctions} from "./AddFieldDate";
 import {javaFunctions} from "../functions/JavaClassFunctions";
 import { liquibaseFunctions } from "../functions/LiquibaseFunctions";
+import { unitTestFunctions } from "../functions/UnitTestFunctions";
 
 /**
  * AddField editor
  * - Adds chain from persistence to api for field of a bean
- * - Supported types: String, int, long, boolean, LocalDateTime
+ * - Supported types: String, Integer, Long, Boolean, LocalDateTime
  */
 @Editor("AddField", "Add field to a bean for the whole api to persistence chain")
 @Tags("rug", "api", "persistence", "domain", "shboland")
@@ -115,6 +116,17 @@ export class AddField implements EditProject {
     })
     public release: string = "1.0.0";
 
+    @Parameter({
+        displayName: "With Lombok",
+        description: "Do you want to include lombok annotations?",
+        pattern: Pattern.any,
+        validInput: "true or false",
+        minLength: 0,
+        maxLength: 100,
+        required: false,
+    })
+    public withLombok: string = "true";
+
     public edit(project: Project) {
 
         const supportedTypes = ['String', 'Integer', 'Long', 'Boolean', 'LocalDateTime'];
@@ -124,6 +136,7 @@ export class AddField implements EditProject {
 
             this.addChangelog(project);
             this.addFieldToPredicates(project, basePath);
+            this.addFieldToRepositoryUnitTest(project);
             this.addFieldToSearchCriteria(project, basePath);
             this.addIntegrationTestInput(project);
             this.addIntegrationTestChecks(project);
@@ -137,8 +150,10 @@ export class AddField implements EditProject {
                 this.addFieldToBean(project, basePath);
                 this.addFieldToDomainObject(project, basePath);
                 this.addFieldToConverter(project, basePath);
+                this.addFieldToConverterUnitTest(project);
                 this.addFieldToJsonSearchCriteria(project, basePath);
                 this.addFieldToSearchCriteriaConverter(project, basePath);
+                this.addFieldToSearchCriteriaConverterUnitTest(project);
             }
         } else {
             console.error('Type \'' + this.type + '\' is not supported');
@@ -181,6 +196,12 @@ export class AddField implements EditProject {
 
         if (project.fileExists(beanPath)) {
             beanFile.replace(inputHook, rawJavaCode);
+
+            if (javaFunctions.trueOfFalse(this.withLombok)) {
+                javaFunctions.addImport(beanFile, "lombok.AccessLevel");
+                javaFunctions.addImport(beanFile, "lombok.AllArgsConstructor");
+                javaFunctions.addAnnotationToClass(beanFile, "@AllArgsConstructor(access = AccessLevel.PRIVATE)");
+            }
         } else {
             console.error("Bean class not added yet!");
         }
@@ -199,6 +220,12 @@ export class AddField implements EditProject {
         if (project.fileExists(path)) {
             file.replace(inputHook, rawJavaCode);
             javaFunctions.addImport(file, "com.fasterxml.jackson.annotation.JsonProperty");
+
+            if (javaFunctions.trueOfFalse(this.withLombok)) {
+                javaFunctions.addImport(file, "lombok.AccessLevel");
+                javaFunctions.addImport(file, "lombok.AllArgsConstructor");
+                javaFunctions.addAnnotationToClass(file, "@AllArgsConstructor(access = AccessLevel.PRIVATE)");
+            }
         } else {
             console.error("Domain class not added yet!");
         }
@@ -222,6 +249,40 @@ export class AddField implements EditProject {
             file.replace(inputBeanHook, rawBeanInput);
         } else {
             console.error("Converter not added yet!");
+        }
+    }
+
+    private addFieldToConverterUnitTest(project: Project) {
+
+        const path = `${this.apiModule}/src/test/java/${fileFunctions.toPath(this.basePackage)}/api/convert/${this.className}ConverterTest.java`;
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            const parameterInputHook = '// @ParameterInput';
+            const rawParameters = `private static final ${this.type} ${this.fieldName.toUpperCase()} = ${unitTestFunctions.getValue(this.type, 0)};
+    `;
+            file.replace(parameterInputHook, rawParameters + parameterInputHook);
+
+            const fieldInputHook = '// @FieldInput';
+            const rawFieldInput = `.${this.fieldName}(${this.fieldName.toUpperCase()})
+                `;
+            file.replace(fieldInputHook, rawFieldInput + fieldInputHook);
+
+            const jsonFieldInputHook = '// @JsonFieldInput';
+            file.replace(jsonFieldInputHook, rawFieldInput + jsonFieldInputHook);
+
+            const assertJsonHook = '// @AssertJsonFieldInput';
+            const rawJsonAssertion = `assertEquals("Field not set correctly!", ${this.fieldName.toUpperCase()}, resultJson${this.className}.get${javaFunctions.capitalize(this.fieldName)}());
+        `;
+            file.replace(assertJsonHook, rawJsonAssertion +  assertJsonHook);
+
+            const assertHook = '// @AssertFieldInput';
+            const rawAssertion = `assertEquals("Field not set correctly!", ${this.fieldName.toUpperCase()}, result${this.className}.get${javaFunctions.capitalize(this.fieldName)}());
+        `;
+            file.replace(assertHook, rawAssertion +  assertHook);
+
+        } else {
+            console.error("Converter unit test class not added yet!");
         }
     }
 
@@ -263,6 +324,83 @@ export class AddField implements EditProject {
         }
     }
 
+    private addFieldToRepositoryUnitTest(project: Project) {
+
+        const path = `${this.persistenceModule}/src/test/java/${fileFunctions.toPath(this.basePackage)}/persistence/db/repo/${this.className}RepositoryImplTest.java`;
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            const parameterInputHook = '// @ParameterInput';
+            const rawParameters = `private static final ${this.type} ${this.fieldName.toUpperCase()} = ${unitTestFunctions.getValue(this.type, 0)};
+    private static final ${this.type} ${this.fieldName.toUpperCase()}_DIFF = ${unitTestFunctions.getValue(this.type, 1)};
+    `;
+            file.replace(parameterInputHook, rawParameters + parameterInputHook);
+
+            const beanCreationInputHook = '// @ObjectCreationInput';
+            const rawBeanCreation = file.firstMatch(`\\Q${this.className.toLowerCase()}Repository.save(\\E[\\s\\S]*?\\Q.build());\\E`);
+
+            const fieldInputHook = '// @FieldInput';
+            const rawFieldInput = `.${this.fieldName}(${this.fieldName.toUpperCase()})
+                `;
+            file.replace(fieldInputHook, rawFieldInput + fieldInputHook);
+
+            file.replace(beanCreationInputHook,
+                rawBeanCreation.replace(fieldInputHook, `.${this.fieldName}(${this.fieldName.toUpperCase()}_DIFF)
+                ` + fieldInputHook) + `
+                
+        ` + beanCreationInputHook
+            );
+
+            const criteriaInputHook = '// @CriteriaInput';
+            const rawCriteria = `.${this.fieldName}(Optional.of(${this.fieldName.toUpperCase()}))
+                `;
+            file.replace(criteriaInputHook, rawCriteria +  criteriaInputHook);
+
+            const criteriaDiffInputHook = '// @CriteriaDiffInput';
+            const rawCriteriaDiff = `.${this.fieldName}(Optional.of(${this.fieldName.toUpperCase()}_DIFF))
+                `;
+            file.replace(criteriaDiffInputHook, rawCriteriaDiff + criteriaDiffInputHook);
+
+            const allPropertiesCriteria = `"Wrong number of objects returned with all properties!", 1`;
+            file.replace(allPropertiesCriteria, `"Wrong number of objects returned with all properties!", 0`);
+
+            const unitTestInputHook = '// @Input';
+            const rawUnitTests = `
+
+    @Test
+    public void testFindNumberOf${this.className}BySearchCriteria_With${javaFunctions.capitalize(this.fieldName)}Property() {
+
+        ${this.className}SearchCriteria searchCriteria = ${this.className}SearchCriteria.builder()
+                .${this.fieldName}(Optional.of(${this.fieldName.toUpperCase()}_DIFF))
+                .build();
+
+        int result = ${this.className.toLowerCase()}Repository.findNumberOf${this.className}BySearchCriteria(searchCriteria);
+
+        assertEquals("Wrong number of objects returned!", 1, result);
+
+    }
+            
+    @Test
+    public void testFindBySearchCriteria_With${javaFunctions.capitalize(this.fieldName)}Property() {
+
+        ${this.className}SearchCriteria searchCriteria = ${this.className}SearchCriteria.builder()
+                .${this.fieldName}(Optional.of(${this.fieldName.toUpperCase()}_DIFF))
+                .build();
+
+        List<${this.className}> result = ${this.className.toLowerCase()}Repository.findBySearchCriteria(searchCriteria);
+
+        assertEquals("Wrong number of objects returned!", 1, result.size());
+
+    }
+
+`;
+            file.replace(unitTestInputHook, unitTestInputHook + rawUnitTests);
+
+        } else {
+            console.error("Repository Impl unit test class not added yet!");
+        }
+    }
+
     private addFieldToSearchCriteriaConverter(project: Project, basePath: string) {
         const inputHook = "// @Input";
         const rawJavaCode = `${javaFunctions.box(this.type)} ${this.fieldName} = ` +
@@ -272,12 +410,38 @@ export class AddField implements EditProject {
         ` + inputHook;
 
         const path = this.apiModule + basePath + "/api/convert/" + this.className + "SearchCriteriaConverter.java";
-        const file: File = project.findFile(path);
-
         if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
             file.replace(inputHook, rawJavaCode);
         } else {
             console.error("SearchCriteriaConverter class not added yet!");
+        }
+    }
+
+    private addFieldToSearchCriteriaConverterUnitTest(project: Project) {
+
+        const path = `${this.apiModule}/src/test/java/${fileFunctions.toPath(this.basePackage)}/api/convert/${this.className}SearchCriteriaConverterTest.java`;
+        if (project.fileExists(path)) {
+            const file: File = project.findFile(path);
+
+            const parameterInputHook = '// @ParameterInput';
+            const rawParameters = `private static final ${this.type} ${this.fieldName.toUpperCase()} = ${unitTestFunctions.getValue(this.type, 0)};
+    `;
+            file.replace(parameterInputHook, rawParameters + parameterInputHook);
+
+            const fieldInputHook = '// @FieldInput';
+            const rawFieldInput = `.${this.fieldName}(${this.fieldName.toUpperCase()})
+                `;
+            file.replace(fieldInputHook, rawFieldInput + fieldInputHook);
+
+            const assertJsonHook = '// @AssertInput';
+            const rawJsonAssertion = ` assertTrue("Field not set correctly!", resultSearchCriteria.get${javaFunctions.capitalize(this.fieldName)}().isPresent());
+        assertEquals("Field not set correctly!", ${this.fieldName.toUpperCase()}, resultSearchCriteria.get${javaFunctions.capitalize(this.fieldName)}().get());
+                `;
+            file.replace(assertJsonHook, rawJsonAssertion +  assertJsonHook);
+
+        } else {
+            console.error("Search criteria converter unit test class not added yet!");
         }
     }
 

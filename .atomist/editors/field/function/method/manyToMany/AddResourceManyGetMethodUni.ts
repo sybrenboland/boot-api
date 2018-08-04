@@ -3,6 +3,8 @@ import {Project} from "@atomist/rug/model/Project";
 import {Params} from "../../Params";
 import {EditFunction} from "../../EditFunction";
 import {javaFunctions} from "../../../../functions/JavaClassFunctions";
+import {fileFunctions} from "../../../../functions/FileFunctions";
+import {unitTestFunctions} from "../../../../functions/UnitTestFunctions";
 
 
 export class AddResourceGetMethodManyUni extends EditFunction {
@@ -12,6 +14,13 @@ export class AddResourceGetMethodManyUni extends EditFunction {
     }
 
     edit(project: Project, params: Params): void {
+
+        this.addMethod(project, params);
+        this.addUnitTest(project, params);
+    }
+
+    private addMethod(project: Project, params: Params) {
+
         const rawJavaMethod = `
     @Override
     public ResponseEntity get${this.oneClass}(@PathVariable long ${this.otherClass.toLowerCase()}Id) {
@@ -51,5 +60,63 @@ export class AddResourceGetMethodManyUni extends EditFunction {
         } else {
             console.error("Resource class not added yet!");
         }
+    }
+
+    private addUnitTest(project: Project, params: Params) {
+
+        const rawJavaMethod = `
+
+    @Test
+    public void testGet${this.oneClass}_No${this.oneClass}Found() {
+
+        when(${this.oneClass.toLowerCase()}Service.fetch${this.oneClass}(${this.otherClass.toUpperCase()}_ID)).thenReturn(Optional.empty());
+
+        ResponseEntity response = ${this.otherClass.toLowerCase()}Controller.get${this.oneClass}(${this.otherClass.toUpperCase()}_ID);
+
+        assertNotNull("No response!", response);
+        assertEquals("Wrong status code returned!", HttpStatus.NOT_FOUND.value(), response.getStatusCodeValue());
+    }
+
+    @Test
+    public void testGet${this.oneClass}() {
+
+        when(${this.oneClass.toLowerCase()}Service.fetch${this.oneClass}(${this.otherClass.toUpperCase()}_ID)).thenReturn(Optional.of(${this.oneClass.toLowerCase()}));
+        when(${this.oneClass.toLowerCase()}Converter.toJson(${this.oneClass.toLowerCase()})).thenReturn(json${this.oneClass});
+
+        ResponseEntity response = ${this.otherClass.toLowerCase()}Controller.get${this.oneClass}(${this.otherClass.toUpperCase()}_ID);
+
+        assertNotNull("No response!", response);
+        assertEquals("Wrong status code returned!", HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertTrue("Returned object of wrong type!", response.getBody() instanceof Json${this.oneClass});
+        assertEquals("Wrong object returned!", json${this.oneClass}, response.getBody());
+    }`;
+
+        const pathControllerUnitTest = params.apiModule + "/src/test/java/" + fileFunctions.toPath(params.basePackage) + "/api/resource/" + this.otherClass + "ControllerTest.java";
+        if (!project.fileExists(pathControllerUnitTest)) {
+            unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.otherClass, params.basePackage);
+        }
+
+        const file: File = project.findFile(pathControllerUnitTest);
+        const inputHook = '// @Input';
+        file.replace(inputHook, inputHook + rawJavaMethod);
+
+        unitTestFunctions.addMock(file, this.oneClass + 'Service');
+        unitTestFunctions.addMock(file, this.oneClass + 'Converter');
+        unitTestFunctions.addLongParameter(file, `${this.otherClass.toUpperCase()}_ID`);
+        unitTestFunctions.addBeanParameter(file, this.oneClass);
+        unitTestFunctions.addBeanParameter(file, 'Json' + this.oneClass);
+        unitTestFunctions.addBeanParameter(file, this.otherClass);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, `${params.basePackage}.persistence.db.hibernate.bean.${this.oneClass}`);
+        javaFunctions.addImport(file, `${params.basePackage}.core.service.${this.oneClass}Service`);
+        javaFunctions.addImport(file, `${params.basePackage}.api.convert.${this.oneClass}Converter`);
+        javaFunctions.addImport(file, `${params.basePackage}.domain.entities.Json${this.oneClass}`);
+        javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
+        javaFunctions.addImport(file, 'java.util.Optional');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
     }
 }

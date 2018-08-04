@@ -15,7 +15,6 @@ import {AddResourceDeleteMethod} from "./function/method/AddResourceDeleteMethod
 import {AddServiceManyDeleteMethod} from "./function/method/oneToMany/AddServiceManyDeleteMethod";
 import {AddOneSideBean} from "./function/bean/oneToMany/AddOneSideBean";
 import {AddServiceOnePutMethod} from "./function/method/oneToMany/AddServiceOnePutMethod";
-import {AddServiceOneDeleteMethod} from "./function/method/oneToMany/AddServiceOneDeleteMethod";
 import {AddServiceOneGetMethod} from "./function/method/oneToMany/AddServiceOneGetMethod";
 import {AddResourceOneGetMethod} from "./function/method/oneToMany/AddResourceOneGetMethod";
 import {AddResourceInterfaceOneGetMethod} from "./function/method/oneToMany/AddResourceInterfaceOneGetMethod";
@@ -34,6 +33,7 @@ import { AddIntegrationTestPutMethod } from "./function/method/integrationTest/A
 import { AddIntegrationTestDeleteMethod } from "./function/method/integrationTest/AddIntegrationTestDeleteMethod";
 import { AddIntegrationTestGetMethod } from "./function/method/integrationTest/AddIntegrationTestGetMethod";
 import { AddIntegrationTestFactoryMethods } from "./function/method/integrationTest/AddIntegrationTestFactoryMethods";
+import {AddServiceOneDeleteMethod} from "./function/method/oneToOne/AddServiceOneDeleteMethod";
 
 /**
  * AddOneToManyRelation editor
@@ -253,7 +253,7 @@ export class AddOneToManyRelation implements EditProject {
                 .and(new AddResourceOneGetMethod(this.classNameOne, this.classNameMany))
                 .and(new AddServiceOneGetMethod(this.classNameOne, this.classNameMany))
                 .and(new AddLinkToConverterOne(this.classNameOne, this.classNameMany))
-                .and(new AddFieldToSearchCriteria(this.classNameOne, this.classNameMany))
+                .and(new AddFieldToSearchCriteria(this.classNameOne, this.classNameMany, false))
                 .and(new AddFieldToPredicates(this.classNameOne, this.classNameMany))
                 .and(new AddIntegrationTestManySetup(this.classNameOne, this.classNameMany, true))
                 .and(new AddIntegrationTestFactoryMethods(this.classNameOne, this.classNameMany, javaFunctions.trueOfFalse(this.biDirectional), false))
@@ -261,12 +261,12 @@ export class AddOneToManyRelation implements EditProject {
         }
         if (javaFunctions.trueOfFalse(this.showInOutputMany)) {
             builder.and(new AddLinkToConverterMany(this.classNameOne, this.classNameMany, true))
+                .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
+                .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany))
                 .and(new AddResourceInterfaceGetMethodMany(this.classNameOne, this.classNameMany, true))
                 .and(new AddIntegrationTestManySetup(this.classNameMany, this.classNameOne, false))
                 .and(new AddIntegrationTestFactoryMethodsMany(this.classNameMany, this.classNameOne, javaFunctions.trueOfFalse(this.biDirectional), false))
-                .and(new AddIntegrationTestManyGetMethod(this.classNameMany, this.classNameOne))
-                .and(new AddResourceGetMethodManyBi(this.classNameOne, this.classNameMany))
-                .and(new AddServiceGetMethodMany(this.classNameOne, this.classNameMany));
+                .and(new AddIntegrationTestManyGetMethod(this.classNameMany, this.classNameOne));
         }
 
         const params: Params = new Params(

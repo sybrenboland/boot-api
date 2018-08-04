@@ -19,6 +19,7 @@ Feature: Add field class should add a given field to the api chain
     Then the name "street" is added to class "JsonAdresSearchCriteria" in package "domain.entities" of the "Domain" module
     Then the name "street" is added to class "AdresSearchCriteriaConverter" in package "api.convert" of the "Api" module
     Then the name "street" is added to class "AdresRepositoryImpl" in package "persistence.db.repo" of the "Persistence" module
+    Then the unit test for "findNumberOfAdresBySearchCriteria" is added for the class "AdresRepositoryImpl" in the package "persistence.db.repo" of the "Persistence" module
 
   Scenario: AddField should add a date field to the chain
     When the NewMavenProject is run

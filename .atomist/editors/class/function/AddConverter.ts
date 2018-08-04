@@ -8,7 +8,9 @@ import {fileFunctions} from "../../functions/FileFunctions";
 
 /**
  * AddConverter editor
+ * - Adds required dependencies
  * - Adds converter shell class
+ * - Adds unit tests
  */
 @Editor("AddConverter", "adds converter class")
 @Tags("rug", "api", "convert", "shboland")
@@ -51,6 +53,7 @@ export class AddConverter implements EditProject {
 
         this.addDependencies(project);
         this.addConverterClass(project, basePath);
+        this.addUnitTest(project);
     }
 
     private addDependencies(project: Project): void {
@@ -110,6 +113,77 @@ public class ${this.className}Converter {
         const pathConverter = basePath + "/api/convert/" + this.className + "Converter.java";
         if (!project.fileExists(pathConverter)) {
             project.addFile(pathConverter, rawJavaFileContent);
+        }
+    }
+
+    private addUnitTest(project: Project) {
+
+        const rawJavaFileContent = `package ${this.basePackage}.api.convert;
+
+import org.junit.Before;
+import org.junit.Test;
+import ${this.basePackage}.domain.entities.Json${this.className};
+import ${this.basePackage}.persistence.db.hibernate.bean.${this.className};
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+public class ${this.className}ConverterTest {
+
+    private ${this.className}Converter ${this.className.toLowerCase()}Converter = new ${this.className}Converter();
+
+    private static final Long ID = 3L;
+    // @ParameterInput
+
+    private ${this.className} ${this.className.toLowerCase()};
+    private Json${this.className} json${this.className};
+
+    @Before
+    public void setUp() {
+
+        this.${this.className.toLowerCase()} = ${this.className}.builder()
+                // @FieldInput
+                .build();
+
+        this.json${this.className} = Json${this.className}.builder()
+                // @JsonFieldInput
+                .build();
+    }
+
+    @Test
+    public void testToJson() {
+
+        Json${this.className} resultJson${this.className} = ${this.className.toLowerCase()}Converter.toJson(${this.className.toLowerCase()});
+
+        assertNotNull("No object returned.", resultJson${this.className});
+        // @AssertJsonFieldInput
+    }
+
+    @Test
+    public void testFromJson() {
+
+        ${this.className} result${this.className} = ${this.className.toLowerCase()}Converter.fromJson(json${this.className});
+
+        assertNotNull("No object returned.", result${this.className});
+        assertNull("Field not set correctly!", result${this.className}.getId());
+        // @AssertFieldInput
+    }
+
+    @Test
+    public void testFromJson_WithId() {
+
+        ${this.className} result${this.className} = ${this.className.toLowerCase()}Converter.fromJson(json${this.className}, ID);
+
+        assertNotNull("No object returned.", result${this.className});
+        assertEquals("Field not set correctly.", ID, result${this.className}.getId());
+        // @AssertFieldInput
+    }
+}`;
+
+        const pathConverterUnitTest = this.module + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/convert/" + this.className + "ConverterTest.java";
+        if (!project.fileExists(pathConverterUnitTest)) {
+            project.addFile(pathConverterUnitTest, rawJavaFileContent);
         }
     }
 }

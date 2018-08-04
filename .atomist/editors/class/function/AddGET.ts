@@ -6,6 +6,8 @@ import {EditProject} from "@atomist/rug/operations/ProjectEditor";
 import {Pattern} from "@atomist/rug/operations/RugOperation";
 import {PathExpressionEngine} from "@atomist/rug/tree/PathExpression";
 import {javaFunctions} from "../../functions/JavaClassFunctions";
+import { fileFunctions } from "../../functions/FileFunctions";
+import { unitTestFunctions } from "../../functions/UnitTestFunctions";
 
 /**
  * AddGET editor
@@ -13,6 +15,8 @@ import {javaFunctions} from "../../functions/JavaClassFunctions";
  * - Adds method to resource class and interface
  * - Adds method to service
  * - Adds method to converter
+ * - Adds unit tests
+ * - Adds integration tests
  *
  * Requires:
  * - Bean class
@@ -70,16 +74,16 @@ export class AddGET implements EditProject {
 
     public edit(project: Project) {
 
-        const basePathApi = this.apiModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/api";
+        const basePathApi = this.apiModule + "/src/main/java/" + fileFunctions.toPath(this.basePackage) + "/api";
 
-        const basePathCore = this.coreModule + "/src/main/java/" +
-            this.basePackage.replace(/\./gi, "/") + "/core";
+        const basePathCore = this.coreModule + "/src/main/java/" + fileFunctions.toPath(this.basePackage) + "/core";
 
         this.addDependencies(project);
         this.addResourceInterfaceMethod(project, basePathApi);
         this.addResourceClassMethod(project, basePathApi);
+        this.addResourceClassMethodUnitTest(project);
         addServiceMethodFetchBean(project, this.className, this.basePackage, basePathCore);
+        addServiceMethodFetchBeanUnitTest(project, this.className, this.basePackage, this.coreModule);
 
         this.addIntegrationTests(project);
     }
@@ -135,6 +139,62 @@ export class AddGET implements EditProject {
         javaFunctions.addImport(file, this.basePackage + ".persistence.db.hibernate.bean." + this.className);
     }
 
+    private addResourceClassMethodUnitTest(project: Project) {
+
+        const rawJavaMethod = ` 
+        
+    @Test
+    public void testGet${this.className}_No${this.className}Found() {
+
+        when(${this.className.toLowerCase()}Service.fetch${this.className}(${this.className.toUpperCase()}_ID)).thenReturn(Optional.empty());
+
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.get${this.className}(${this.className.toUpperCase()}_ID);
+
+        assertNotNull("No response!", response);
+        assertEquals("Wrong status code returned!", HttpStatus.NOT_FOUND.value(), response.getStatusCodeValue());
+    }
+
+    @Test
+    public void testGet${this.className}_With${this.className}() {
+
+        when(${this.className.toLowerCase()}Service.fetch${this.className}(${this.className.toUpperCase()}_ID)).thenReturn(Optional.of(${this.className.toLowerCase()}));
+        when(${this.className.toLowerCase()}Converter.toJson(${this.className.toLowerCase()})).thenReturn(json${this.className});
+
+        ResponseEntity response = ${this.className.toLowerCase()}Controller.get${this.className}(${this.className.toUpperCase()}_ID);
+
+        assertNotNull("No response!", response);
+        assertEquals("Wrong status code returned!", HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertTrue("Returned object of wrong type!", response.getBody() instanceof Json${this.className});
+        assertEquals("Wrong object returned!", json${this.className}, response.getBody());
+    }`;
+
+        const pathControllerUnitTest = this.apiModule + "/src/test/java/" + fileFunctions.toPath(this.basePackage) + "/api/resource/" + this.className + "ControllerTest.java";
+        if (!project.fileExists(pathControllerUnitTest)) {
+            unitTestFunctions.basicUnitTestController(project, pathControllerUnitTest, this.className, this.basePackage);
+        }
+
+        const file: File = project.findFile(pathControllerUnitTest);
+        const inputHook = '// @Input';
+        file.replace(inputHook, inputHook + rawJavaMethod);
+
+        unitTestFunctions.addMock(file, this.className + 'Service');
+        unitTestFunctions.addMock(file, this.className + 'Converter');
+        unitTestFunctions.addLongParameter(file, `${this.className.toUpperCase()}_ID`);
+        unitTestFunctions.addBeanParameter(file, this.className);
+        unitTestFunctions.addBeanParameter(file, 'Json' + this.className);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, `${this.basePackage}.domain.entities.Json${this.className}`);
+        javaFunctions.addImport(file, `${this.basePackage}.core.service.${this.className}Service`);
+        javaFunctions.addImport(file, `${this.basePackage}.api.convert.${this.className}Converter`);
+        javaFunctions.addImport(file, 'org.springframework.http.HttpStatus');
+        javaFunctions.addImport(file, 'org.springframework.http.ResponseEntity');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertNotNull');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
+    }
+
     private addIntegrationTests(project: Project) {
         const rawJavaMethod = `
     @Test
@@ -188,6 +248,47 @@ export function addServiceMethodFetchBean(project: Project, className: string, b
 
     javaFunctions.addImport(file, "java.util.Optional");
     javaFunctions.addImport(file, basePackage + ".persistence.db.hibernate.bean." + className);
+}
+
+export function addServiceMethodFetchBeanUnitTest(project: Project, className: string, basePackage: string, moduleName: string) {
+
+    const rawJavaMethod = `
+
+    @Test
+    public void testFetch${className}() {
+
+        when(${className.toLowerCase()}Repository.findById(${className.toUpperCase()}_ID)).thenReturn(Optional.of(${className.toLowerCase()}));
+
+        Optional<${className}> fetchResult = ${className.toLowerCase()}Service.fetch${className}(${className.toUpperCase()}_ID);
+
+        assertTrue("Wrong result returned!", fetchResult.isPresent());
+        assertEquals("Wrong object returned!", ${className.toLowerCase()}, fetchResult.get());
+    }`;
+
+    const pathServiceUnitTest = moduleName + "/src/test/java/" + fileFunctions.toPath(basePackage) + "/core/service/" + className + "ServiceTest.java";
+    if (!project.fileExists(pathServiceUnitTest)) {
+        unitTestFunctions.basicUnitTestService(project, pathServiceUnitTest, className, basePackage);
+    }
+
+    const file: File = project.findFile(pathServiceUnitTest);
+    const inputHook = '// @Input';
+
+    if (!file.contains(`testFetch${className}`)) {
+        file.replace(inputHook, inputHook + rawJavaMethod);
+
+        unitTestFunctions.addMock(file, className + 'Repository');
+        unitTestFunctions.addLongParameter(file, `${className.toUpperCase()}_ID`);
+        unitTestFunctions.addBeanParameter(file, className);
+
+        javaFunctions.addImport(file, "org.junit.Test");
+        javaFunctions.addImport(file, `${basePackage}.persistence.db.hibernate.bean.${className}`);
+        javaFunctions.addImport(file, `${basePackage}.persistence.db.repo.${className}Repository`);
+        javaFunctions.addImport(file, 'java.util.Optional');
+
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertEquals');
+        javaFunctions.addImport(file, 'static org.junit.Assert.assertTrue');
+        javaFunctions.addImport(file, 'static org.mockito.Mockito.when');
+    }
 }
 
 export const addGet = new AddGET();
